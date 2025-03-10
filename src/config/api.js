@@ -1,10 +1,11 @@
 import axios from 'axios';
 import { getToken, setToken } from '../core/token';
 import { userService } from '~/services/user.service';
+import { API_ROOT } from '~/utils/constants';
 
 // Khởi tạo Axios instance
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_HOST,
+    baseURL: API_ROOT,
     withCredentials: true, // ✅ Đảm bảo luôn gửi cookie trong request
 });
 

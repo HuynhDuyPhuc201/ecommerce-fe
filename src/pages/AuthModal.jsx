@@ -89,7 +89,7 @@ const AuthModal = () => {
                                     <Button className="w-full mt-[30px]" disabled={loading}>
                                         {loading && <Spin />}Đăng nhập
                                     </Button>
-                                    <Title style={{ fontSize: '12px', paddingTop: '20px' }}>
+                                    <Title style={{ fontSize: '15px', paddingTop: '20px' }}>
                                         Chưa tạo tài khoản?
                                         <button onClick={() => setShowSignUp(true)} className="text-[#2640d4]">
                                             Tạo tài khoản

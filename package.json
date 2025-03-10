@@ -4,8 +4,8 @@
     "version": "0.0.0",
     "type": "module",
     "scripts": {
-        "dev": "vite --port 3000",
-        "build": "vite build",
+        "dev": "cross-env BUILD_MODE=dev vite --port 3000",
+        "build": "cross-env BUILD_MODE=production vite build",
         "preview": "vite preview"
     },
     "dependencies": {
@@ -15,6 +15,7 @@
         "antd": "^5.23.2",
         "axios": "^0.27.2",
         "classnames": "^2.3.2",
+        "cross-env": "^7.0.3",
         "eslint-config-prettier": "^10.0.1",
         "lodash": "^4.17.21",
         "moment": "^2.29.4",
