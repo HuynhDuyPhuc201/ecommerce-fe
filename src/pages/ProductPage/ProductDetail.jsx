@@ -28,6 +28,7 @@ const ProductDetail = () => {
     const user = getUser();
     const { data: _data } = useGetProductDetail(id);
 
+    console.log('user', user);
     const dataDetail = _data?.product;
     const allImage = dataDetail?.image?.map((item) => item.thumbUrl);
     const discount = ((dataDetail?.price_old - dataDetail?.price) / dataDetail?.price_old) * 100;
@@ -194,6 +195,7 @@ const ProductDetail = () => {
                                                 borderColor: '#ff4d4f',
                                                 marginBottom: '8px',
                                             }}
+                                            disabled={user?.isAdmin}
                                             onClick={handleAddCart}
                                         >
                                             Mua ngay
@@ -206,7 +208,7 @@ const ProductDetail = () => {
                                             type="default"
                                             icon={<ShoppingCartOutlined />}
                                             block
-                                            disabled={isLoading}
+                                            disabled={user?.isAdmin || isLoading}
                                         >
                                             Thêm vào giỏ
                                         </Button>
@@ -283,6 +285,7 @@ const ProductDetail = () => {
                                             borderColor: '#ff4d4f',
                                             marginBottom: '8px',
                                         }}
+                                        disabled={user?.isAdmin}
                                         onClick={handleAddCart}
                                     >
                                         Mua ngay
@@ -295,7 +298,7 @@ const ProductDetail = () => {
                                         type="default"
                                         icon={<ShoppingCartOutlined />}
                                         block
-                                        disabled={isLoading}
+                                        disabled={user?.isAdmin || isLoading}
                                     >
                                         Thêm vào giỏ
                                     </Button>

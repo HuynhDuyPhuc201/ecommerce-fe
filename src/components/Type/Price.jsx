@@ -2,6 +2,7 @@ import { Row } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { formatNumber } from '~/core';
+import { useDebounce } from '~/hooks/useDebounce';
 
 const Price = ({ priceObj }) => {
     const { price, updatePrice } = priceObj;
@@ -12,11 +13,11 @@ const Price = ({ priceObj }) => {
     const priceParams = useMemo(() => searchParams.get('price'), [searchParams]);
 
     const handleSliderChange = (e) => {
-        setPriceValue(e.target.value);
+        const value = e.target.value;
+        setPriceValue(value);
+        updatePrice(value);
     };
-    const handlePrice = (item) => () => {
-        updatePrice(item);
-    };
+
     useEffect(() => {
         if (priceParams === null) {
             setPriceValue(0);
@@ -34,22 +35,22 @@ const Price = ({ priceObj }) => {
                         <input
                             type="range"
                             min="0"
-                            max="1000000"
+                            max="5000000"
                             value={priceValue}
                             onChange={handleSliderChange}
                             className="w-[100%] h-2 bg-gray-200 rounded-lg cursor-pointer"
                         />
                     </div>
-                    <span className="p-2 bg-slate-200 rounded-[10px]  ml-2">1.000.000</span>
+                    <span className="p-2 bg-slate-200 rounded-[10px]  ml-2">5.000.000</span>
                 </div>
 
                 <div
                     className=" text-center text-xl font-semibold text-gray-800 cursor-pointer "
-                    onClick={handlePrice(priceValue)}
+                    // onClick={handlePrice(priceValue)}
                 >
                     <span className="text-[16px]">Giá từ:</span>{' '}
                     <span className="p-2 bg-slate-200 rounded-[10px] text-[16px]">
-                        {formatNumber(Number(priceValue))} VND
+                        {`0 - ${formatNumber(Number(priceValue))}`} VND
                     </span>
                 </div>
             </Row>

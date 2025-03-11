@@ -8,10 +8,13 @@ import { setToken, setUser } from '~/core/token';
 import { useAppStore } from '~/store/useAppStore';
 import { userService } from '~/services/user.service';
 import { login } from '~/constants/images';
+import { path } from '~/config/path';
+import { useNavigate } from 'react-router-dom';
 
 const AuthModal = () => {
     const { Title } = Typography;
     const { openModal, toggleModal } = useAppStore();
+    const navigate = useNavigate();
 
     const [showPass, setShowPass] = useState(false);
     const [showPassConFirm, setShowPassConFirm] = useState(false);
@@ -29,6 +32,9 @@ const AuthModal = () => {
             setUser(data);
             setToken(data.access_token);
             message.success(data.message);
+            if (data.isAdmin === true) {
+                navigate(path.Admin);
+            }
             setLoading(true);
         } catch (error) {
             setLoading(false);
@@ -67,7 +73,7 @@ const AuthModal = () => {
                                     </Title>
                                     <InputForm
                                         error={loginForm.formState.errors.email}
-                                        placeholder="admin@gmail.com"
+                                        placeholder="admin@gmail.com hoặc test@gmail.com"
                                         name="email"
                                         type="text"
                                     />
@@ -90,7 +96,7 @@ const AuthModal = () => {
                                         {loading && <Spin />}Đăng nhập
                                     </Button>
                                     <Title style={{ fontSize: '14px', paddingTop: '20px' }}>
-                                        Chưa tạo tài khoản?
+                                        Chưa tạo tài khoản?{' '}
                                         <button onClick={() => setShowSignUp(true)} className="text-[#2640d4]">
                                             Tạo tài khoản
                                         </button>
@@ -168,7 +174,7 @@ const AuthModal = () => {
                                     <Button className="w-full mt-[30px]" type="submit">
                                         Đăng ký
                                     </Button>
-                                    <Title style={{ fontSize: '12px', paddingTop: '20px' }}>
+                                    <Title style={{ fontSize: '14px', paddingTop: '20px' }}>
                                         Đã có tài khoản?{' '}
                                         <button onClick={() => setShowSignUp(false)} className="text-[#2640d4]">
                                             Đăng nhập

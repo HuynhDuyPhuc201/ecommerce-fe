@@ -12,6 +12,7 @@ const Index = () => {
     const arrImg = [slider_1, slider_3];
     const { id } = useParams();
 
+    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
     const [searchParams, setSearchParams] = useSearchParams();
     const page = searchParams.get('page') || 1;
     const [currentPage, setCurrentPage] = useState(page);
@@ -63,30 +64,57 @@ const Index = () => {
         setCurrentPage(page);
     };
 
+    useEffect(() => {
+        const handleResize = () => setWindowWidth(window.innerWidth);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, [window.innerWidth]);
+
     return (
         <>
             <div className="py-0 container my-20">
                 <HomeSlider arrImg={arrImg} />
-                <div className="p-4 flex items-center justify-end font-[sans-serif]">
-                    <label className="text-[16px] text-[#333] block pr-3" htmlFor="sort-select">
-                        Sắp xếp giá theo:
-                    </label>
-                    <select
-                        id="sort-select"
-                        value={sort || ''}
-                        onChange={handleSelectChange}
-                        className="w-[50%]  md:w-[20%] p-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    >
-                        <option value="asc">Thấp đến cao</option>
-                        <option value="desc">Cao đến thấp</option>
-                    </select>
-                </div>
+                {windowWidth > 500 && (
+                    <div className="p-4 flex items-center justify-end font-[sans-serif]">
+                        <label className="text-[16px] text-[#333] block pr-3" htmlFor="sort-select">
+                            Sắp xếp giá theo:
+                        </label>
+                        <select
+                            id="sort-select"
+                            value={sort || ''}
+                            onChange={handleSelectChange}
+                            className="w-[50%]  md:w-[20%] p-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        >
+                            <option value="asc">Thấp đến cao</option>
+                            <option value="desc">Cao đến thấp</option>
+                        </select>
+                    </div>
+                )}
 
                 <Row gutter={[12, 12]} style={{ rowGap: '16px' }}>
                     <Col md={6}>
                         <Navbar ratingObj={{ updateRating, rating }} priceObj={{ price, updatePrice }} />
                     </Col>
-                    <Col md={18}>
+                    {windowWidth < 500 && (
+                        <Col sm={24} xs={24} md={24}>
+                            <div className="p-4 flex items-center justify-end font-[sans-serif]">
+                                <label className="text-[16px] text-[#333] block pr-3" htmlFor="sort-select">
+                                    Sắp xếp giá theo:
+                                </label>
+                                <select
+                                    id="sort-select"
+                                    value={sort || ''}
+                                    onChange={handleSelectChange}
+                                    className="w-[50%]  md:w-[20%] p-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                >
+                                    <option value="asc">Thấp đến cao</option>
+                                    <option value="desc">Cao đến thấp</option>
+                                </select>
+                            </div>
+                        </Col>
+                    )}
+
+                    <Col xs={24} sm={18} md={18}>
                         <Row gutter={[12, 12]} style={{ rowGap: '16px', marginTop: '20px' }}>
                             {dataProduct?.map((item, i) => (
                                 <Col lg={6} md={8} sm={8} xs={12} key={i}>

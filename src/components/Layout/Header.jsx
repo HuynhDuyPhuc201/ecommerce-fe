@@ -1,7 +1,7 @@
 import React, { useState, useEffect, forwardRef } from 'react';
 import { Avatar, Badge, Col, List, Row, Typography } from 'antd';
 import { generatePath, Link, Navigate, useNavigate } from 'react-router-dom';
-import { ShoppingCartOutlined, UserOutlined, MenuOutlined } from '@ant-design/icons';
+import { ShoppingCartOutlined, UserOutlined, MenuOutlined, CaretDownOutlined } from '@ant-design/icons';
 import { Dropdown, Space } from 'antd';
 import SearchBar from '../SearchBar';
 import Sidebar from '../Sidebar';
@@ -177,6 +177,9 @@ const Header = forwardRef((props, ref) => {
                                             </button>
                                         </Dropdown>
                                     </div>
+                                    <CaretDownOutlined
+                                        style={{ color: '#fff', cursor: 'pointer', padding: '5px 0 0 5px' }}
+                                    />
                                 </div>
                                 {!user?.isAdmin && (
                                     <Link className="cart pl-[20px] flex item-center cursor-pointer" to={path.Cart}>
