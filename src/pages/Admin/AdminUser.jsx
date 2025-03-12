@@ -114,8 +114,13 @@ const AdminUser = () => {
         userForm.reset(item);
     };
 
-    const renderOrder = (_id) => {
-        return <Button onClick={() => fetchOrder(_id)}>View Orders</Button>;
+    const renderOrder = (id) => {
+        const userAdmin = dataUser?.find((item) => item._id === id);
+        console.log(userAdmin);
+        if (!userAdmin.isAdmin) {
+            return <Button onClick={() => fetchOrder(id)}>View Orders</Button>;
+        }
+        return null;
     };
     const [modalOrder, setModalOrder] = useState(false);
 
@@ -123,9 +128,9 @@ const AdminUser = () => {
         setModalOrder(false);
     };
     const [data, setData] = useState();
-    const fetchOrder = async (_id) => {
+    const fetchOrder = async (id) => {
         try {
-            const result = await orderService.getOrderAdmin(_id);
+            const result = await orderService.getOrderAdmin(id);
             setData(result);
             setModalOrder(true);
         } catch (error) {
@@ -163,7 +168,14 @@ const AdminUser = () => {
         );
     };
 
-    const renderAction = (id) => <Button onClick={() => onClickUpdate(id)}>Update</Button>;
+    const renderAction = (id) => {
+        const userAdmin = dataUser?.find((item) => item._id === id);
+        console.log(userAdmin);
+        if (!userAdmin.isAdmin) {
+            return <Button onClick={() => onClickUpdate(id)}>Update</Button>;
+        }
+        return null;
+    };
 
     const columns = {
         user: [
@@ -199,7 +211,7 @@ const AdminUser = () => {
                 responsive: ['xs', 'sm', 'md', 'lg'], // Hiện trên mọi màn hình
                 dataIndex: '_id',
                 width: 120,
-                render: (_id) => renderOrder(_id),
+                render: (id) => renderOrder(id),
             },
             { title: 'Action', dataIndex: '_id', width: 100, render: (id) => renderAction(id) },
         ],

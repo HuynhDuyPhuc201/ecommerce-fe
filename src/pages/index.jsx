@@ -117,7 +117,7 @@ const Index = () => {
                     <Col xs={24} sm={18} md={18}>
                         <Row gutter={[12, 12]} style={{ rowGap: '16px', marginTop: '20px' }}>
                             {dataProduct?.map((item, i) => (
-                                <Col lg={6} md={8} sm={8} xs={12} key={i}>
+                                <Col lg={6} md={8} sm={12} xs={12} key={i}>
                                     {isFetching ? <Skeleton /> : <ProductCard item={item} />}
                                 </Col>
                             ))}
