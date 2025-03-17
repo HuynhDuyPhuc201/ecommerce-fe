@@ -204,20 +204,27 @@ const AuthModal = () => {
                                             </div>
                                         </Col>
                                         {verifyEmail && (
-                                            <Col span={12}>
-                                                <InputForm
-                                                    error={regitserForm.formState.errors.code}
-                                                    placeholder="Verify Code..."
-                                                    name="code"
-                                                />
-                                                <Button
-                                                    onClick={handleResendCode}
-                                                    disabled={loadingSendCode}
-                                                    className="cursor-pointer w-1/2 mt-5 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                                                >
-                                                    {loadingSendCode && <Spin />}Gửi lại
-                                                </Button>
-                                            </Col>
+                                            <Row gutter={[12, 12]}>
+                                                <Col span={12}>
+                                                    <InputForm
+                                                        error={regitserForm.formState.errors.code}
+                                                        placeholder="Verify Code..."
+                                                        name="code"
+                                                    />
+                                                </Col>
+                                                <Col span={12}>
+                                                    <Button
+                                                        onClick={handleResendCode}
+                                                        disabled={loadingSendCode}
+                                                        className="cursor-pointer w-1/2 mt-5 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                                                    >
+                                                        {loadingSendCode && <Spin />}Gửi lại
+                                                    </Button>
+                                                </Col>
+                                                <span className="pl-5">
+                                                    Lưu ý: Mã xác thực có thể ở trong thư mục spam
+                                                </span>
+                                            </Row>
                                         )}
                                     </Row>
 
