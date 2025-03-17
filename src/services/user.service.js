@@ -19,6 +19,9 @@ export const userService = {
     register(form) {
         return api.post('/user/sign-up', form);
     },
+    verifyEmail(form) {
+        return api.post('/user/verify-email', form);
+    },
     refreshToken() {
         return api.post('/user/refresh-token', {}, { withCredentials: true });
     },

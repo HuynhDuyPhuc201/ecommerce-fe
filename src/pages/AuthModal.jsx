@@ -1,6 +1,6 @@
 import { Modal, Row, Col, Typography, Image, message, Spin } from 'antd';
 import { EyeInvisibleOutlined, EyeOutlined, LeftOutlined } from '@ant-design/icons';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import InputForm from '~/components/InputForm';
 import Button from '~/components/Button';
@@ -15,11 +15,12 @@ const AuthModal = () => {
     const { Title } = Typography;
     const { openModal, toggleModal } = useAppStore();
     const navigate = useNavigate();
-
+    const [verifyEmail, setShowVerifyEmail] = useState(false);
     const [showPass, setShowPass] = useState(false);
     const [showPassConFirm, setShowPassConFirm] = useState(false);
     const { showSignUp, setShowSignUp } = useAppStore();
     const [loading, setLoading] = useState(false);
+    const [loadingSendCode, setLoadingSendCode] = useState(false);
 
     // tạo useForm sử dụng cho nhiều component
     const loginForm = useForm({ mode: 'onChange' });
@@ -41,24 +42,57 @@ const AuthModal = () => {
         }
     };
 
+    const [dataDefault, setDataDefault] = useState({});
+
     const handleRegister = async (form) => {
+        setLoading(true);
         try {
-            const result = await userService.register(form);
+            const service = form.code ? userService.verifyEmail : userService.register;
+            const result = await service(form);
             if (result.success) {
-                setShowSignUp(false);
                 message.success(result.message);
+                setShowVerifyEmail(true);
+                setDataDefault(form); // lấy giá trị ban đầu để so sánh vs mail sau, nếu thay đổi thì cho nhận lại email xác nhận
+                setLoading(false);
+            }
+            if (result.verify) {
                 regitserForm.reset({
                     name: '',
                     email: '',
                     password: '',
                     confirmPassword: '',
                 });
+                setShowSignUp(false);
+                message.success(result.message);
+                setLoading(false);
             }
+            setLoading(false);
         } catch (error) {
             message.error(error.response.data?.message);
         }
     };
+    const handleOnChangeEmail = (e) => {
+        if (dataDefault.email !== e.target.value) {
+            setShowVerifyEmail(false);
+        }
+    };
 
+    const handleResendCode = async () => {
+        const form = regitserForm.getValues(); // lấy email hiện tại từ form
+        try {
+            setLoadingSendCode(true);
+            const result = await userService.register(form); // giả sử BE có key 'resend' để gửi lại mã
+            if (result.success) {
+                setLoadingSendCode(false);
+                message.success('Mã xác thực đã được gửi lại!');
+            } else {
+                message.error('Không thể gửi lại mã xác thực, vui lòng thử lại!');
+            }
+            setLoadingSendCode(false);
+        } catch (error) {
+            message.error(error.response.data?.message || 'Có lỗi xảy ra!');
+        }
+    };
     return (
         <>
             <Modal open={openModal} onCancel={toggleModal} footer={null} width={800}>
@@ -152,6 +186,7 @@ const AuthModal = () => {
                                                 placeholder="Email..."
                                                 name="email"
                                                 type="text"
+                                                onChange={handleOnChangeEmail}
                                             />
                                             <div className="relative">
                                                 <InputForm
@@ -168,10 +203,26 @@ const AuthModal = () => {
                                                 </div>
                                             </div>
                                         </Col>
+                                        {verifyEmail && (
+                                            <Col span={12}>
+                                                <InputForm
+                                                    error={regitserForm.formState.errors.code}
+                                                    placeholder="Verify Code..."
+                                                    name="code"
+                                                />
+                                                <Button
+                                                    onClick={handleResendCode}
+                                                    disabled={loadingSendCode}
+                                                    className="cursor-pointer w-1/2 mt-5 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                                                >
+                                                    {loadingSendCode && <Spin />}Gửi lại
+                                                </Button>
+                                            </Col>
+                                        )}
                                     </Row>
 
-                                    <Button className="w-full mt-[30px]" type="submit">
-                                        Đăng ký
+                                    <Button className="w-full mt-[30px]" type="submit" disabled={loading}>
+                                        {loading && <Spin />}Đăng ký
                                     </Button>
                                     <Title style={{ fontSize: '14px', paddingTop: '20px' }}>
                                         Đã có tài khoản?{' '}

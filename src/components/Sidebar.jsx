@@ -1,5 +1,5 @@
 import React from 'react';
-import { Drawer, Avatar, Badge, Menu } from 'antd';
+import { Drawer, Avatar, Badge, Menu, message } from 'antd';
 import { CloseOutlined, ShoppingCartOutlined, UserOutlined } from '@ant-design/icons';
 import { useAppStore } from '~/store/useAppStore';
 import { getUser, removeUser } from '~/core/token';
@@ -32,7 +32,7 @@ const Sidebar = () => {
                 toggleSidebar(); // Đóng Drawer sau khi đăng xuất
             }
         } catch (error) {
-            console.log(error);
+            message.error('Đăng xuất thất bại');
         }
     };
 

@@ -99,12 +99,9 @@ const Payment = () => {
         setNewSubTotal(newSubTotal - discountAmount);
         setDiscountCode({ code: '', discountAmount: discountAmount });
     };
-    console.log('newSubTotal', newSubTotal);
 
     const handleCloseDiscount = () => {
         setDiscountCode({ discountAmount: 0 });
-        console.log('baseSubTotal', baseSubTotal);
-        console.log('shippingFee', shippingFee);
         setNewSubTotal(baseSubTotal + shippingFee);
     };
     const handleShippingMethod = (e) => {
