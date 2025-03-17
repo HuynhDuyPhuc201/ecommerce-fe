@@ -12,7 +12,6 @@ export const cartService = {
         return api.put(`/cart/update`, payload);
     },
     removeCart(ids) {
-        console.log('ids', ids);
         return api.delete(`/cart/delete?${ids}`);
     },
 };

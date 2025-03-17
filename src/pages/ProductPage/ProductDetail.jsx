@@ -1,8 +1,8 @@
-import { Button, Card, Col, InputNumber, message, Modal, Row, Typography } from 'antd';
+import { Button, Col, InputNumber, message, Modal, Row, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import Slider from 'react-slick';
-import { CloseOutlined, ShoppingCartOutlined, StarFilled } from '@ant-design/icons';
+import { ShoppingCartOutlined, StarFilled } from '@ant-design/icons';
 import ProductCard from '~/components/ProductCard';
 import { productService } from '~/services/product.service';
 import { useQuery } from '@tanstack/react-query';
@@ -10,11 +10,11 @@ import { useAppStore } from '~/store/useAppStore';
 import { getUser } from '~/core/token';
 import { formatNumber } from '~/core';
 import { cartService } from '~/services/cart.service';
-import './style.css';
 import AddressModal from '~/components/Address/AddressModal';
 import useGetUserDetail from '~/hooks/useGetUserDetail';
 import useGetProductDetail from '~/hooks/useGetProductDetail';
 import useGetCart from '~/hooks/useGetCart';
+import './style.css';
 
 const { Title, Text } = Typography;
 
@@ -26,9 +26,9 @@ const ProductDetail = () => {
     const [modalConfig, setModalConfig] = useState(false);
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
     const user = getUser();
+    const { data: dataUser } = useGetUserDetail();
     const { data: _data } = useGetProductDetail(id);
 
-    console.log('user', user);
     const dataDetail = _data?.product;
     const allImage = dataDetail?.image?.map((item) => item.thumbUrl);
     const discount = ((dataDetail?.price_old - dataDetail?.price) / dataDetail?.price_old) * 100;
@@ -60,7 +60,6 @@ const ProductDetail = () => {
         queryKey: ['products', idCate],
         queryFn: async () => await productService.getAll(`?limit=8&page=1&categories=${idCate}`),
     });
-    const { data: dataUser } = useGetUserDetail();
     const { refetch } = useGetCart();
 
     const handleQuantityChange = (value) => {
@@ -75,7 +74,6 @@ const ProductDetail = () => {
             setIsloading(true);
             const { _id, name, price } = dataDetail;
             const imageUrl = dataDetail.image?.[0]?.thumbUrl ?? 'default-image-url.jpg';
-
             const result = await cartService.addCart({
                 productId: _id,
                 name,
@@ -95,7 +93,7 @@ const ProductDetail = () => {
         }
     };
 
-    let address = user?.address.find((item) => item.defaultAddress === true);
+    let address = dataUser?.user?.address.find((item) => item.defaultAddress === true);
 
     const [chooseAddress, setChooseAddress] = useState(address);
 

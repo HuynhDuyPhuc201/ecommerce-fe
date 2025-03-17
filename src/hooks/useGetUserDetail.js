@@ -4,7 +4,6 @@ import { useQuery } from '@tanstack/react-query';
 
 const useGetUserDetail = () => {
     const user = getUser();
-
     const { data, refetch, isFetching } = useQuery({
         queryKey: ['cart', user?._id],
         queryFn: async () => await userService?.getDetail(user?._id),

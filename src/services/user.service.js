@@ -13,6 +13,9 @@ export const userService = {
     login(form) {
         return api.post('/user/sign-in', form);
     },
+    logout(form) {
+        return api.post('/user/sign-out', form);
+    },
     register(form) {
         return api.post('/user/sign-up', form);
     },

@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import InputForm from '~/components/InputForm';
 import Button from '~/components/Button';
-import { setToken, setUser } from '~/core/token';
+import { setUser } from '~/core/token';
 import { useAppStore } from '~/store/useAppStore';
 import { userService } from '~/services/user.service';
 import { login } from '~/constants/images';
@@ -30,7 +30,6 @@ const AuthModal = () => {
             const data = await userService.login(form);
             toggleModal();
             setUser(data);
-            setToken(data.access_token);
             message.success(data.message);
             if (data.isAdmin === true) {
                 navigate(path.Admin);

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, forwardRef } from 'react';
-import { Avatar, Badge, Col, List, Row, Typography } from 'antd';
-import { generatePath, Link, Navigate, useNavigate } from 'react-router-dom';
+import { Avatar, Badge, Col, List, message, Row, Typography } from 'antd';
+import { generatePath, Link, useNavigate } from 'react-router-dom';
 import { ShoppingCartOutlined, UserOutlined, MenuOutlined, CaretDownOutlined } from '@ant-design/icons';
 import { Dropdown, Space } from 'antd';
 import SearchBar from '../SearchBar';
@@ -8,13 +8,16 @@ import Sidebar from '../Sidebar';
 import { path } from '~/config/path';
 import AuthModal from '~/pages/AuthModal';
 import { useAppStore } from '~/store/useAppStore';
-import { getUser, removeToken, removeUser } from '~/core/token';
+import { getUser, removeUser } from '~/core/token';
 import { formatNumber } from '~/core';
 import useGetCart from '~/hooks/useGetCart';
+import useGetUserDetail from '~/hooks/useGetUserDetail';
+import { userService } from '~/services/user.service';
 
 const Header = forwardRef((props, ref) => {
     const user = getUser();
 
+    const { data: userDetail } = useGetUserDetail();
     const navigation = useNavigate();
     const { data: dataCart } = useGetCart();
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -31,11 +34,19 @@ const Header = forwardRef((props, ref) => {
         toggleSidebar();
     };
 
-    const handleLogout = () => {
-        removeToken();
-        removeUser();
-        navigation('/');
-        window.location.reload();
+    const handleLogout = async () => {
+        try {
+            const result = await userService.logout();
+            if (result.success) {
+                toggleSidebar(); // Đóng Drawer sau khi đăng xuất
+                navigation('/');
+                window.location.reload();
+                removeUser();
+                message.success('Đăng xuất thành công');
+            }
+        } catch (error) {
+            message.error('Đăng xuất thất bại');
+        }
     };
 
     const hanldeShowSearch = () => {
@@ -162,8 +173,8 @@ const Header = forwardRef((props, ref) => {
                         {windowWidth >= 1000 ? (
                             <>
                                 <div className="account flex pl-[20px] items-center ">
-                                    {user && user?.avatar ? (
-                                        <Avatar size={50} src={user?.avatar || undefined} />
+                                    {userDetail?.user && userDetail?.user?.avatar ? (
+                                        <Avatar size={50} src={userDetail?.user?.avatar || undefined} />
                                     ) : (
                                         <UserOutlined style={{ fontSize: '30px', color: '#fff' }} />
                                     )}
@@ -172,7 +183,7 @@ const Header = forwardRef((props, ref) => {
                                         <Dropdown menu={{ items }} trigger={user ? ['hover'] : []}>
                                             <button onClick={toggleModal} disabled={user} className="cursor-pointer">
                                                 <Space className="text-[#fff] text-[17px]">
-                                                    {user ? user.name : 'Tài khoản'}
+                                                    {userDetail?.user ? userDetail?.user?.name : 'Tài khoản'}
                                                 </Space>
                                             </button>
                                         </Dropdown>

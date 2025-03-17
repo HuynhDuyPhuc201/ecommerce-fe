@@ -1,9 +1,8 @@
 import { Avatar, Button, Col, message, Row, Upload } from 'antd';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { getUser, setUser } from '~/core/token';
 import { EyeInvisibleOutlined, EyeOutlined, UploadOutlined, UserOutlined } from '@ant-design/icons';
-import { useQuery } from '@tanstack/react-query';
 import { userService } from '~/services/user.service';
 import { FormProvider } from 'antd/es/form/context';
 import { useForm } from 'react-hook-form';
@@ -24,7 +23,7 @@ const Profile = () => {
         updateForm.reset(data?.user);
     }, [data]);
 
-    const onSubmit = async (form) => {
+    const onSubmitUpdate = async (form) => {
         const isChanged = JSON.stringify(updateForm.formState.defaultValues) === JSON.stringify(form);
         if (isChanged) {
             return message.error('Không có gì thay đổi');
@@ -60,7 +59,7 @@ const Profile = () => {
         <div className="w-full mx-auto bg-white p-6 rounded-lg shadow-md">
             <h2 className="text-2xl font-semibold mb-4">Thông tin tài khoản</h2>
             <FormProvider {...updateForm}>
-                <form onSubmit={updateForm.handleSubmit(onSubmit)}>
+                <form onSubmit={updateForm.handleSubmit(onSubmitUpdate)}>
                     <Row gutter={[24, 24]} align="top">
                         <Col xs={24} md={8}>
                             <div className="flex flex-col items-center gap-4 p-4 border rounded-lg shadow-md w-full">
@@ -110,16 +109,6 @@ const Profile = () => {
                                     />
                                 </Col>
 
-                                {/* <Col xs={24} md={12}>
-                                    <label className="block text-gray-700">Địa chỉ</label>
-                                    <input
-                                        {...updateForm.register('address')}
-                                        type="text"
-                                        className="w-full p-2 border rounded-lg"
-                                        placeholder="Nhập địa chỉ"
-                                    />
-                                </Col> */}
-
                                 <Col xs={24} md={12}>
                                     <label className="block text-gray-700">Mật khẩu cũ</label>
                                     <div className="relative">
@@ -137,6 +126,7 @@ const Profile = () => {
                                         </div>
                                     </div>
                                 </Col>
+
                                 <Col xs={24} md={12}>
                                     <label className="block text-gray-700">Mật khẩu mới</label>
                                     <div className="relative">
@@ -154,15 +144,14 @@ const Profile = () => {
                                         </div>
                                     </div>
                                 </Col>
+                                <Col xs={24} md={12}>
+                                    <button className="w-1/2 bg-blue-500 hover:bg-blue-700 text-white  mt-5 font-bold py-2 px-4 rounded">
+                                        Lưu thay đổi
+                                    </button>
+                                </Col>
                             </Row>
                         </Col>
                     </Row>
-
-                    <div className="flex items-center justify-center mt-6">
-                        <button className="w-1/2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                            Lưu thay đổi
-                        </button>
-                    </div>
                 </form>
             </FormProvider>
         </div>

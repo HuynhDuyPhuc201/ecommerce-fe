@@ -1,30 +1,39 @@
 import React from 'react';
-import { Drawer, Input, Avatar, Badge, Button, Menu } from 'antd';
-import { CloseOutlined, SearchOutlined, ShoppingCartOutlined, UserOutlined } from '@ant-design/icons';
+import { Drawer, Avatar, Badge, Menu } from 'antd';
+import { CloseOutlined, ShoppingCartOutlined, UserOutlined } from '@ant-design/icons';
 import { useAppStore } from '~/store/useAppStore';
-import { getUser, removeToken, removeUser } from '~/core/token';
+import { getUser, removeUser } from '~/core/token';
 import { useNavigate } from 'react-router-dom';
 import { path } from '~/config/path';
 import useGetCart from '~/hooks/useGetCart';
 import SearchBar from './SearchBar';
 import { Typography } from 'antd';
+import { userService } from '~/services/user.service';
+import useGetUserDetail from '~/hooks/useGetUserDetail';
 
 const { SubMenu } = Menu;
 
 const Sidebar = () => {
-    const { toggleSidebar, openSidebar, showSignUp, setShowSignUp, toggleModal } = useAppStore();
+    const { toggleSidebar, openSidebar, toggleModal } = useAppStore();
 
-    const user = getUser();
+    const { data: userDetail } = useGetUserDetail();
+
     const navigate = useNavigate();
     const { data: dataCart } = useGetCart();
     const {} = useAppStore();
 
-    const handleLogout = () => {
-        removeToken();
-        removeUser();
-        navigate('/');
-        window.location.reload();
-        toggleSidebar(); // Đóng Drawer sau khi đăng xuất
+    const handleLogout = async () => {
+        try {
+            const result = await userService.logout();
+            if (result.success) {
+                removeUser();
+                navigate('/');
+                window.location.reload();
+                toggleSidebar(); // Đóng Drawer sau khi đăng xuất
+            }
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     const handleMenuClick = ({ key }) => {
@@ -58,24 +67,27 @@ const Sidebar = () => {
             </div>
 
             <div className="p-5 flex items-center">
-                {user?.avatar ? (
-                    <Avatar src={user?.avatar} size={70} className="mr-3" />
+                {userDetail?.user?.avatar ? (
+                    <Avatar src={userDetail?.user?.avatar} size={70} className="mr-3" />
                 ) : (
                     <UserOutlined style={{ fontSize: '30px', color: '#fff' }} />
                 )}
 
-                {user?.name && <span className="text-[16px] text-[#333]">{user?.name}</span>}
+                {userDetail?.user?.name && <span className="text-[16px] text-[#333]">{userDetail?.user?.name}</span>}
             </div>
 
             {/* User Menu */}
             <Menu mode="inline" className="text-[20px]" onClick={handleMenuClick}>
                 <SubMenu key="user" title="Tài khoản" className="text-[16px] text-[#333] cursor-pointer">
-                    {user && (
+                    {userDetail?.user && (
                         <>
-                            <Menu.Item className="text-[20px]" key={user?.isAdmin ? path.Admin : path.Account.Profile}>
-                                {user?.isAdmin ? 'Quản lý hệ thống' : 'Thông tin người dùng'}
+                            <Menu.Item
+                                className="text-[16px]"
+                                key={userDetail?.user?.isAdmin ? path.Admin : path.Account.Profile}
+                            >
+                                {userDetail?.user?.isAdmin ? 'Quản lý hệ thống' : 'Thông tin người dùng'}
                             </Menu.Item>
-                            {!user?.isAdmin && (
+                            {!userDetail?.user?.isAdmin && (
                                 <Menu.Item key={path.Account.MyOrder} className="text-[16px] text-[#333]">
                                     Đơn hàng
                                 </Menu.Item>
@@ -86,7 +98,7 @@ const Sidebar = () => {
                         </>
                     )}
 
-                    {!user?.isAdmin && (
+                    {!userDetail?.user?.isAdmin && (
                         <>
                             <Menu.Item className="text-[16px] text-[#333]" onClick={() => toggleModal()}>
                                 Đăng nhập & Đăng ký
@@ -98,7 +110,7 @@ const Sidebar = () => {
 
             {/* Giỏ hàng */}
             <div
-                className="p-10 flex items-center cursor-pointer text-xl font-medium mt-5"
+                className="p-10 flex items-center cursor-pointer text-xl mt-5"
                 onClick={() => {
                     navigate(path.Cart);
                     toggleSidebar();

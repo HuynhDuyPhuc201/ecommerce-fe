@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { PlusOutlined, MailOutlined, SettingOutlined, UserOutlined, UploadOutlined } from '@ant-design/icons';
-import { Avatar, Button, message, Space, Tag, Upload } from 'antd';
-import { Divider, Radio, Table } from 'antd';
+import React, { useState } from 'react';
+import { UserOutlined, UploadOutlined } from '@ant-design/icons';
+import { Avatar, Button, message, Upload } from 'antd';
+import { Divider, Table } from 'antd';
 import { Modal } from 'antd';
 import { ModalButton } from './component/ModalButton';
 import { useForm } from 'react-hook-form';
@@ -116,7 +116,6 @@ const AdminUser = () => {
 
     const renderOrder = (id) => {
         const userAdmin = dataUser?.find((item) => item._id === id);
-        console.log(userAdmin);
         if (!userAdmin.isAdmin) {
             return <Button onClick={() => fetchOrder(id)}>View Orders</Button>;
         }
@@ -138,7 +137,6 @@ const AdminUser = () => {
         }
     };
 
-    console.log('data', data);
     const renderUpload = () => {
         return (
             <>
@@ -170,7 +168,6 @@ const AdminUser = () => {
 
     const renderAction = (id) => {
         const userAdmin = dataUser?.find((item) => item._id === id);
-        console.log(userAdmin);
         if (!userAdmin.isAdmin) {
             return <Button onClick={() => onClickUpdate(id)}>Update</Button>;
         }
