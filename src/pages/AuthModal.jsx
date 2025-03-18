@@ -28,6 +28,11 @@ const AuthModal = () => {
 
     const handleLogin = async (form) => {
         try {
+            // 🔥 Yêu cầu quyền lưu trữ trước khi gửi request (chỉ với Safari)
+            if (document.requestStorageAccess) {
+                await document.requestStorageAccess();
+                console.log('Storage access granted!');
+            }
             const data = await userService.login(form);
             if (data.tokensSaved === true) {
                 setTimeout(() => {
