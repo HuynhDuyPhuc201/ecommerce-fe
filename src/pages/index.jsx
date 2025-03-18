@@ -46,9 +46,10 @@ const Index = () => {
         setSearchParams(queryObject);
     }, [sort, rating, price, id, name]);
 
-    const query = `${`?page=${currentPage}`}${sort && `&sort=${sort}`}${id ? `&categories=${id}` : ''}${
-        searchParams ? `&${searchParams.toString()}` : ''
-    }`;
+    console.log(typeof id, id);
+    const query = `${`?page=${currentPage}`}${sort ? `&sort=${sort}` : ''}${
+        id && !isNaN(Number(id)) && Number(id) > 0 ? `&categories=${id}` : ''
+    }${searchParams ? `&${searchParams.toString()}` : ''}`;
 
     const { data, isFetching } = useQuery({
         queryKey: ['products', sort, rating, price, id, searchParams, currentPage, name],
