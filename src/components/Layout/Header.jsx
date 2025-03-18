@@ -149,7 +149,7 @@ const Header = forwardRef((props, ref) => {
                                                         color: '#ff4d4f',
                                                     }}
                                                 >
-                                                    {formatNumber(item.price)} đ
+                                                    {formatNumber(item.price) || 0} đ
                                                 </p>
                                             </div>
                                         </List.Item>

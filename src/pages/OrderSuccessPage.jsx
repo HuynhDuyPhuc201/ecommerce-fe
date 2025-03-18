@@ -6,7 +6,6 @@ import useOrderStore from '~/store/useOrderStore';
 
 const OrderSuccessPage = () => {
     const navigate = useNavigate();
-    const { orderItem } = useOrderStore();
 
     return (
         <Col xs={24} sm={24} md={24}>

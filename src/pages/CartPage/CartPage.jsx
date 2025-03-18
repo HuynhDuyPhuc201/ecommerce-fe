@@ -18,7 +18,7 @@ const CartPage = () => {
     const user = getUser();
     const { data: dataUser, refetch: refetchUser } = useGetUserDetail();
     const { refetch: refetchCart, data: dataCart } = useGetCart();
-    const { setOrderItem } = useOrderStore();
+    const { setCheckoutInfo } = useOrderStore();
     const navigate = useNavigate();
 
     const address = useMemo(() => {
@@ -83,6 +83,9 @@ const CartPage = () => {
         async (value, record) => {
             try {
                 if (value < 1) return;
+                if (value > record.countInstock) {
+                    return message.error('Số lượng sản phẩm không đủ', 2);
+                }
 
                 const payload = {
                     productId: record.productId,
@@ -99,6 +102,7 @@ const CartPage = () => {
         },
         [refetchCart],
     );
+
     const hanldeOrder = useCallback(async () => {
         if (addressString === '' || !idCheckbox.length) {
             return message.error('Vui lòng cập nhật địa chỉ hoặc chọn sản phẩm');
@@ -106,7 +110,6 @@ const CartPage = () => {
         const listProduct = idCheckbox.map((productId) => {
             return dataCart?.listProduct.find((item) => item._id === productId);
         });
-
         const form = {
             userId: dataCart.userId,
             orderItems: listProduct,
@@ -114,9 +117,9 @@ const CartPage = () => {
             subTotal: selectedTotal,
             shippingAddress: chooseAddress,
         };
-        setOrderItem(form);
+        setCheckoutInfo(form);
         navigate(path.Payment);
-    }, [addressString, idCheckbox, dataCart, user, address, setOrderItem]);
+    }, [addressString, idCheckbox, dataCart, user, address, setCheckoutInfo]);
 
     const renderImage = useCallback((img) => {
         return img ? <img className="h-[100px] w-full object-cover" src={img} alt="" /> : '';
@@ -193,12 +196,12 @@ const CartPage = () => {
                                 <div className="p-4 bg-white rounded-lg shadow-md ">
                                     <div className="flex justify-between text-gray-700">
                                         <span>Tạm tính</span>
-                                        <span>{formatNumber(subTotal)}đ</span>
+                                        <span>{formatNumber(subTotal) || 0}đ</span>
                                     </div>
 
                                     <div className="flex justify-between font-bold mt-4">
                                         <span>Tổng tiền thanh toán</span>
-                                        <span>{formatNumber(subTotal)}đ</span>
+                                        <span>{formatNumber(subTotal) || 0}đ</span>
                                     </div>
                                     <p className="text-sm text-gray-500">(Đã bao gồm VAT nếu có)</p>
                                     <button

@@ -285,7 +285,7 @@ const AdminUser = () => {
                                         <strong>Số lượng:</strong> {item?.totalProduct}
                                     </p>
                                     <p>
-                                        <strong>Tổng tiền:</strong> {formatNumber(item?.subTotal)}
+                                        <strong>Tổng tiền:</strong> {formatNumber(item?.subTotal) || 0}
                                     </p>
                                     <p className="mt-3">
                                         <strong>Sản phẩm:</strong>
@@ -304,7 +304,7 @@ const AdminUser = () => {
                                                 <div>
                                                     <p>{item?.name}</p>
                                                     <p>
-                                                        {formatNumber(item?.price)} x {item?.quantity}
+                                                        {formatNumber(item?.price) || 0} x {item?.quantity || 0}
                                                     </p>
                                                 </div>
                                             </li>

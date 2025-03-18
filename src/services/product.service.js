@@ -7,6 +7,9 @@ export const productService = {
     getAll(query) {
         return api.get(`/product/getAllProduct${query ? query : ''}`);
     },
+    updateStock(form) {
+        return api.put(`/product/update-stock`, form);
+    },
     // cate
     getCategory() {
         return api.get(`/product/getCategory`);

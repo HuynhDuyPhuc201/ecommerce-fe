@@ -4,8 +4,8 @@ import { persist } from 'zustand/middleware';
 const useOrderStore = create(
     persist(
         (set) => ({
-            orderItem: {},
-            setOrderItem: (product) => set((state) => ({ orderItem: product })),
+            checkoutInfo: {},
+            setCheckoutInfo: (product) => set((state) => ({ checkoutInfo: product })),
             removeFromCart: (id) =>
                 set((state) => ({
                     orders: state.orders.filter((item) => item.id !== id),
