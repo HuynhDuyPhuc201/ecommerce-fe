@@ -23,15 +23,18 @@ const Category = () => {
                 <li>Tất cả</li>
             </Link>
             {data?.map((item, index) => (
-                <NavLink
-                    to={{ pathname: `/${item.id}` }}
-                    key={index}
-                    className={`text-[16px] text-[#333] cursor-pointer ${
-                        item.id == id ? 'text-[#69b1ff]' : 'text-[#333]'
-                    }`}
-                >
-                    <li> {item?.title}</li>
-                </NavLink>
+                <>
+                    {console.log(typeof item?.id)}
+                    <NavLink
+                        to={{ pathname: `/${item.id}` }}
+                        key={index}
+                        className={`text-[16px] text-[#333] cursor-pointer ${
+                            item.id == id ? 'text-[#69b1ff]' : 'text-[#333]'
+                        }`}
+                    >
+                        <li> {item?.title}</li>
+                    </NavLink>
+                </>
             ))}
         </div>
     );
