@@ -240,9 +240,13 @@ const AdminProduct = () => {
             <Button disabled={!state.idCheckbox?.length} onClick={handleDelete} style={{ marginBottom: '10px' }}>
                 Xóa
             </Button>
-            <div className="space-x-3 my-3">
-                <Button onClick={() => handleShowTable('product')}>Xem danh sách sản phẩm</Button>
-                <Button onClick={() => handleShowTable('category')}>Xem danh mục sản phẩm</Button>
+            <div className="  mb-5 md:flex md:flex-row sm:flex-col gap-5 ">
+                <div className="mt-3">
+                    <Button onClick={() => handleShowTable('product')}>Xem danh sách sản phẩm</Button>
+                </div>
+                <div className="mt-3">
+                    <Button onClick={() => handleShowTable('category')}>Xem danh mục sản phẩm</Button>
+                </div>
             </div>
             <Table
                 rowKey="_id" // Đảm bảo mỗi hàng có ID duy nhất

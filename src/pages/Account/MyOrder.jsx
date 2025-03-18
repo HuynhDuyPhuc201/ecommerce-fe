@@ -34,7 +34,7 @@ const MyOrder = () => {
             title: 'Sản phẩm',
             dataIndex: 'orderItems',
             responsive: ['xs', 'sm', 'md', 'lg'], // Hiện trên mọi màn hình
-            width: 250,
+            width: 100,
             render: (list) => (
                 <>
                     <div className="flex item-center">
@@ -54,12 +54,14 @@ const MyOrder = () => {
 
         {
             title: 'Tổng tiền',
+            width: 70,
             responsive: ['xs', 'sm', 'md', 'lg'],
             dataIndex: 'subTotal',
             render: (item) => <p>{formatNumber(item) || 0}</p>,
         },
         {
             title: 'Ngày đặt',
+            width: 70,
             responsive: ['xs', 'sm', 'md', 'lg'],
             dataIndex: 'createdAt',
             render: (item) => formattedDate(item),
@@ -68,6 +70,7 @@ const MyOrder = () => {
             title: 'Chi tiết',
             responsive: ['xs', 'sm', 'md', 'lg'],
             dataIndex: '_id',
+            width: 70,
             render: (id, record) => (
                 <Button key={id} type="link" onClick={() => showModal(record)}>
                     Xem chi tiết
@@ -78,7 +81,7 @@ const MyOrder = () => {
     return (
         <>
             {dataSort?.length > 0 ? (
-                <Table columns={columns} dataSource={dataSort} />
+                <Table columns={columns} dataSource={dataSort} scroll={{ x: 500 }} />
             ) : (
                 <div className="w-full mx-auto bg-white p-6 rounded-lg shadow-md">
                     <p className="text-[20px] text-center py-10">Đơn hàng trống</p>
