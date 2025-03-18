@@ -29,12 +29,17 @@ const AuthModal = () => {
     const handleLogin = async (form) => {
         try {
             const data = await userService.login(form);
-            toggleModal();
-            setUser(data);
-            message.success(data.message);
-            if (data.isAdmin === true) {
-                navigate(path.Admin);
+            if (data.tokensSaved === true) {
+                setTimeout(() => {
+                    toggleModal();
+                    setUser(data);
+                    message.success(data.message);
+                }, 100); // Đợi 100ms để cookie được set
+                if (data.isAdmin === true) {
+                    navigate(path.Admin);
+                }
             }
+
             setLoading(true);
         } catch (error) {
             setLoading(false);
