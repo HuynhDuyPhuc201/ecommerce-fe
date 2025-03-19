@@ -7,6 +7,9 @@ import { API_ROOT } from '~/utils/constants';
 const api = axios.create({
     baseURL: API_ROOT,
     withCredentials: true, // ✅ Đảm bảo luôn gửi cookie trong request
+    headers: {
+        'Content-Type': 'application/json',
+    },
 });
 
 // Request Interceptor: Gửi token trong header nếu có (nếu lưu access token vào cookie thì không cần gửi token trong header)

@@ -26,8 +26,8 @@ export const userService = {
         return api.post('/user/refresh-token', {}, { withCredentials: true });
     },
 
-    getAddress(form) {
-        return api.get('/user/getAddress', form);
+    getAddress(params) {
+        return api.get('/user/getAddress', { params });
     },
     createAddress(form) {
         return api.post('/user/createAddress', form);
