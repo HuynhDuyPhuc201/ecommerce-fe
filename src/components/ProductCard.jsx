@@ -16,8 +16,11 @@ const ProductCard = ({ item }) => {
                 cover={
                     item.image?.length > 1 ? (
                         <Carousel>
-                            {item.image?.map((img) => (
-                                <div className={`relative ${item.countInstock === 0 ? 'bg-[#5e5b5b]' : ''}`}>
+                            {item.image?.map((img, index) => (
+                                <div
+                                    key={index}
+                                    className={`relative ${item.countInstock === 0 ? 'bg-[#5e5b5b]' : ''}`}
+                                >
                                     <img
                                         key={img.uid}
                                         alt=""

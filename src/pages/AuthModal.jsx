@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import InputForm from '~/components/InputForm';
 import Button from '~/components/Button';
-import { setUser } from '~/core/token';
+import { setToken, setUser } from '~/core/token';
 import { useAppStore } from '~/store/useAppStore';
 import { userService } from '~/services/user.service';
 import { login } from '~/constants/images';
@@ -28,19 +28,14 @@ const AuthModal = () => {
 
     const handleLogin = async (form) => {
         try {
-            // 🔥 Yêu cầu quyền lưu trữ trước khi gửi request (chỉ với Safari)
-            if (document.requestStorageAccess) {
-                await document.requestStorageAccess();
-                console.log('Storage access granted!');
-            }
-            const data = await userService.login(form);
-            if (data.tokensSaved === true) {
-                setTimeout(() => {
-                    toggleModal();
-                    setUser(data);
-                    message.success(data.message);
-                }, 100); // Đợi 100ms để cookie được set
-                if (data.isAdmin === true) {
+            const data = await userService?.login(form);
+            const { token, ...userData } = data;
+            if (data.success === true) {
+                toggleModal();
+                setUser(userData);
+                setToken(token);
+                message.success(data.message);
+                if (data.isAdmin) {
                     navigate(path.Admin);
                 }
             }

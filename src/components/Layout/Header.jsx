@@ -34,19 +34,12 @@ const Header = forwardRef((props, ref) => {
         toggleSidebar();
     };
 
-    const handleLogout = async () => {
-        try {
-            const result = await userService.logout();
-            if (result.success) {
-                toggleSidebar(); // Đóng Drawer sau khi đăng xuất
-                navigation('/');
-                window.location.reload();
-                removeUser();
-                message.success('Đăng xuất thành công');
-            }
-        } catch (error) {
-            message.error('Đăng xuất thất bại');
-        }
+    const handleLogout = () => {
+        removeUser();
+        removeToken();
+        navigate('/');
+        window.location.reload();
+        toggleSidebar();
     };
 
     const hanldeShowSearch = () => {
@@ -75,7 +68,7 @@ const Header = forwardRef((props, ref) => {
 
     return (
         <>
-            <div className="bg-[#1A94FF]  h-[50px] md:h-[70px]  flex items-center absolute z-11 w-full ">
+            <div className="bg-[#1A94FF] h-[70px]  flex items-center absolute z-11 w-full ">
                 <Row className="w-full container justify-between" style={{ alignItems: 'center' }}>
                     <Col span={windowWidth >= 1000 ? 4 : 8}>
                         <Link to={path.Home}>

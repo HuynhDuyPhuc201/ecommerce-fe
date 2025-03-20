@@ -22,18 +22,12 @@ const Sidebar = () => {
     const { data: dataCart } = useGetCart();
     const {} = useAppStore();
 
-    const handleLogout = async () => {
-        try {
-            const result = await userService.logout();
-            if (result.success) {
-                removeUser();
-                navigate('/');
-                window.location.reload();
-                toggleSidebar(); // Đóng Drawer sau khi đăng xuất
-            }
-        } catch (error) {
-            message.error('Đăng xuất thất bại');
-        }
+    const handleLogout = () => {
+        removeUser();
+        removeToken();
+        navigate('/');
+        window.location.reload();
+        toggleSidebar();
     };
 
     const handleMenuClick = ({ key }) => {
@@ -57,7 +51,7 @@ const Sidebar = () => {
             }}
         >
             {/* Header */}
-            <div className="p-5 h-[50px] flex items-center justify-between bg-[#1A94FF]">
+            <div className="p-7 h-[70px] flex items-center justify-between bg-[#1A94FF]">
                 <Typography style={{ color: '#fff', fontSize: '20px', fontFamily: 'sans-serif' }}>My Shop</Typography>
                 <CloseOutlined className="text-white text-[20px] cursor-pointer" onClick={toggleSidebar} />
             </div>

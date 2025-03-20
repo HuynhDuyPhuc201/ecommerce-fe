@@ -24,7 +24,6 @@ const Category = () => {
             </Link>
             {data?.map((item, index) => (
                 <>
-                    {console.log(typeof item?.id)}
                     <NavLink
                         to={{ pathname: `/${item.id}` }}
                         key={index}

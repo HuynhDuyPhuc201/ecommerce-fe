@@ -22,8 +22,8 @@ export const userService = {
     verifyEmail(form) {
         return api.post('/user/verify-email', form);
     },
-    refreshToken() {
-        return api.post('/user/refresh-token', {}, { withCredentials: true });
+    refreshToken(token) {
+        return api.post('/user/refresh-token', { token }, { withCredentials: true });
     },
 
     getAddress(params) {

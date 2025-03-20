@@ -46,7 +46,6 @@ const Index = () => {
         setSearchParams(queryObject);
     }, [sort, rating, price, id, name]);
 
-    console.log(typeof id, id);
     const query = `${`?page=${currentPage}`}${sort ? `&sort=${sort}` : ''}${
         id && !isNaN(Number(id)) && Number(id) > 0 ? `&categories=${id}` : ''
     }${searchParams ? `&${searchParams.toString()}` : ''}`;
