@@ -22,39 +22,40 @@ const Payment = () => {
     const [loading, setLoading] = useState(false);
     const { setCartLocal, cartLocal, addressLocal } = useLocalStore();
     const { refetch: refetchCart, data: dataCart } = useGetCart();
+    const [discountCode, setDiscountCode] = useState({
+        code: '',
+        discountAmount: 0,
+    });
     const [selectedPayment, setSelectedPayment] = useState(null);
     const [shippingMethod, setShippingMethod] = useState('standard');
-    const [discountCode, setDiscountCode] = useState({ code: '', discountAmount: 0 });
 
     const addressForm = useForm({ mode: 'onChange' });
-    const [chooseAddress, setChooseAddress] = useState(user ? checkoutInfo.shippingAddress : addressLocal);
 
+    const [chooseAddress, setChooseAddress] = useState(user ? checkoutInfo.shippingAddress : addressLocal);
     const addressString = useMemo(() => {
         return Object.entries(checkoutInfo?.shippingAddress || chooseAddress || {})
             .filter(([key]) => key !== '_id' && key !== 'defaultAddress')
             .map(([_, value]) => value)
             .join(', ');
-    }, [checkoutInfo?.shippingAddress, chooseAddress]);
+    }, [checkoutInfo?.shippingAddress]);
 
-    // Phí ship
+    // phí ship
     const shippingFee = useMemo(() => {
         return shippingOptions.find((option) => option.value === shippingMethod)?.price || 0;
     }, [shippingMethod]);
 
-    // Tổng tiền
+    // tổng tiền
     const newSubTotal = useMemo(() => {
         return (checkoutInfo?.subTotal || 0) + shippingFee - (discountCode.discountAmount || 0);
     }, [checkoutInfo?.subTotal, shippingFee, discountCode.discountAmount]);
 
-    // Nếu không có dữ liệu checkout, chuyển về trang Home
-    if (!checkoutInfo || Object.keys(checkoutInfo).length === 0) return <Navigate to={path.Home} />;
+    if (Object.keys(checkoutInfo || []).length <= 0) return <Navigate to={path.Home} />;
 
     const { refetch: refetchProduct } = useQuery({
         queryKey: ['products'],
         queryFn: () => productService.getAll(`?limit=8&page=1`),
     });
 
-    // Xử lý đặt hàng
     const onSubmitOrder = async (form) => {
         if (!shippingMethod) return message.error('Thêm phương thức vận chuyển');
         if (!selectedPayment) return message.error('Thêm phương thức thanh toán');
@@ -73,23 +74,21 @@ const Payment = () => {
 
         try {
             setLoading(true);
-
             const listOrderItem = {
                 ...checkoutInfo,
-                shippingAddress,
+                // nếu như shipping không có (tức là khi dùng button mua ngay, nó không add shipping) thì thêm vào
+                shippingAddress: shippingAddress,
                 deliveryMethod: shippingMethod,
                 paymentMethod: selectedPayment,
                 subTotal: newSubTotal,
                 ...inforUser,
             };
-
             const result = await orderService.createOrder(listOrderItem);
             if (result.success) {
                 message.success(result.message);
                 refetchCart();
                 navigation(path.OrderSuccess);
                 updateStockAfterOrder(listOrderItem?.orderItems);
-
                 if (!user) {
                     const listProductOrdered = result.createdOrder.orderItems.map((item) => item.productId);
                     const listProduct = cartLocal?.listProduct.filter(
@@ -98,14 +97,14 @@ const Payment = () => {
                     const newCartLocal = {
                         listProduct,
                         subTotal: listProduct.reduce((acc, item) => acc + item.price * item.quantity, 0),
-                        totalProduct: listProduct.length,
+                        totalProduct: listProduct?.length,
                     };
                     setCartLocal(newCartLocal);
                     setCart(newCartLocal);
                 }
-            } else {
-                message.error(result.message);
             }
+
+            if (!result.success) return message.error(result.message);
         } catch (error) {
             if (error) {
                 message.error('Cập nhật địa chỉ');
@@ -114,42 +113,41 @@ const Payment = () => {
             setLoading(false);
         }
     };
-
-    // Cập nhật kho hàng sau khi đặt hàng
     const updateStockAfterOrder = async (orderItems) => {
         for (const item of orderItems) {
             try {
-                await productService.updateStock({ productId: item.productId, quantityOrdered: item.quantity });
-                refetchProduct();
+                const result = await productService.updateStock({
+                    productId: item.productId,
+                    quantityOrdered: item.quantity,
+                });
+                if (result) {
+                    refetchProduct();
+                }
             } catch (error) {
-                console.error(`Lỗi cập nhật kho cho sản phẩm ${item.productId}`, error);
+                console.error(` updating stock for product ${item.productId}`);
             }
         }
     };
 
-    // Áp dụng mã giảm giá
     const handleDiscount = () => {
-        const discountMap = {
-            GIAM30: 0.3,
-            GIAM10: 0.1,
-        };
-
-        if (!discountMap[discountCode.code]) {
+        let discountAmount = discountCode.discountAmount;
+        if (discountCode.code) {
+            if (discountCode.code === 'GIAM30') {
+                discountAmount = (checkoutInfo?.subTotal * 30) / 100; // Giảm giá 30%
+            } else if (discountCode.code === 'GIAM10') {
+                discountAmount = (checkoutInfo?.subTotal * 10) / 100; // Giảm giá 10%
+            }
+        }
+        if (discountCode && !['GIAM30', 'GIAM10'].includes(discountCode.code)) {
             return message.error('Mã không hợp lệ');
         }
-
-        setDiscountCode({
-            code: '',
-            discountAmount: checkoutInfo?.subTotal * discountMap[discountCode.code],
-        });
+        setDiscountCode({ code: '', discountAmount: discountAmount });
     };
 
-    // Xóa mã giảm giá
     const handleCloseDiscount = () => {
         setDiscountCode({ discountAmount: 0 });
     };
 
-    // Chọn phương thức vận chuyển
     const handleShippingMethod = useCallback((e) => {
         setShippingMethod(e.target.value);
     }, []);
