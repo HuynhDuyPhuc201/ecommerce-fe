@@ -101,7 +101,7 @@ const MyOrder = () => {
                         </p>
 
                         <p>
-                            <strong>Số lượng:</strong> {selectedOrder?.totalProduct}
+                            <strong>Số lượng sản phẩm:</strong> {selectedOrder?.totalProduct}
                         </p>
                         <p>
                             <strong>Tổng tiền:</strong> {formatNumber(selectedOrder?.subTotal) || 0}

@@ -1,150 +1,343 @@
-import { Button, Card, Col, message, Modal, Radio, Row, Table } from 'antd';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Button, Card, Col, message, Radio, Row } from 'antd';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
-import InputForm from '~/components/InputForm';
 import { cart_empty } from '~/constants/images';
 import { formatNumber } from '~/core';
-import { getUser, setUser } from '~/core/token';
-import { userService } from '~/services/user.service';
+import { getUser, setCart } from '~/core/token';
 import useGetUserDetail from '~/hooks/useGetUserDetail';
 import useGetCart from '~/hooks/useGetCart';
-import useOrderStore from '~/store/useOrderStore';
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { path } from '~/config/path';
 import { orderService } from '~/services/order.service';
 import { useQuery } from '@tanstack/react-query';
 import { productService } from '~/services/product.service';
+import { useLocalStore } from '~/store/useLocalStore';
+import { paymentMethods, shippingOptions } from '~/constants/dummyData';
 
-const paymentMethods = [{ id: 1, label: 'Thanh toán tiền mặt' }];
-const shippingOptions = [
-    { value: 'standard', label: 'Giao tiết kiệm', price: 10000 },
-    { value: 'express', label: 'Giao nhanh', price: 20000 },
-    { value: 'fastest', label: 'Hỏa tốc', price: 60000 },
-];
 const Payment = () => {
-    const navigate = useNavigate();
-    const { checkoutInfo } = useOrderStore();
-    const { refetch: refetchUser } = useGetUserDetail();
+    const { state: checkoutInfo } = useLocation();
+    const navigation = useNavigate();
+    const { data: dataUserDetail } = useGetUserDetail();
+    const user = getUser();
+    const [loading, setLoading] = useState(false);
+    const { setCartLocal, cartLocal, addressLocal } = useLocalStore();
     const { refetch: refetchCart, data: dataCart } = useGetCart();
-    const [discountCode, setDiscountCode] = useState({
-        code: '',
-        discountAmount: 0,
-    });
-    const [modalConfig, setModalConfig] = useState(false);
     const [selectedPayment, setSelectedPayment] = useState(null);
     const [shippingMethod, setShippingMethod] = useState('standard');
+    const [discountCode, setDiscountCode] = useState({ code: '', discountAmount: 0 });
 
-    const orderForm = useForm({ mode: 'onChange' });
+    const addressForm = useForm({ mode: 'onChange' });
+    const [chooseAddress, setChooseAddress] = useState(user ? checkoutInfo.shippingAddress : addressLocal);
 
-    // phí ship
+    const addressString = useMemo(() => {
+        return Object.entries(checkoutInfo?.shippingAddress || chooseAddress || {})
+            .filter(([key]) => key !== '_id' && key !== 'defaultAddress')
+            .map(([_, value]) => value)
+            .join(', ');
+    }, [checkoutInfo?.shippingAddress, chooseAddress]);
+
+    // Phí ship
     const shippingFee = useMemo(() => {
         return shippingOptions.find((option) => option.value === shippingMethod)?.price || 0;
     }, [shippingMethod]);
 
-    // tổng tiền
+    // Tổng tiền
     const newSubTotal = useMemo(() => {
         return (checkoutInfo?.subTotal || 0) + shippingFee - (discountCode.discountAmount || 0);
     }, [checkoutInfo?.subTotal, shippingFee, discountCode.discountAmount]);
 
-    if (Object.keys(checkoutInfo)?.length === 0) return <Navigate to={path.Home} />;
+    // Nếu không có dữ liệu checkout, chuyển về trang Home
+    if (!checkoutInfo || Object.keys(checkoutInfo).length === 0) return <Navigate to={path.Home} />;
 
-    const onSubmit = async (form) => {
-        try {
-            const data = await userService.update(form);
-            if (data.success) {
-                const { password, ...user } = data.user;
-                setUser(user);
-                message.success(data.message);
-                refetchUser();
-                orderForm.reset({});
-                setModalConfig(false);
-            }
-        } catch (error) {
-            message.error(error.response.data?.message);
-        }
-    };
     const { refetch: refetchProduct } = useQuery({
         queryKey: ['products'],
-        queryFn: async () => productService.getAll(`?limit=8&page=1`),
+        queryFn: () => productService.getAll(`?limit=8&page=1`),
     });
 
-    const hanldeOrder = async () => {
+    // Xử lý đặt hàng
+    const onSubmitOrder = async (form) => {
         if (!shippingMethod) return message.error('Thêm phương thức vận chuyển');
         if (!selectedPayment) return message.error('Thêm phương thức thanh toán');
+
+        const shippingAddress = {
+            houseNumber: form?.houseNumber || chooseAddress?.houseNumber,
+            district: form?.district || chooseAddress?.district,
+            city: form?.city || chooseAddress?.city,
+        };
+
+        const inforUser = {
+            name: form.name || dataUserDetail?.user?.name,
+            email: form.email || dataUserDetail?.user?.email,
+            phone: form.phone || dataUserDetail?.user?.phone,
+        };
+
         try {
+            setLoading(true);
+
             const listOrderItem = {
                 ...checkoutInfo,
+                shippingAddress,
                 deliveryMethod: shippingMethod,
                 paymentMethod: selectedPayment,
                 subTotal: newSubTotal,
+                ...inforUser,
             };
+
             const result = await orderService.createOrder(listOrderItem);
             if (result.success) {
                 message.success(result.message);
                 refetchCart();
-                navigate(path.OrderSuccess);
-                updateStockAfterOrder(listOrderItem.orderItems);
+                navigation(path.OrderSuccess);
+                updateStockAfterOrder(listOrderItem?.orderItems);
+
+                if (!user) {
+                    const listProductOrdered = result.createdOrder.orderItems.map((item) => item.productId);
+                    const listProduct = cartLocal?.listProduct.filter(
+                        (item) => !listProductOrdered.includes(item.productId),
+                    );
+                    const newCartLocal = {
+                        listProduct,
+                        subTotal: listProduct.reduce((acc, item) => acc + item.price * item.quantity, 0),
+                        totalProduct: listProduct.length,
+                    };
+                    setCartLocal(newCartLocal);
+                    setCart(newCartLocal);
+                }
+            } else {
+                message.error(result.message);
             }
         } catch (error) {
-            message.error(error);
+            if (error) {
+                message.error('Cập nhật địa chỉ');
+            }
+        } finally {
+            setLoading(false);
         }
     };
+
+    // Cập nhật kho hàng sau khi đặt hàng
     const updateStockAfterOrder = async (orderItems) => {
         for (const item of orderItems) {
             try {
-                const result = await productService.updateStock({
-                    productId: item.productId,
-                    quantityOrdered: item.quantity,
-                });
-                if (result) {
-                    refetchProduct();
-                }
+                await productService.updateStock({ productId: item.productId, quantityOrdered: item.quantity });
+                refetchProduct();
             } catch (error) {
-                console.error(`Error updating stock for product ${item.productId}`, error);
+                console.error(`Lỗi cập nhật kho cho sản phẩm ${item.productId}`, error);
             }
         }
     };
 
+    // Áp dụng mã giảm giá
     const handleDiscount = () => {
-        let discountAmount = discountCode.discountAmount;
-        if (discountCode.code) {
-            if (discountCode.code === 'GIAM30') {
-                discountAmount = (checkoutInfo?.subTotal * 30) / 100; // Giảm giá 30%
-            } else if (discountCode.code === 'GIAM10') {
-                discountAmount = (checkoutInfo?.subTotal * 10) / 100; // Giảm giá 10%
-            }
+        const discountMap = {
+            GIAM30: 0.3,
+            GIAM10: 0.1,
+        };
+
+        if (!discountMap[discountCode.code]) {
+            return message.error('Mã không hợp lệ');
         }
-        if (discountCode && !['GIAM30', 'GIAM10'].includes(discountCode.code)) {
-            message.error('Mã không hợp lệ');
-        }
-        setDiscountCode({ code: '', discountAmount: discountAmount });
+
+        setDiscountCode({
+            code: '',
+            discountAmount: checkoutInfo?.subTotal * discountMap[discountCode.code],
+        });
     };
 
+    // Xóa mã giảm giá
     const handleCloseDiscount = () => {
         setDiscountCode({ discountAmount: 0 });
     };
 
+    // Chọn phương thức vận chuyển
     const handleShippingMethod = useCallback((e) => {
         setShippingMethod(e.target.value);
     }, []);
 
-    const handleCancel = () => {
-        setModalConfig(false);
-    };
-
-    const addressString = useMemo(() => {
-        return Object.entries(checkoutInfo?.shippingAddress || {})
-            .filter(([key]) => key !== '_id' && key !== 'defaultAddress')
-            .map(([_, value]) => value)
-            .join(', ');
-    }, [checkoutInfo?.shippingAddress]);
-
     return (
         <div className="container pt-16">
             <Row span={(16, 16)} style={{ gap: '10px' }}>
-                {dataCart?.listProduct?.length > 0 ? (
+                {dataCart?.listProduct?.length > 0 ||
+                cartLocal?.listProduct?.length > 0 ||
+                Object.keys(checkoutInfo || []).length > 0 ||
+                [] ? (
                     <>
                         <Col xs={24} sm={24} md={15}>
+                            <Card title="Thông tin đơn hàng" className="mb-6">
+                                <div>
+                                    <p>
+                                        <strong>Số lượng sản phẩm:</strong> {checkoutInfo?.totalProduct || `1`}
+                                    </p>
+                                    <p>
+                                        <strong>Tổng tiền:</strong>{' '}
+                                        {/* nếu bấm mua ngay thì totalProduct bằng giá chính nó * số lượng */}
+                                        {formatNumber(
+                                            checkoutInfo?.subTotal || checkoutInfo?.price * checkoutInfo?.quantity,
+                                        ) || 0}
+                                        đ
+                                    </p>
+                                    <p className="mt-3">
+                                        <strong>Sản phẩm:</strong>
+                                    </p>
+                                    {/* 1 sản phẩm cho mua ngay */}
+                                    {/*  bấm mua ngay thì mới hiện */}
+                                    {/* kiểm tra đại các key có hay không mới cho render ra */}
+                                    {checkoutInfo.name && (
+                                        <ul className="pt-5">
+                                            <li
+                                                key={checkoutInfo?._id}
+                                                style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}
+                                            >
+                                                <img
+                                                    src={checkoutInfo?.image}
+                                                    alt="Product"
+                                                    style={{ width: '70px', height: '70px', marginRight: '10px' }}
+                                                />
+                                                <div>
+                                                    <p>{checkoutInfo?.name}</p>
+                                                    <p>
+                                                        {formatNumber(checkoutInfo?.price)} x{' '}
+                                                        {checkoutInfo?.quantity || 0}
+                                                    </p>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    )}
+                                    <ul className="pt-5">
+                                        {checkoutInfo?.orderItems?.map((item, index) => (
+                                            <li
+                                                key={item?._id}
+                                                style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}
+                                            >
+                                                <img
+                                                    src={item?.image}
+                                                    alt="Product"
+                                                    style={{ width: '70px', height: '70px', marginRight: '10px' }}
+                                                />
+                                                <div>
+                                                    <p>{item?.name}</p>
+                                                    <p>
+                                                        {formatNumber(item?.price)} x {item?.quantity || 0}
+                                                    </p>
+                                                </div>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            </Card>
+                            {!user && (
+                                <Card title="Thông tin khách hàng" className="mb-6">
+                                    <FormProvider {...addressForm}>
+                                        <form onSubmit={addressForm.handleSubmit(onSubmitOrder)}>
+                                            <Row gutter={[24, 24]} align="top">
+                                                <Col span={12}>
+                                                    <label className="block text-gray-700">Họ tên</label>
+                                                    <input
+                                                        {...addressForm.register('name', {
+                                                            required: true ? 'Trường này là bắt buộc' : '',
+                                                        })}
+                                                        type="text"
+                                                        className="w-full p-2 border rounded-lg"
+                                                        placeholder=""
+                                                    />
+                                                    {addressForm?.formState?.errors?.name && (
+                                                        <p style={{ color: 'red' }}>
+                                                            {addressForm?.formState?.errors?.name.message}
+                                                        </p>
+                                                    )}
+                                                </Col>
+                                                <Col span={12}>
+                                                    <label className="block text-gray-700">Email</label>
+                                                    <input
+                                                        {...addressForm.register('email', {
+                                                            required: true ? 'Trường này là bắt buộc' : '',
+                                                        })}
+                                                        type="text"
+                                                        className="w-full p-2 border rounded-lg"
+                                                        placeholder=""
+                                                    />
+                                                    {addressForm?.formState?.errors?.email && (
+                                                        <p style={{ color: 'red' }}>
+                                                            {addressForm?.formState?.errors?.email.message}
+                                                        </p>
+                                                    )}
+                                                </Col>
+                                                <Col span={!checkoutInfo?.shippingAddress ? 12 : 24}>
+                                                    <label className="block text-gray-700">Số điện thoại</label>
+                                                    <input
+                                                        {...addressForm.register('phone', {
+                                                            required: true ? 'Trường này là bắt buộc' : '',
+                                                        })}
+                                                        type="text"
+                                                        className="w-full p-2 border rounded-lg"
+                                                        placeholder=""
+                                                    />
+                                                    {addressForm?.formState?.errors?.phone && (
+                                                        <p style={{ color: 'red' }}>
+                                                            {addressForm?.formState?.errors?.phone.message}
+                                                        </p>
+                                                    )}
+                                                </Col>
+                                                {!checkoutInfo?.shippingAddress && (
+                                                    <>
+                                                        <Col span={12}>
+                                                            <label className="block text-gray-700">Số nhà</label>
+                                                            <input
+                                                                {...addressForm.register('houseNumber', {
+                                                                    required: true ? 'Trường này là bắt buộc' : '',
+                                                                })}
+                                                                type="text"
+                                                                className="w-full p-2 border rounded-lg"
+                                                                placeholder=""
+                                                            />
+                                                            {addressForm?.formState?.errors?.houseNumber && (
+                                                                <p style={{ color: 'red' }}>
+                                                                    {
+                                                                        addressForm?.formState?.errors?.houseNumber
+                                                                            .message
+                                                                    }
+                                                                </p>
+                                                            )}
+                                                        </Col>
+                                                        <Col span={12}>
+                                                            <label className="block text-gray-700">Quận / huyện</label>
+                                                            <input
+                                                                {...addressForm.register('district', {
+                                                                    required: true ? `Trường này là bắt buộc` : '',
+                                                                })}
+                                                                type="text"
+                                                                className="w-full p-2 border rounded-lg"
+                                                                placeholder=""
+                                                            />
+                                                            {addressForm?.formState?.errors?.district && (
+                                                                <p style={{ color: 'red' }}>
+                                                                    {addressForm?.formState?.errors?.district.message}
+                                                                </p>
+                                                            )}
+                                                        </Col>
+                                                        <Col span={12}>
+                                                            <label className="block text-gray-700">Thành phố</label>
+                                                            <input
+                                                                {...addressForm.register('city', {
+                                                                    required: true ? `Trường này là bắt buộc` : '',
+                                                                })}
+                                                                type="text"
+                                                                className="w-full p-2 border rounded-lg"
+                                                                placeholder=""
+                                                            />
+                                                            {addressForm?.formState?.errors?.city && (
+                                                                <p style={{ color: 'red' }}>
+                                                                    {addressForm?.formState?.errors?.city.message}
+                                                                </p>
+                                                            )}
+                                                        </Col>
+                                                    </>
+                                                )}
+                                            </Row>
+                                        </form>
+                                    </FormProvider>
+                                </Card>
+                            )}
                             <Card title="Phương thức thanh toán" className="mb-6">
                                 <Radio.Group
                                     onChange={(e) => setSelectedPayment(e.target.value)}
@@ -179,7 +372,17 @@ const Payment = () => {
                                 <div className="flex justify-between">
                                     <p className=" text-[#333]  mb-5">Giao tới</p>
                                 </div>
-                                <span>{addressString || 'Chưa cập nhật địa chỉ'}</span>
+                                <div className="flex justify-between">
+                                    <span>{addressString || 'Chưa cập nhật địa chỉ'}</span>{' '}
+                                    {!addressString && user && (
+                                        <Link
+                                            to={path.Account.Address}
+                                            style={{ textDecoration: 'underline', color: '#1A94FF' }}
+                                        >
+                                            Cập nhật
+                                        </Link>
+                                    )}
+                                </div>
                             </div>
                             <Col sm={24} xs={24} md={24}>
                                 <div className="p-4 bg-white rounded-lg shadow-md ">
@@ -191,7 +394,12 @@ const Payment = () => {
                                     </div>
                                     <div className="flex justify-between text-gray-700">
                                         <span>Tạm tính</span>
-                                        <span>{formatNumber(checkoutInfo?.subTotal) || 0}đ</span>
+                                        <span>
+                                            {formatNumber(
+                                                checkoutInfo?.subTotal || checkoutInfo?.price * checkoutInfo?.quantity,
+                                            ) || 0}
+                                            đ
+                                        </span>
                                     </div>
                                     <div className="flex justify-between text-gray-700 mt-2">
                                         <span>Phí vận chuyển</span>
@@ -242,9 +450,11 @@ const Payment = () => {
                                     ) : (
                                         <button
                                             className="mt-4 w-full bg-red-500 text-white py-2 rounded-lg font-semibold hover:bg-red-600"
-                                            onClick={hanldeOrder}
+                                            onClick={addressForm.handleSubmit(onSubmitOrder)}
+                                            disabled={loading}
                                         >
-                                            Đặt hàng ({checkoutInfo?.orderItems?.length || 0})
+                                            Đặt hàng (
+                                            {checkoutInfo?.orderItems?.length || (checkoutInfo?.name && 1) || 0})
                                         </button>
                                     )}
                                 </div>
@@ -262,27 +472,6 @@ const Payment = () => {
                     </Col>
                 )}
             </Row>
-            <FormProvider {...orderForm}>
-                <Modal title="Cập nhật địa chỉ" open={modalConfig} onCancel={handleCancel} footer={null}>
-                    <form onSubmit={orderForm.handleSubmit(onSubmit)}>
-                        <Row gutter={[18, 18]}>
-                            <Col md={24}>
-                                <InputForm
-                                    error={orderForm.formState.errors['address']}
-                                    placeholder="Nhập địa chỉ"
-                                    name="address"
-                                    required={false}
-                                />
-                            </Col>
-                            <div className="flex items-center justify-center w-full">
-                                <button className="w-1/2 mt-5 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                    Cập nhật địa chỉ
-                                </button>
-                            </div>
-                        </Row>
-                    </form>
-                </Modal>
-            </FormProvider>
         </div>
     );
 };

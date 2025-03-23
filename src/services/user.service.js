@@ -13,6 +13,9 @@ export const userService = {
     login(form) {
         return api.post('/user/sign-in', form);
     },
+    loginGoogle(token) {
+        return api.post('/user/sign-in-google', token);
+    },
     logout(form) {
         return api.post('/user/sign-out', form);
     },

@@ -30,3 +30,10 @@ export const priceArr = [
         checked: false,
     },
 ];
+
+export const paymentMethods = [{ id: 1, label: 'Thanh toán tiền mặt' }];
+export const shippingOptions = [
+    { value: 'standard', label: 'Giao tiết kiệm', price: 10000 },
+    { value: 'express', label: 'Giao nhanh', price: 20000 },
+    { value: 'fastest', label: 'Hỏa tốc', price: 60000 },
+];

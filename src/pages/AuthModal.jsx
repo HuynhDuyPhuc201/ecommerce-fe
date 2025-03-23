@@ -1,6 +1,6 @@
 import { Modal, Row, Col, Typography, Image, message, Spin } from 'antd';
 import { EyeInvisibleOutlined, EyeOutlined, LeftOutlined } from '@ant-design/icons';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import InputForm from '~/components/InputForm';
 import Button from '~/components/Button';
@@ -10,6 +10,7 @@ import { userService } from '~/services/user.service';
 import { login } from '~/constants/images';
 import { path } from '~/config/path';
 import { useNavigate } from 'react-router-dom';
+import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 
 const AuthModal = () => {
     const { Title } = Typography;
@@ -29,12 +30,13 @@ const AuthModal = () => {
     const handleLogin = async (form) => {
         try {
             const data = await userService?.login(form);
-            const { token, ...userData } = data;
-            if (data.success === true) {
+            if (data.success) {
+                const { token, ...userData } = data;
                 toggleModal();
                 setUser(userData);
                 setToken(token);
                 message.success(data.message);
+                navigate(path.Home);
                 if (data.isAdmin) {
                     navigate(path.Admin);
                 }
@@ -43,6 +45,27 @@ const AuthModal = () => {
             setLoading(true);
         } catch (error) {
             setLoading(false);
+            message.error(error.response.data?.message);
+        }
+    };
+
+    const handleLoginGoogle = async (credentialResponse) => {
+        const token = credentialResponse.credential;
+
+        try {
+            const data = await userService?.loginGoogle({ token });
+            if (data.success) {
+                const { token, ...userData } = data;
+                toggleModal();
+                setUser(userData);
+                setToken(token);
+                message.success(data.message);
+                navigate(path.Home);
+                if (data.isAdmin) {
+                    navigate(path.Admin);
+                }
+            }
+        } catch (error) {
             message.error(error.response.data?.message);
         }
     };
@@ -133,14 +156,23 @@ const AuthModal = () => {
                                     <Button className="w-full mt-[30px]" disabled={loading}>
                                         {loading && <Spin />}Đăng nhập
                                     </Button>
-                                    <Title style={{ fontSize: '14px', paddingTop: '20px' }}>
-                                        Chưa tạo tài khoản?{' '}
-                                        <button onClick={() => setShowSignUp(true)} className="text-[#2640d4]">
-                                            Tạo tài khoản
-                                        </button>
-                                    </Title>
                                 </form>
                             </FormProvider>
+                            <div className="mt-5">
+                                <GoogleOAuthProvider clientId="119448505566-72peltvkmj8bi0cfn1l5hqm0fmf85jci.apps.googleusercontent.com">
+                                    <GoogleLogin
+                                        onSuccess={handleLoginGoogle}
+                                        onError={() => console.log('Login Failed')}
+                                        cookiePolicy={'single_host_origin'}
+                                    />
+                                </GoogleOAuthProvider>
+                            </div>
+                            <Title style={{ fontSize: '14px', paddingTop: '20px' }}>
+                                Chưa tạo tài khoản?{' '}
+                                <button onClick={() => setShowSignUp(true)} className="text-[#2640d4]">
+                                    Tạo tài khoản
+                                </button>
+                            </Title>
                         </Col>
                     )}
                     {showSignUp && (

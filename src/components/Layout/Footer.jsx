@@ -71,7 +71,9 @@ function Footer() {
         //         </div>
         //     </div>
         // </footer>
-        <></>
+        <>
+            <p className="pt-20"></p>
+        </>
     );
 }
 

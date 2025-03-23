@@ -9,8 +9,10 @@ import AddressItem from '~/components/Address/AddressItem';
 const Address = () => {
     const addressForm = useForm({ mode: 'onChange' });
     const [createAddress, setCreateAddress] = useState(false);
+    const [loading, setLoading] = useState(false);
     const onSubmit = async (form) => {
         try {
+            setLoading(true);
             const result = await userService.createAddress(form);
             if (result.success) {
                 message.success(result.message);
@@ -22,8 +24,10 @@ const Address = () => {
                 });
                 setUser(result.userUpdate);
             }
+            setLoading(false);
             return setCreateAddress(false);
         } catch (error) {
+            setLoading(false);
             message.error(error.response.data?.message);
         }
     };
@@ -92,7 +96,7 @@ const Address = () => {
                                 </Col>
                             </Row>
 
-                            <div className="flex items-center justify-center mt-6">
+                            <div className="flex items-center justify-center mt-6" disabled={loading}>
                                 <button className="w-1/2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                                     Lưu thay đổi
                                 </button>

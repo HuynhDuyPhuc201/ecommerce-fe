@@ -2,30 +2,34 @@ import { Button, Col, InputNumber, message, Modal, Row, Table } from 'antd';
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { cart_empty } from '~/constants/images';
 import { formatNumber } from '~/core';
-import { getUser } from '~/core/token';
+import { getAddress, getCart, getUser, setAddress, setCart } from '~/core/token';
 import { cartService } from '~/services/cart.service';
-import './CartPage.css';
 import AddressModal from '~/components/Address/AddressModal';
 import useGetUserDetail from '~/hooks/useGetUserDetail';
 import useGetCart from '~/hooks/useGetCart';
 import { useNavigate } from 'react-router-dom';
 import { path } from '~/config/path';
 import useOrderStore from '~/store/useOrderStore';
+import { FormProvider, useForm } from 'react-hook-form';
+import './CartPage.css';
+import { useLocalStore } from '~/store/useLocalStore';
 
 const CartPage = () => {
+    const user = getUser();
+    const { setCartLocal, cartLocal, addressLocal } = useLocalStore();
     const [idCheckbox, setIdCheckbox] = useState([]);
     const [modalConfig, setModalConfig] = useState(false);
-    const user = getUser();
-    const { data: dataUser, refetch: refetchUser } = useGetUserDetail();
+    const { data: dataUserDetail } = useGetUserDetail();
     const { refetch: refetchCart, data: dataCart } = useGetCart();
     const { setCheckoutInfo } = useOrderStore();
     const navigate = useNavigate();
+    const addressForm = useForm();
 
     const address = useMemo(() => {
-        return dataUser?.user?.address.find((item) => item?.defaultAddress) || dataUser?.user.address[0];
-    }, [dataUser]);
+        return dataUserDetail?.user?.address.find((item) => item?.defaultAddress) || dataUserDetail?.user.address[0];
+    }, [dataUserDetail]);
 
-    const [chooseAddress, setChooseAddress] = useState(address);
+    const [chooseAddress, setChooseAddress] = useState(user ? address : addressLocal);
 
     const addressString = useMemo(() => {
         return Object?.entries(chooseAddress || '')
@@ -34,27 +38,41 @@ const CartPage = () => {
             .join(', ');
     }, [chooseAddress]);
 
-    useEffect(() => {
-        setChooseAddress(address);
-    }, [address]);
-
     const selectedTotal = useMemo(() => {
         return idCheckbox.reduce((acc, id) => {
-            const checkItemProduct = dataCart?.listProduct.find((item) => item?._id === id);
+            const checkItemProduct = user
+                ? dataCart?.listProduct.find((item) => item?._id === id)
+                : cartLocal?.listProduct.find((item) => item.productId === id);
             return checkItemProduct ? acc + checkItemProduct.price * checkItemProduct.quantity : acc;
         }, 0);
-    }, [idCheckbox, dataCart]);
+    }, [idCheckbox, dataCart, cartLocal, user]);
 
     const subTotal = useMemo(() => {
-        return idCheckbox?.length === dataCart?.listProduct?.length ? dataCart?.subTotal : selectedTotal;
-    }, [idCheckbox, dataCart, selectedTotal]);
-
+        if (user) {
+            return idCheckbox?.length === dataCart?.listProduct?.length ? dataCart?.subTotal : selectedTotal;
+        } else {
+            return idCheckbox?.length === cartLocal?.listProduct?.length ? cartLocal?.subTotal : selectedTotal;
+        }
+    }, [idCheckbox, dataCart, selectedTotal, user, cartLocal]);
     const handleCancel = useCallback(() => {
         setModalConfig(false);
     }, []);
 
     const handleOnClick = useCallback(() => {
         setModalConfig(true);
+    }, []);
+
+    const onSubmitAddress = useCallback((form) => {
+        setModalConfig(false);
+        setChooseAddress(form);
+        if (!user) {
+            setAddress(form);
+            addressForm.reset({
+                houseNumber: '',
+                district: '',
+                city: '',
+            });
+        }
     }, []);
 
     const handleChooseAddress = useCallback((item) => {
@@ -68,11 +86,22 @@ const CartPage = () => {
 
     const handleDelete = useCallback(async () => {
         try {
-            const response = await cartService.removeCart(query);
-            if (response) {
-                message.success('Xóa sản phẩm thành công');
-                setIdCheckbox([]);
-                refetchCart();
+            if (user) {
+                const response = await cartService.removeCart(query);
+                if (response) {
+                    message.success('Xóa sản phẩm thành công');
+                    setIdCheckbox([]);
+                    refetchCart();
+                }
+            } else {
+                const listProduct = cartLocal?.listProduct.filter((item) => !idCheckbox.includes(item.productId));
+                const subTotal = listProduct?.reduce((acc, item) => acc + item.quantity * item.price, 0) || 0;
+                const totalProduct = listProduct?.length || 0;
+                if (listProduct) {
+                    message.success('Xóa sản phẩm thành công');
+                    setCartLocal({ listProduct, totalProduct, subTotal });
+                    setCart({ listProduct, totalProduct, subTotal });
+                }
             }
         } catch (error) {
             message.error('Xóa sản phẩm thất bại');
@@ -83,24 +112,33 @@ const CartPage = () => {
         async (value, record) => {
             try {
                 if (value < 1) return;
-                if (value > record.countInstock) {
-                    return message.error('Số lượng sản phẩm không đủ', 2);
-                }
+                if (value > record.countInstock) return message.error('Số lượng sản phẩm không đủ', 2);
 
                 const payload = {
                     productId: record.productId,
                     quantity: value,
                 };
-                const response = await cartService.updateCart(payload);
-                if (response) {
-                    message.success('Cập nhật giỏ hàng thành công!');
+                if (user) {
+                    await cartService.updateCart(payload);
                     refetchCart();
+                } else {
+                    const item = cartLocal.listProduct.find((item) => item.productId === record.productId);
+                    if (item) {
+                        item.quantity = value;
+                    }
+                    const subTotal = cartLocal?.listProduct?.reduce((acc, item) => acc + item.price * item.quantity, 0);
+                    const updatedCart = {
+                        ...cartLocal,
+                        subTotal,
+                    };
+                    setCartLocal(updatedCart);
+                    setCart(updatedCart);
                 }
             } catch (error) {
                 message.error(error.response?.data?.message || 'Cập nhật giỏ hàng thất bại!');
             }
         },
-        [refetchCart],
+        [refetchCart, setCartLocal],
     );
 
     const hanldeOrder = useCallback(async () => {
@@ -108,17 +146,18 @@ const CartPage = () => {
             return message.error('Vui lòng cập nhật địa chỉ hoặc chọn sản phẩm');
         }
         const listProduct = idCheckbox.map((productId) => {
-            return dataCart?.listProduct.find((item) => item._id === productId);
+            return user
+                ? dataCart?.listProduct.find((item) => item._id === productId)
+                : cartLocal?.listProduct.find((item) => item.productId === productId);
         });
         const form = {
-            userId: dataCart.userId,
+            userId: user ? dataCart.userId : '',
             orderItems: listProduct,
-            totalProduct: dataCart.totalProduct,
+            totalProduct: user ? dataCart.totalProduct : cartLocal.totalProduct,
             subTotal: selectedTotal,
             shippingAddress: chooseAddress,
         };
-        setCheckoutInfo(form);
-        navigate(path.Payment);
+        navigate(path.Payment, { state: form });
     }, [addressString, idCheckbox, dataCart, user, address, setCheckoutInfo]);
 
     const renderImage = useCallback((img) => {
@@ -142,7 +181,15 @@ const CartPage = () => {
                 dataIndex: 'quantity',
                 align: 'top',
                 render: (quantity, record) => (
-                    <InputNumber min={1} value={quantity} onChange={(value) => handleQuantityChange(value, record)} />
+                    <InputNumber
+                        min={1}
+                        value={
+                            user
+                                ? quantity
+                                : cartLocal?.listProduct.find((item) => item.productId === record.productId)?.quantity
+                        }
+                        onChange={(value) => handleQuantityChange(value, record)}
+                    />
                 ),
                 width: 70,
             },
@@ -160,25 +207,27 @@ const CartPage = () => {
             <Row span={(16, 16)} style={{ gap: '10px' }}>
                 <Col xs={24} sm={24} md={24}>
                     <h1 className="text-[22px] uppercase pb-6">Giỏ hàng</h1>
-                    {dataCart?.listProduct?.length > 0 && (
+                    {idCheckbox?.length > 0 && (
                         <Button style={{ marginBottom: '10px' }} onClick={handleDelete}>
                             Xóa
                         </Button>
                     )}
                 </Col>
-                {dataCart?.listProduct?.length > 0 ? (
+                {dataCart?.listProduct?.length > 0 || cartLocal?.listProduct?.length > 0 ? (
                     <>
                         <Col sm={24} md={18}>
                             <Table
                                 rowClassName={() => 'align-top'}
                                 style={{ display: '' }}
-                                rowKey="_id"
+                                rowKey={(record) => record._id || record.productId}
                                 rowSelection={{
                                     selectedRowKeys: idCheckbox,
-                                    onChange: (keys) => setIdCheckbox(keys),
+                                    onChange: (keys) => {
+                                        setIdCheckbox(keys);
+                                    },
                                 }}
                                 columns={columns}
-                                dataSource={dataCart?.listProduct}
+                                dataSource={dataCart?.listProduct || cartLocal?.listProduct}
                                 scroll={{ x: 800 }}
                             />
                         </Col>
@@ -200,7 +249,10 @@ const CartPage = () => {
                                     </div>
 
                                     <div className="flex justify-between font-bold mt-4">
-                                        <span>Tổng tiền thanh toán</span>
+                                        <span>
+                                            Tổng tiền <br />
+                                            thanh toán
+                                        </span>
                                         <span>{formatNumber(subTotal) || 0}đ</span>
                                     </div>
                                     <p className="text-sm text-gray-500">(Đã bao gồm VAT nếu có)</p>
@@ -226,12 +278,77 @@ const CartPage = () => {
                 )}
             </Row>
 
-            <AddressModal
-                open={modalConfig}
-                onClose={handleCancel}
-                addresses={dataUser?.user?.address}
-                onSelect={handleChooseAddress}
-            />
+            {user ? (
+                <AddressModal
+                    open={modalConfig}
+                    onClose={handleCancel}
+                    addresses={dataUserDetail?.user?.address}
+                    onSelect={handleChooseAddress}
+                />
+            ) : (
+                <Modal title="Cập nhật địa chỉ" open={modalConfig} onCancel={handleCancel} footer={null}>
+                    <FormProvider {...addressForm}>
+                        <form onSubmit={addressForm.handleSubmit(onSubmitAddress)}>
+                            <Row gutter={[24, 24]} align="top">
+                                <Col span={12}>
+                                    <label className="block text-gray-700">Số nhà</label>
+                                    <input
+                                        {...addressForm.register('houseNumber', {
+                                            required: true ? 'Trường này là bắt buộc' : '',
+                                        })}
+                                        type="text"
+                                        className="w-full p-2 border rounded-lg"
+                                        placeholder=""
+                                    />
+                                    {addressForm?.formState?.errors?.houseNumber && (
+                                        <p style={{ color: 'red' }}>
+                                            {addressForm?.formState?.errors?.houseNumber.message}
+                                        </p>
+                                    )}
+                                </Col>
+
+                                <Col span={12}>
+                                    <label className="block text-gray-700">Quận / huyện</label>
+                                    <input
+                                        {...addressForm.register('district', {
+                                            required: true ? `Trường này là bắt buộc` : '',
+                                        })}
+                                        type="text"
+                                        className="w-full p-2 border rounded-lg"
+                                        placeholder=""
+                                    />
+                                    {addressForm?.formState?.errors?.district && (
+                                        <p style={{ color: 'red' }}>
+                                            {addressForm?.formState?.errors?.district.message}
+                                        </p>
+                                    )}
+                                </Col>
+
+                                <Col xs={24} md={24}>
+                                    <label className="block text-gray-700">Thành phố</label>
+                                    <input
+                                        {...addressForm.register('city', {
+                                            required: true ? `Trường này là bắt buộc` : '',
+                                        })}
+                                        type="text"
+                                        className="w-full p-2 border rounded-lg"
+                                        placeholder=""
+                                    />
+                                    {addressForm?.formState?.errors?.city && (
+                                        <p style={{ color: 'red' }}>{addressForm?.formState?.errors?.city.message}</p>
+                                    )}
+                                </Col>
+                            </Row>
+
+                            <div className="flex items-center justify-center mt-6">
+                                <button className="w-1/2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                    Thêm địa chỉ
+                                </button>
+                            </div>
+                        </form>
+                    </FormProvider>
+                </Modal>
+            )}
         </div>
     );
 };

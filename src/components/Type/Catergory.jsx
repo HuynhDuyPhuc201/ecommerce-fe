@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
-import { generatePath, Link, NavLink, useLocation, useParams, useSearchParams } from 'react-router-dom';
+import { Link, NavLink, useLocation, useParams } from 'react-router-dom';
 import { path } from '~/config/path';
 import { productService } from '~/services/product.service';
 
@@ -23,17 +22,15 @@ const Category = () => {
                 <li>Tất cả</li>
             </Link>
             {data?.map((item, index) => (
-                <>
-                    <NavLink
-                        to={{ pathname: `/${item.id}` }}
-                        key={index}
-                        className={`text-[16px] text-[#333] cursor-pointer ${
-                            item.id == id ? 'text-[#69b1ff]' : 'text-[#333]'
-                        }`}
-                    >
-                        <li> {item?.title}</li>
-                    </NavLink>
-                </>
+                <NavLink
+                    to={{ pathname: `/${item.id}` }}
+                    key={index}
+                    className={`text-[16px] text-[#333] cursor-pointer ${
+                        item.id == id ? 'text-[#69b1ff]' : 'text-[#333]'
+                    }`}
+                >
+                    <li> {item?.title}</li>
+                </NavLink>
             ))}
         </div>
     );

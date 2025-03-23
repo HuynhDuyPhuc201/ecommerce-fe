@@ -8,11 +8,12 @@ import Sidebar from '../Sidebar';
 import { path } from '~/config/path';
 import AuthModal from '~/pages/AuthModal';
 import { useAppStore } from '~/store/useAppStore';
-import { getUser, removeUser } from '~/core/token';
+import { getUser, removeUser, removeToken, getCart } from '~/core/token';
 import { formatNumber } from '~/core';
 import useGetCart from '~/hooks/useGetCart';
 import useGetUserDetail from '~/hooks/useGetUserDetail';
 import { userService } from '~/services/user.service';
+import { useLocalStore } from '~/store/useLocalStore';
 
 const Header = forwardRef((props, ref) => {
     const user = getUser();
@@ -21,6 +22,7 @@ const Header = forwardRef((props, ref) => {
     const navigation = useNavigate();
     const { data: dataCart } = useGetCart();
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+    const { cartLocal } = useLocalStore();
     const { toggleSidebar, toggleModal, searchResults, setOverlayVisible, setSearchResults, isOverlayVisible } =
         useAppStore();
 
@@ -37,7 +39,7 @@ const Header = forwardRef((props, ref) => {
     const handleLogout = () => {
         removeUser();
         removeToken();
-        navigate('/');
+        navigation('/');
         window.location.reload();
         toggleSidebar();
     };
@@ -77,7 +79,6 @@ const Header = forwardRef((props, ref) => {
                             </Typography>
                         </Link>
                     </Col>
-                    {/* {!user?.isAdmin && windowWidth >= 1000 && ( */}
                     <Col span={windowWidth >= 1000 ? 12 : 0}>
                         <SearchBar ref={ref} placeholder="Search" size="large" text="Tìm kiếm" />
                         {isOverlayVisible && searchResults && searchResults?.length > 0 && (
@@ -160,14 +161,17 @@ const Header = forwardRef((props, ref) => {
                             />
                         )}
                     </Col>
-                    {/* )} */}
 
                     <Col span={windowWidth <= 1000 ? 4 : 8} className="flex justify-center items-center">
                         {windowWidth >= 1000 ? (
                             <>
                                 <div className="account flex pl-[20px] items-center ">
-                                    {userDetail?.user && userDetail?.user?.avatar ? (
-                                        <Avatar size={50} src={userDetail?.user?.avatar || undefined} />
+                                    {(userDetail?.user && userDetail?.user?.avatar) || user?.avatar ? (
+                                        <img
+                                            src={userDetail?.user?.avatar || user?.avatar}
+                                            alt=""
+                                            className="w-[50px] h-[50px] rounded-full object-cover"
+                                        />
                                     ) : (
                                         <UserOutlined style={{ fontSize: '30px', color: '#fff' }} />
                                     )}
@@ -188,7 +192,17 @@ const Header = forwardRef((props, ref) => {
                                 {!user?.isAdmin && (
                                     <Link className="cart pl-[20px] flex item-center cursor-pointer" to={path.Cart}>
                                         <div className="icon relative">
-                                            <Badge count={dataCart?.totalProduct > 0 ? dataCart?.totalProduct : 0}>
+                                            <Badge
+                                                count={
+                                                    user
+                                                        ? dataCart?.totalProduct > 0
+                                                            ? dataCart?.totalProduct
+                                                            : 0
+                                                        : cartLocal?.totalProduct > 0
+                                                        ? cartLocal?.totalProduct
+                                                        : 0
+                                                }
+                                            >
                                                 <ShoppingCartOutlined style={{ fontSize: '30px', color: '#fff' }} />
                                             </Badge>
                                         </div>

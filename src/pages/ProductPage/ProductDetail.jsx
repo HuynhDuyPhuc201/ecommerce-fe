@@ -1,13 +1,12 @@
-import { Button, Col, InputNumber, message, Modal, Row, Typography } from 'antd';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Button, Col, InputNumber, message, Row, Typography } from 'antd';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import Slider from 'react-slick';
 import { ShoppingCartOutlined, StarFilled } from '@ant-design/icons';
 import ProductCard from '~/components/ProductCard';
 import { productService } from '~/services/product.service';
 import { useQuery } from '@tanstack/react-query';
-import { useAppStore } from '~/store/useAppStore';
-import { getUser } from '~/core/token';
+import { getUser, setCart } from '~/core/token';
 import { formatNumber } from '~/core';
 import { cartService } from '~/services/cart.service';
 import AddressModal from '~/components/Address/AddressModal';
@@ -15,17 +14,22 @@ import useGetUserDetail from '~/hooks/useGetUserDetail';
 import useGetProductDetail from '~/hooks/useGetProductDetail';
 import useGetCart from '~/hooks/useGetCart';
 import './style.css';
+import { useLocalStore } from '~/store/useLocalStore';
+import { path } from '~/config/path';
 
 const { Title, Text } = Typography;
 
 const ProductDetail = () => {
+    const user = getUser();
+    const navigate = useNavigate();
+
     const { idCate, id } = useParams();
-    const { toggleModal } = useAppStore();
+    const { cartLocal } = useLocalStore();
     const [quantity, setQuantity] = useState(1);
     const [isLoading, setIsloading] = useState(false);
     const [modalConfig, setModalConfig] = useState(false);
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-    const user = getUser();
+
     const { data: dataUser } = useGetUserDetail();
     const { data: _data } = useGetProductDetail(id);
 
@@ -80,53 +84,76 @@ const ProductDetail = () => {
         [dataDetail?.countInstock],
     );
 
-    const existingItem = dataCart?.listProduct?.find((item) => item.productId === dataDetail._id);
+    const existingItem = user
+        ? dataCart?.listProduct?.find((item) => item.productId === dataDetail._id)
+        : cartLocal?.listProduct?.find((item) => item.productId === dataDetail._id);
     const currentQuantity = existingItem ? existingItem.quantity : 0;
     const newTotalQuantity = currentQuantity + quantity;
+
     const handleAddCart = useCallback(async () => {
-        if (!user) return toggleModal(true);
         if (newTotalQuantity > dataDetail?.countInstock) {
             return message.error('Số lượng sản phẩm không đủ');
         }
-        setIsloading(true);
-        try {
-            const { _id, name, price, countInstock } = dataDetail;
-            const imageUrl = dataDetail.image?.[0]?.thumbUrl ?? 'default-image-url.jpg'; // +1 ở đây là do lấy itemCart cần phải useEfft để nó set lại, kh gọi nó sẽ bị chậm 1 bước nên +1 cho lẹ
-            const result = await cartService.addCart({
-                productId: _id,
-                name,
-                price,
-                quantity: quantity,
-                image: imageUrl,
-                countInstock,
-            });
 
-            if (result) {
-                message.success('Thêm vào giỏ hàng thành công');
-                refetch();
+        const { _id, name, price, countInstock } = dataDetail;
+        const imageUrl = dataDetail.image?.[0]?.thumbUrl ?? 'default-image-url.jpg';
+        const cartItem = { productId: _id, name, price, quantity, image: imageUrl, countInstock };
+
+        if (user) {
+            try {
+                setIsloading(true);
+                const result = await cartService.addCart(cartItem);
+                if (result) {
+                    message.success('Thêm vào giỏ hàng thành công');
+                    refetch();
+                }
+            } catch (error) {
+                message.error(error.message || 'Có lỗi xảy ra');
+            } finally {
                 setIsloading(false);
             }
-        } catch (error) {
-            setIsloading(true);
-            message.error(error);
+        } else {
+            updateLocalCart(cartItem);
         }
     }, [user, newTotalQuantity, dataDetail, refetch]);
 
-    let address = dataUser?.user?.address.find((item) => item.defaultAddress === true);
+    // update cart ở local dành cho user không login
+    const updateLocalCart = (cartItem) => {
+        const existingItem = cartLocal.listProduct.find((item) => item.productId === cartItem.productId);
+        if (existingItem) {
+            existingItem.quantity += cartItem.quantity;
+        } else {
+            cartLocal.listProduct.push(cartItem);
+        }
+
+        cartLocal.totalProduct = cartLocal.listProduct.length;
+        cartLocal.subTotal += cartItem.quantity * cartItem.price;
+
+        setCart(cartLocal);
+        message.success('Thêm vào giỏ hàng thành công');
+    };
+
+    let address = dataUser?.user?.address.find((item) => item?.defaultAddress) || dataUser?.user.address[0];
+
+    // button mua ngay
+    const handleByNow = useCallback(async () => {
+        if (quantity > dataDetail?.countInstock) {
+            return message.error('Số lượng sản phẩm không đủ');
+        }
+        const { _id, name, price } = dataDetail;
+        const imageUrl = dataDetail.image?.[0]?.thumbUrl ?? 'default-image-url.jpg';
+        const cartItem = { productId: _id, name, price, quantity, image: imageUrl };
+        const form = {
+            orderItems: [cartItem],
+            shippingAddress: address,
+            subTotal: cartItem.price * cartItem.quantity,
+            totalProduct: 1,
+            userId: user ? user?._id : null,
+        };
+        navigate(path.Payment, { state: form });
+    }, [dataDetail, newTotalQuantity]);
 
     const [chooseAddress, setChooseAddress] = useState(address);
-
-    let addressString = Object?.entries(chooseAddress || '')
-        ?.filter(([key]) => key !== '_id' && key !== 'defaultAddress')
-        ?.map(([_, value]) => value)
-        ?.join(', ');
-
-    const updateAddress = () => {
-        if (!user) {
-            return toggleModal(true);
-        }
-        setModalConfig(true);
-    };
 
     const productRecommand = dataProduct?.data.filter((item) => item._id !== id);
 
@@ -227,7 +254,7 @@ const ProductDetail = () => {
                                                 marginBottom: '8px',
                                             }}
                                             disabled={user?.isAdmin || dataDetail?.countInstock === 0}
-                                            onClick={handleAddCart}
+                                            onClick={handleByNow}
                                         >
                                             Mua ngay
                                         </Button>
@@ -251,12 +278,6 @@ const ProductDetail = () => {
                     <div className="des bg-[#fff] rounded-[8px] p-6 mb-4">
                         <div className="border-solid border-b-2 border-[#f0f0f0] pb-4 mb-4">
                             <span className="font-bold">Thông tin vận chuyển</span>
-                            <div className="flex justify-between items-center pt-5">
-                                <span>{addressString || 'Chưa cập nhật địa chỉ'}</span>
-                                <Button className="text-[#6274ff]" onClick={updateAddress}>
-                                    Đổi
-                                </Button>
-                            </div>
                         </div>
                         <div className="border-solid border-b-2 border-[#f0f0f0] pb-4 mb-4">
                             <span className="">Giao siêu tốc 2h</span>
@@ -317,7 +338,7 @@ const ProductDetail = () => {
                                             marginBottom: '8px',
                                         }}
                                         disabled={user?.isAdmin || dataDetail?.countInstock === 0}
-                                        onClick={handleAddCart}
+                                        onClick={handleByNow}
                                     >
                                         Mua ngay
                                     </Button>

@@ -1,26 +1,26 @@
 import React from 'react';
-import { Drawer, Avatar, Badge, Menu, message } from 'antd';
+import { Drawer, Avatar, Badge, Menu } from 'antd';
 import { CloseOutlined, ShoppingCartOutlined, UserOutlined } from '@ant-design/icons';
 import { useAppStore } from '~/store/useAppStore';
-import { getUser, removeUser } from '~/core/token';
+import { removeUser } from '~/core/token';
 import { useNavigate } from 'react-router-dom';
 import { path } from '~/config/path';
 import useGetCart from '~/hooks/useGetCart';
 import SearchBar from './SearchBar';
 import { Typography } from 'antd';
-import { userService } from '~/services/user.service';
 import useGetUserDetail from '~/hooks/useGetUserDetail';
+import { useLocalStore } from '~/store/useLocalStore';
 
 const { SubMenu } = Menu;
 
 const Sidebar = () => {
+    const { cartLocal } = useLocalStore();
     const { toggleSidebar, openSidebar, toggleModal } = useAppStore();
 
     const { data: userDetail } = useGetUserDetail();
 
     const navigate = useNavigate();
     const { data: dataCart } = useGetCart();
-    const {} = useAppStore();
 
     const handleLogout = () => {
         removeUser();
@@ -50,13 +50,12 @@ const Sidebar = () => {
                 body: { padding: 0 },
             }}
         >
-            {/* Header */}
             <div className="p-7 h-[70px] flex items-center justify-between bg-[#1A94FF]">
                 <Typography style={{ color: '#fff', fontSize: '20px', fontFamily: 'sans-serif' }}>My Shop</Typography>
                 <CloseOutlined className="text-white text-[20px] cursor-pointer" onClick={toggleSidebar} />
             </div>
 
-            <div className="m-5 border-b border-solid border-b-black">
+            <div className="m-5 border-b-[0.5px] border-solid border-b-[#eae9e9]">
                 <SearchBar placeholder="Search" size="large" text="Tìm kiếm" />
             </div>
 
@@ -102,7 +101,6 @@ const Sidebar = () => {
                 </SubMenu>
             </Menu>
 
-            {/* Giỏ hàng */}
             <div
                 className="p-10 flex items-center cursor-pointer text-xl mt-5"
                 onClick={() => {
@@ -110,8 +108,8 @@ const Sidebar = () => {
                     toggleSidebar();
                 }}
             >
-                <Badge count={dataCart?.totalProduct > 0 ? dataCart?.totalProduct : 0}>
-                    <ShoppingCartOutlined className="text-[16px] text-[#333] mr-3" styles={{ fontSize: '20px' }} />
+                <Badge count={dataCart?.totalProduct > 0 || cartLocal?.totalProduct || 0}>
+                    <ShoppingCartOutlined style={{ fontSize: '30px', color: '#fff' }} />
                 </Badge>
                 <span className="text-[16px] text-[#333]">Giỏ hàng</span>
             </div>

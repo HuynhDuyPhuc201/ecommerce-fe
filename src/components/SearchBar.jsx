@@ -25,22 +25,16 @@ const SearchBar = forwardRef(({ placeholder, size = 'small', text }, ref) => {
 
     // Cập nhật kết quả tìm kiếm khi API trả về dữ liệu mới
     useEffect(() => {
-        if (data) {
-            setSearchResults(data.data);
-        }
+        if (data) setSearchResults(data.data);
     }, [data]);
 
     useEffect(() => {
-        if (searchValue) {
-            setSearchResults([]);
-        }
+        if (searchValue) setSearchResults([]);
     }, [searchValue]);
 
     // Cập nhật state khi URL có query ?q=
     useEffect(() => {
-        if (querySearch) {
-            setSearchValue(querySearch);
-        }
+        if (querySearch) setSearchValue(querySearch);
     }, [querySearch]);
 
     // Xử lý khi thay đổi input

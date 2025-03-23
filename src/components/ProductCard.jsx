@@ -1,7 +1,7 @@
 import { Card, Carousel } from 'antd';
 import React from 'react';
 import { StarFilled } from '@ant-design/icons';
-import { generatePath, Link, useParams } from 'react-router-dom';
+import { generatePath, Link } from 'react-router-dom';
 import { path } from '~/config/path';
 import { formatNumber } from '~/core';
 

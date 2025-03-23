@@ -54,7 +54,10 @@ const Profile = () => {
             reader.readAsDataURL(file); // Đọc file dưới dạng URL base64
         }
     };
-    if (!user && !user?.isAdmin) return <Navigate to={path.Home} />;
+    if (!user && !user?.isAdmin) {
+        message.warning('Yêu cầu đăng nhập');
+        return <Navigate to={path.Home} />;
+    }
     return (
         <div className="w-full mx-auto bg-white p-6 rounded-lg shadow-md">
             <h2 className="text-2xl font-semibold mb-4">Thông tin tài khoản</h2>
