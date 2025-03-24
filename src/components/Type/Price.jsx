@@ -17,12 +17,13 @@ const Price = ({ priceObj }) => {
         updatePrice(value);
     };
 
+    // bị tương tự như rating
     useEffect(() => {
-        if (priceParams === null) {
+        if (priceParams === null && priceValue !== 0) {
             setPriceValue(0);
             updatePrice('');
         }
-    }, [priceParams]);
+    }, [priceParams, priceValue]);
 
     return (
         <div className="category bg-[#fff] rounded-[8px] p-10 w-full my-2">

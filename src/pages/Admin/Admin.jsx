@@ -29,17 +29,17 @@ const Admin = () => {
     const onClick = ({ key }) => {
         setRenderComponent(key);
     };
-    if (!user || !user.isAdmin) return <Navigate to={path.Home} />;
+    if (!user?.isAdmin) return <Navigate to={path.Home} />;
     return (
         <>
             <Header />
             <div className="pt-[50px] md:pt-[70px]">
-                <Row span={(24, 24)}>
+                <Row>
                     <Col sm={24} xs={24} md={4}>
                         <Menu
                             onClick={onClick}
                             className="custom-menu"
-                            defaultOpenKeys={['user']}
+                            defaultSelectedKeys={['user']}
                             mode="inline"
                             items={items}
                         />

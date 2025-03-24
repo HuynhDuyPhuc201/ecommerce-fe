@@ -57,7 +57,7 @@ const MyOrder = () => {
             width: 70,
             responsive: ['xs', 'sm', 'md', 'lg'],
             dataIndex: 'subTotal',
-            render: (item) => <p>{formatNumber(item) || 0}</p>,
+            render: (item) => <p>{formatNumber(item || 0)}</p>,
         },
         {
             title: 'Ngày đặt',
@@ -104,7 +104,7 @@ const MyOrder = () => {
                             <strong>Số lượng sản phẩm:</strong> {selectedOrder?.totalProduct}
                         </p>
                         <p>
-                            <strong>Tổng tiền:</strong> {formatNumber(selectedOrder?.subTotal) || 0}
+                            <strong>Tổng tiền:</strong> {formatNumber(selectedOrder?.subTotal || 0)}
                         </p>
                         <p className="mt-3">
                             <strong>Sản phẩm:</strong>
@@ -123,7 +123,7 @@ const MyOrder = () => {
                                     <div>
                                         <p>{item?.name}</p>
                                         <p>
-                                            {formatNumber(item?.price)} x {item?.quantity || 0}
+                                            {formatNumber(item?.price || 0)} x {item?.quantity || 0}
                                         </p>
                                     </div>
                                 </li>

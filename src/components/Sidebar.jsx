@@ -26,9 +26,9 @@ const Sidebar = () => {
     const handleLogout = () => {
         removeUser();
         removeToken();
-        navigate('/');
-        window.location.reload();
+        navigate('/', { replace: true }); // Điều hướng mà không tạo history mới
         toggleSidebar();
+        window.location.replace('/'); // Chỉ dùng nếu cần reset toàn bộ app state
     };
 
     const handleMenuClick = ({ key }) => {
@@ -36,6 +36,9 @@ const Sidebar = () => {
             handleLogout();
         } else {
             navigate(key);
+            setTimeout(() => {
+                toggleSidebar(); // Đảm bảo Drawer đóng sau khi chuyển trang
+            }, 200); // Delay nhỏ để tránh bị xung đột UI
         }
         toggleSidebar(); // Đóng Drawer sau khi chọn menu
     };

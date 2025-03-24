@@ -3,7 +3,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { cart_empty } from '~/constants/images';
 import { formatNumber } from '~/core';
-import { getUser, setCart } from '~/core/token';
+import { getAddress, getUser, setCart } from '~/core/token';
 import useGetUserDetail from '~/hooks/useGetUserDetail';
 import useGetCart from '~/hooks/useGetCart';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
@@ -16,11 +16,12 @@ import { paymentMethods, shippingOptions } from '~/constants/dummyData';
 
 const Payment = () => {
     const { state: checkoutInfo } = useLocation();
-    const navigation = useNavigate();
+    const navigate = useNavigate();
     const { data: dataUserDetail } = useGetUserDetail();
     const user = getUser();
     const [loading, setLoading] = useState(false);
-    const { setCartLocal, cartLocal, addressLocal } = useLocalStore();
+    const { setCartLocal, cartLocal } = useLocalStore();
+    const addressLocal = getAddress();
     const { refetch: refetchCart, data: dataCart } = useGetCart();
     const [discountCode, setDiscountCode] = useState({
         code: '',
@@ -50,11 +51,6 @@ const Payment = () => {
     }, [checkoutInfo?.subTotal, shippingFee, discountCode.discountAmount]);
 
     if (Object.keys(checkoutInfo || []).length <= 0) return <Navigate to={path.Home} />;
-
-    const { refetch: refetchProduct } = useQuery({
-        queryKey: ['products'],
-        queryFn: () => productService.getAll(`?limit=8&page=1`),
-    });
 
     const onSubmitOrder = async (form) => {
         if (!shippingMethod) return message.error('Thêm phương thức vận chuyển');
@@ -87,7 +83,7 @@ const Payment = () => {
             if (result.success) {
                 message.success(result.message);
                 refetchCart();
-                navigation(path.OrderSuccess);
+                navigate(path.OrderSuccess);
                 updateStockAfterOrder(listOrderItem?.orderItems);
                 if (!user) {
                     const listProductOrdered = result.createdOrder.orderItems.map((item) => item.productId);
@@ -102,12 +98,14 @@ const Payment = () => {
                     setCartLocal(newCartLocal);
                     setCart(newCartLocal);
                 }
+            } else {
+                message.error(result.message);
             }
 
             if (!result.success) return message.error(result.message);
         } catch (error) {
             if (error) {
-                message.error('Cập nhật địa chỉ');
+                message.error('Lỗi đặt hàng' || error.response.data?.message);
             }
         } finally {
             setLoading(false);
@@ -116,13 +114,10 @@ const Payment = () => {
     const updateStockAfterOrder = async (orderItems) => {
         for (const item of orderItems) {
             try {
-                const result = await productService.updateStock({
+                await productService.updateStock({
                     productId: item.productId,
                     quantityOrdered: item.quantity,
                 });
-                if (result) {
-                    refetchProduct();
-                }
             } catch (error) {
                 console.error(` updating stock for product ${item.productId}`);
             }
@@ -151,7 +146,6 @@ const Payment = () => {
     const handleShippingMethod = useCallback((e) => {
         setShippingMethod(e.target.value);
     }, []);
-    console.log('addressLocal', addressLocal);
 
     return (
         <div className="container pt-16">
@@ -171,8 +165,8 @@ const Payment = () => {
                                         <strong>Tổng tiền:</strong>{' '}
                                         {/* nếu bấm mua ngay thì totalProduct bằng giá chính nó * số lượng */}
                                         {formatNumber(
-                                            checkoutInfo?.subTotal || checkoutInfo?.price * checkoutInfo?.quantity,
-                                        ) || 0}
+                                            checkoutInfo?.subTotal || checkoutInfo?.price * checkoutInfo?.quantity || 0,
+                                        )}
                                         đ
                                     </p>
                                     <p className="mt-3">
@@ -195,7 +189,7 @@ const Payment = () => {
                                                 <div>
                                                     <p>{checkoutInfo?.name}</p>
                                                     <p>
-                                                        {formatNumber(checkoutInfo?.price)} x{' '}
+                                                        {formatNumber(checkoutInfo?.price || 0)} x{' '}
                                                         {checkoutInfo?.quantity || 0}
                                                     </p>
                                                 </div>
@@ -216,7 +210,7 @@ const Payment = () => {
                                                 <div>
                                                     <p>{item?.name}</p>
                                                     <p>
-                                                        {formatNumber(item?.price)} x {item?.quantity || 0}
+                                                        {formatNumber(item?.price || 0)} x {item?.quantity || 0}
                                                     </p>
                                                 </div>
                                             </li>
@@ -360,29 +354,31 @@ const Payment = () => {
                                 >
                                     {shippingOptions?.map((option) => (
                                         <Radio key={option.value} value={option.value}>
-                                            {option.label} - {formatNumber(option.price) || 0}đ
+                                            {option.label} - {formatNumber(option.price || 0)}đ
                                         </Radio>
                                     ))}
                                 </Radio.Group>
                             </Card>
                         </Col>
                         <Col sm={24} xs={24} md={7}>
-                            <div className="category bg-[#fff] rounded-[8px]   p-4 w-full my-2">
-                                <div className="flex justify-between">
-                                    <p className=" text-[#333]  mb-5">Giao tới</p>
+                            {addressLocal && (
+                                <div className="category bg-[#fff] rounded-[8px]   p-4 w-full my-2">
+                                    <div className="flex justify-between">
+                                        <p className=" text-[#333]  mb-5">Giao tới</p>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span>{addressString || 'Chưa cập nhật địa chỉ'}</span>{' '}
+                                        {!addressString && user && (
+                                            <Link
+                                                to={path.Account.Address}
+                                                style={{ textDecoration: 'underline', color: '#1A94FF' }}
+                                            >
+                                                Cập nhật
+                                            </Link>
+                                        )}
+                                    </div>
                                 </div>
-                                <div className="flex justify-between">
-                                    <span>{addressString || 'Chưa cập nhật địa chỉ'}</span>{' '}
-                                    {!addressString && user && (
-                                        <Link
-                                            to={path.Account.Address}
-                                            style={{ textDecoration: 'underline', color: '#1A94FF' }}
-                                        >
-                                            Cập nhật
-                                        </Link>
-                                    )}
-                                </div>
-                            </div>
+                            )}
                             <Col sm={24} xs={24} md={24}>
                                 <div className="p-4 bg-white rounded-lg shadow-md ">
                                     <div className="flex justify-between">
@@ -395,21 +391,23 @@ const Payment = () => {
                                         <span>Tạm tính</span>
                                         <span>
                                             {formatNumber(
-                                                checkoutInfo?.subTotal || checkoutInfo?.price * checkoutInfo?.quantity,
-                                            ) || 0}
+                                                checkoutInfo?.subTotal ||
+                                                    checkoutInfo?.price * checkoutInfo?.quantity ||
+                                                    0,
+                                            )}
                                             đ
                                         </span>
                                     </div>
                                     <div className="flex justify-between text-gray-700 mt-2">
                                         <span>Phí vận chuyển</span>
-                                        <span>{formatNumber(shippingFee) || 0}đ</span>
+                                        <span>{formatNumber(shippingFee || 0)}đ</span>
                                     </div>
 
                                     {discountCode.discountAmount > 0 && (
                                         <div className="flex justify-between text-gray-700 mt-2">
                                             <span>Mã giảm giá</span>
                                             <span className="text-[red]">
-                                                -{formatNumber(discountCode.discountAmount) || 0}đ
+                                                -{formatNumber(discountCode.discountAmount || 0)}đ
                                                 <Button
                                                     style={{ width: '10px', fontSize: '10px', marginLeft: '10px' }}
                                                     onClick={handleCloseDiscount}
@@ -436,7 +434,7 @@ const Payment = () => {
                                     </div>
                                     <div className="flex justify-between font-bold mt-4">
                                         <span>Tổng tiền thanh toán</span>
-                                        <span>{formatNumber(newSubTotal) || 0}đ</span>
+                                        <span>{formatNumber(newSubTotal || 0)}đ</span>
                                     </div>
                                     <p className="text-sm text-gray-500">(Đã bao gồm VAT nếu có)</p>
                                     {discountCode.code ? (
@@ -448,7 +446,9 @@ const Payment = () => {
                                         </button>
                                     ) : (
                                         <button
-                                            className="mt-4 w-full bg-red-500 text-white py-2 rounded-lg font-semibold hover:bg-red-600"
+                                            className={`mt-4 w-full bg-red-500 text-white py-2 rounded-lg font-semibold hover:bg-red-600 ${
+                                                loading ? ' opacity-50' : 'opacity-100'
+                                            }`}
                                             onClick={addressForm.handleSubmit(onSubmitOrder)}
                                             disabled={loading}
                                         >

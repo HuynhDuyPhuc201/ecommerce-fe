@@ -9,7 +9,7 @@ const Rating = ({ ratingObj }) => {
     const [selectRating, setSelectRating] = useState(null);
 
     const [searchParams] = useSearchParams();
-    const ratingParams = useMemo(() => searchParams.get('rating'), [searchParams]);
+    const ratingParams = useMemo(() => searchParams.get('rating'), [searchParams] || '');
 
     const handleRatingChange = useCallback(
         (e) => {
@@ -22,12 +22,16 @@ const Rating = ({ ratingObj }) => {
         },
         [updateRating, selectRating],
     );
+
+    // Khi component mount, nếu ratingParams === null, updateRating('') sẽ chạy ngay.
+    // Điều này thay đổi searchParams, làm component re-render vô tận.
+    // Thêm điều kiện kiểm tra selectRating !== null để tránh re-render không cần thiết:
     useEffect(() => {
-        if (ratingParams === null) {
+        if (ratingParams === null && selectRating !== null) {
             setSelectRating(null);
             updateRating('');
         }
-    }, [ratingParams]);
+    }, [ratingParams, selectRating]);
 
     return (
         <>

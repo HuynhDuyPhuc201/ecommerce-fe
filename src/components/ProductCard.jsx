@@ -1,20 +1,24 @@
 import { Card, Carousel } from 'antd';
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { StarFilled } from '@ant-design/icons';
 import { generatePath, Link } from 'react-router-dom';
 import { path } from '~/config/path';
 import { formatNumber } from '~/core';
 
 const ProductCard = ({ item }) => {
-    const discount = ((item?.price_old - item?.price) / item?.price_old) * 100;
-    const pathURL = generatePath(path.ProductDetail, { idCate: item?.categories, id: item?._id });
+    const discount = useMemo(
+        () => (item?.price_old ? ((item.price_old - item.price) / item.price_old) * 100 : 0),
+        [item.price, item.price_old],
+    );
 
-    const handleScrollTop = () => {
-        window.scrollBy({
-            top: -100000,
-            behavior: 'smooth',
-        });
-    };
+    const pathURL = useMemo(
+        () => generatePath(path.ProductDetail, { idCate: item?.categories, id: item?._id }),
+        [item.categories, item._id],
+    );
+
+    const handleScrollTop = useCallback(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, []);
 
     return (
         <Link to={pathURL} onClick={handleScrollTop}>
@@ -59,11 +63,11 @@ const ProductCard = ({ item }) => {
                         <span className="pr-2">{item?.rating}</span>
                         <StarFilled style={{ color: '#ffff19' }} />
                     </div>
-                    <p className="text-[20px] text-[#fc3434] font-bold mt-3">{formatNumber(item?.price) || 0}</p>
+                    <p className="text-[20px] text-[#fc3434] font-bold mt-3">{formatNumber(item?.price || 0)}</p>
                     <div className="sale mt-2">
                         <span className="p-2 bg-slate-200 rounded-[10px] text-[10px]">-{discount.toFixed() || 0}%</span>
                         <span className="price-sale line-through pl-5 text-[gray] text-[10px]">
-                            {formatNumber(item?.price_old) || 0}
+                            {formatNumber(item?.price_old || 0)}
                         </span>
                     </div>
                 </div>

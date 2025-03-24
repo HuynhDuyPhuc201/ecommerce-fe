@@ -1,15 +1,14 @@
 import { Button, Col, InputNumber, message, Row, Typography } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import Slider from 'react-slick';
 import { ShoppingCartOutlined, StarFilled } from '@ant-design/icons';
 import ProductCard from '~/components/ProductCard';
 import { productService } from '~/services/product.service';
 import { useQuery } from '@tanstack/react-query';
-import { getUser, setCart } from '~/core/token';
+import { getUser, removeAddress, setCart } from '~/core/token';
 import { formatNumber } from '~/core';
 import { cartService } from '~/services/cart.service';
-import AddressModal from '~/components/Address/AddressModal';
 import useGetUserDetail from '~/hooks/useGetUserDetail';
 import useGetProductDetail from '~/hooks/useGetProductDetail';
 import useGetCart from '~/hooks/useGetCart';
@@ -38,12 +37,9 @@ const ProductDetail = () => {
     const discount = ((dataDetail?.price_old - dataDetail?.price) / dataDetail?.price_old) * 100 || 0;
 
     useEffect(() => {
-        let timeout;
         const handleResize = () => {
-            if (timeout) cancelAnimationFrame(timeout);
-            timeout = requestAnimationFrame(() => setWindowWidth(window.innerWidth));
+            setWindowWidth((prev) => (prev !== window.innerWidth ? window.innerWidth : prev));
         };
-
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
@@ -67,11 +63,11 @@ const ProductDetail = () => {
 
     const { data: dataProduct } = useQuery({
         queryKey: ['products', idCate],
-        queryFn: async () => productService.getAll(`?limit=8&page=1&categories=${idCate}`),
-        enabled: Boolean(idCate), // Chỉ gọi khi idCate tồn tại
+        queryFn: async () => await productService.getAll(`?limit=8&page=1&categories=${idCate}`),
+        // enabled: Boolean(idCate), // Chỉ gọi khi idCate tồn tại
     });
 
-    const { data: dataCart, refetch } = useGetCart();
+    const { data: dataCart, refetchCart } = useGetCart();
 
     const handleQuantityChange = useCallback(
         (value) => {
@@ -105,7 +101,7 @@ const ProductDetail = () => {
                 const result = await cartService.addCart(cartItem);
                 if (result) {
                     message.success('Thêm vào giỏ hàng thành công');
-                    refetch();
+                    refetchCart();
                 }
             } catch (error) {
                 message.error(error.message || 'Có lỗi xảy ra');
@@ -116,7 +112,7 @@ const ProductDetail = () => {
         } else {
             updateLocalCart(cartItem);
         }
-    }, [user, newTotalQuantity, dataDetail, refetch]);
+    }, [user, newTotalQuantity, dataDetail, refetchCart]);
 
     // update cart ở local dành cho user không login
     const updateLocalCart = (cartItem) => {
@@ -129,15 +125,16 @@ const ProductDetail = () => {
 
         cartLocal.totalProduct = cartLocal.listProduct.length;
         cartLocal.subTotal += cartItem.quantity * cartItem.price;
-        handleQuantityChange(1);
         setCart(cartLocal);
+        handleQuantityChange(1);
         message.success('Thêm vào giỏ hàng thành công');
     };
 
     let address = dataUser?.user?.address.find((item) => item?.defaultAddress) || dataUser?.user.address[0];
 
     // button mua ngay
-    const handleByNow = useCallback(async () => {
+    const handleBuyNow = useCallback(async () => {
+        if (!user) removeAddress();
         if (quantity > dataDetail?.countInstock) {
             return message.error('Số lượng sản phẩm không đủ');
         }
@@ -154,18 +151,7 @@ const ProductDetail = () => {
         navigate(path.Payment, { state: form });
     }, [dataDetail, newTotalQuantity]);
 
-    const [chooseAddress, setChooseAddress] = useState(address);
-
     const productRecommand = dataProduct?.data.filter((item) => item._id !== id);
-
-    const handleCancel = () => {
-        setModalConfig(false);
-    };
-
-    const handleChooseAddress = (item) => {
-        setModalConfig(false);
-        setChooseAddress(item);
-    };
 
     return (
         <div className="container pt-10">
@@ -214,7 +200,7 @@ const ProductDetail = () => {
                                     -{discount.toFixed() || 0}%
                                 </span>
                                 <span className="price-sale line-through pl-5 text-[gray] text-[10px]">
-                                    {formatNumber(dataDetail?.price_old) || 0}
+                                    {formatNumber(dataDetail?.price_old || 0)}
                                 </span>
                             </div>
                         </div>
@@ -256,7 +242,7 @@ const ProductDetail = () => {
                                             Tạm tính
                                         </Title>
                                         <Title level={4} style={{ color: '#fa541c', marginTop: '5px' }}>
-                                            {formatNumber(quantity * dataDetail?.price) || 0}
+                                            {formatNumber(quantity * dataDetail?.price || 0)}
                                         </Title>
                                     </Col>
 
@@ -270,7 +256,7 @@ const ProductDetail = () => {
                                                 marginBottom: '8px',
                                             }}
                                             disabled={user?.isAdmin || dataDetail?.countInstock === 0}
-                                            onClick={handleByNow}
+                                            onClick={handleBuyNow}
                                         >
                                             Mua ngay
                                         </Button>
@@ -340,7 +326,7 @@ const ProductDetail = () => {
                                         Tạm tính
                                     </Title>
                                     <Title level={4} style={{ color: '#fa541c', marginTop: '5px' }}>
-                                        {formatNumber(quantity * dataDetail?.price) || 0}
+                                        {formatNumber(quantity * dataDetail?.price || 0)}
                                     </Title>
                                 </Col>
 
@@ -354,7 +340,7 @@ const ProductDetail = () => {
                                             marginBottom: '8px',
                                         }}
                                         disabled={user?.isAdmin || dataDetail?.countInstock === 0}
-                                        onClick={handleByNow}
+                                        onClick={handleBuyNow}
                                     >
                                         Mua ngay
                                     </Button>
@@ -376,14 +362,6 @@ const ProductDetail = () => {
                     </Col>
                 )}
             </Row>
-
-            {/* modal chọn địa chỉ */}
-            <AddressModal
-                open={modalConfig}
-                onClose={handleCancel}
-                addresses={dataUser?.user?.address}
-                onSelect={handleChooseAddress}
-            />
         </div>
     );
 };

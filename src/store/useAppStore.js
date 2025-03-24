@@ -6,13 +6,11 @@ export const useAppStore = create((set) => ({
     searchValue: '',
     openSidebar: false,
     openModal: false,
-    address: {},
     showSignUp: false,
     toggleSidebar: () => set((state) => ({ openSidebar: !state.openSidebar })), // ✅ Lấy state từ store
     toggleModal: () => set((state) => ({ openModal: !state.openModal })), // ✅ Lấy state từ store
     setSearchResults: (data) => set(() => ({ searchResults: data })),
     setSearchValue: (data) => set(() => ({ searchValue: data })),
     setOverlayVisible: (isVisible) => set({ isOverlayVisible: isVisible }),
-    setAddress: (newAddress) => set(() => ({ address: newAddress })),
     setShowSignUp: (showSignUp) => set(() => ({ showSignUp: showSignUp })),
 }));

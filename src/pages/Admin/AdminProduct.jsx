@@ -199,7 +199,7 @@ const AdminProduct = () => {
             { title: 'Tên', dataIndex: 'name', width: 150 },
             { title: 'Hình', dataIndex: 'image', ellipsis: true, width: 200, render: renderImage },
             { title: 'Danh mục', dataIndex: 'categories', width: 100 },
-            { title: 'Giá', dataIndex: 'price', width: 100, render: (price) => formatNumber(Number(price)) },
+            { title: 'Giá', dataIndex: 'price', width: 100, render: (price) => formatNumber(Number(price || 0)) },
             { title: 'Tồn kho', dataIndex: 'countInstock', width: 100 },
             { title: 'Đánh giá', dataIndex: 'rating', width: 100 },
             {

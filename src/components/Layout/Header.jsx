@@ -12,14 +12,13 @@ import { getUser, removeUser, removeToken, getCart } from '~/core/token';
 import { formatNumber } from '~/core';
 import useGetCart from '~/hooks/useGetCart';
 import useGetUserDetail from '~/hooks/useGetUserDetail';
-import { userService } from '~/services/user.service';
 import { useLocalStore } from '~/store/useLocalStore';
 
 const Header = forwardRef((props, ref) => {
     const user = getUser();
 
     const { data: userDetail } = useGetUserDetail();
-    const navigation = useNavigate();
+    const navigate = useNavigate();
     const { data: dataCart } = useGetCart();
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
     const { cartLocal } = useLocalStore();
@@ -39,9 +38,9 @@ const Header = forwardRef((props, ref) => {
     const handleLogout = () => {
         removeUser();
         removeToken();
-        navigation('/');
-        window.location.reload();
+        navigate('/', { replace: true }); // Điều hướng mà không tạo history mới
         toggleSidebar();
+        window.location.replace('/'); // Chỉ dùng nếu cần reset toàn bộ app state
     };
 
     const hanldeShowSearch = () => {
@@ -54,12 +53,12 @@ const Header = forwardRef((props, ref) => {
         {
             key: '1',
             label: `${user?.isAdmin ? 'Quản lý hệ thống' : 'Thông tin người dùng'}`,
-            onClick: () => navigation(`${user?.isAdmin ? path.Admin : path.Account.Profile}`),
+            onClick: () => navigate(`${user?.isAdmin ? path.Admin : path.Account.Profile}`),
         },
         !user?.isAdmin && {
             key: '2',
             label: 'Đơn hàng',
-            onClick: () => navigation(path.Account.MyOrder),
+            onClick: () => navigate(path.Account.MyOrder),
         },
         {
             key: '3',
@@ -143,7 +142,7 @@ const Header = forwardRef((props, ref) => {
                                                         color: '#ff4d4f',
                                                     }}
                                                 >
-                                                    {formatNumber(item.price) || 0} đ
+                                                    {formatNumber(item.price || 0)} đ
                                                 </p>
                                             </div>
                                         </List.Item>

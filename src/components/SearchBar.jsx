@@ -13,6 +13,9 @@ const SearchBar = forwardRef(({ placeholder, size = 'small', text }, ref) => {
     const [searchParams] = useSearchParams();
     const querySearch = searchParams.get('q') || '';
 
+    useEffect(() => {
+        if (!searchValue) setSearchResults([]);
+    }, [searchValue]);
     // Debounce để tìm kiếm sau 0.3 giây
     const debouncedSearch = useDebounce(searchValue, 300);
 
@@ -27,10 +30,6 @@ const SearchBar = forwardRef(({ placeholder, size = 'small', text }, ref) => {
     useEffect(() => {
         if (data) setSearchResults(data.data);
     }, [data]);
-
-    useEffect(() => {
-        if (searchValue) setSearchResults([]);
-    }, [searchValue]);
 
     // Cập nhật state khi URL có query ?q=
     useEffect(() => {

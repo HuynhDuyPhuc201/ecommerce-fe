@@ -16,7 +16,8 @@ import { useLocalStore } from '~/store/useLocalStore';
 
 const CartPage = () => {
     const user = getUser();
-    const { setCartLocal, cartLocal, addressLocal } = useLocalStore();
+    const { setCartLocal, cartLocal } = useLocalStore();
+    const addressLocal = getAddress();
     const [idCheckbox, setIdCheckbox] = useState([]);
     const [modalConfig, setModalConfig] = useState(false);
     const { data: dataUserDetail } = useGetUserDetail();
@@ -174,7 +175,7 @@ const CartPage = () => {
                 ellipsis: true,
                 width: 70,
                 align: 'top',
-                render: (price) => formatNumber(Number(price)),
+                render: (price) => formatNumber(Number(price || 0)),
             },
             {
                 title: 'Số lượng',
@@ -196,7 +197,7 @@ const CartPage = () => {
             {
                 title: 'Thành tiền',
                 width: 70,
-                render: (_, record) => formatNumber(Number(record.price * record.quantity)),
+                render: (_, record) => formatNumber(Number(record.price * record.quantity || 0)),
             },
         ],
         [renderImage, handleQuantityChange],
@@ -245,7 +246,7 @@ const CartPage = () => {
                                 <div className="p-4 bg-white rounded-lg shadow-md ">
                                     <div className="flex justify-between text-gray-700">
                                         <span>Tạm tính</span>
-                                        <span>{formatNumber(subTotal) || 0}đ</span>
+                                        <span>{formatNumber(subTotal || 0)}đ</span>
                                     </div>
 
                                     <div className="flex justify-between font-bold mt-4">
@@ -253,7 +254,7 @@ const CartPage = () => {
                                             Tổng tiền <br />
                                             thanh toán
                                         </span>
-                                        <span>{formatNumber(subTotal) || 0}đ</span>
+                                        <span>{formatNumber(subTotal || 0)}đ</span>
                                     </div>
                                     <p className="text-sm text-gray-500">(Đã bao gồm VAT nếu có)</p>
                                     <button

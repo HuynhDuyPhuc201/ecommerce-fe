@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button, Col } from 'antd';
 import { path } from '~/config/path';
 import useOrderStore from '~/store/useOrderStore';
