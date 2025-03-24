@@ -106,7 +106,7 @@ const Payment = () => {
             if (!result.success) return message.error(result.message);
         } catch (error) {
             if (error) {
-                message.error('Lỗi đặt hàng hoặc chưa cập nhật địa chỉ' || error.response.data?.message);
+                message.error(error.response.data?.message || 'Lỗi đặt hàng hoặc chưa cập nhật địa chỉ');
             }
         } finally {
             setLoading(false);
