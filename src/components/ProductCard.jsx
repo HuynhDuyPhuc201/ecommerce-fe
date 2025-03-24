@@ -9,8 +9,15 @@ const ProductCard = ({ item }) => {
     const discount = ((item?.price_old - item?.price) / item?.price_old) * 100;
     const pathURL = generatePath(path.ProductDetail, { idCate: item?.categories, id: item?._id });
 
+    const handleScrollTop = () => {
+        window.scrollBy({
+            top: -100000,
+            behavior: 'smooth',
+        });
+    };
+
     return (
-        <Link to={pathURL}>
+        <Link to={pathURL} onClick={handleScrollTop}>
             <Card
                 hoverable
                 cover={

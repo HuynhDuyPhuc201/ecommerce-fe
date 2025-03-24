@@ -81,7 +81,7 @@ const ProductDetail = () => {
             }
             setQuantity(value || 1);
         },
-        [dataDetail?.countInstock],
+        [dataDetail?.countInstock, quantity],
     );
 
     const existingItem = user
@@ -111,6 +111,7 @@ const ProductDetail = () => {
                 message.error(error.message || 'Có lỗi xảy ra');
             } finally {
                 setIsloading(false);
+                handleQuantityChange(1);
             }
         } else {
             updateLocalCart(cartItem);
@@ -128,7 +129,7 @@ const ProductDetail = () => {
 
         cartLocal.totalProduct = cartLocal.listProduct.length;
         cartLocal.subTotal += cartItem.quantity * cartItem.price;
-
+        handleQuantityChange(1);
         setCart(cartLocal);
         message.success('Thêm vào giỏ hàng thành công');
     };
@@ -231,8 +232,23 @@ const ProductDetail = () => {
                                                 value={quantity}
                                                 onChange={handleQuantityChange}
                                                 style={{ width: '100px' }}
+                                                controls={true}
                                             />
                                         </Row>
+                                        <div className="flex mt-5 gap-5">
+                                            <Button
+                                                onClick={() => handleQuantityChange(quantity - 1)}
+                                                disabled={quantity <= 1}
+                                            >
+                                                -
+                                            </Button>
+                                            <Button
+                                                onClick={() => handleQuantityChange(quantity + 1)}
+                                                disabled={quantity >= dataDetail?.countInstock}
+                                            >
+                                                +
+                                            </Button>
+                                        </div>
                                     </Col>
 
                                     <Col span={24}>

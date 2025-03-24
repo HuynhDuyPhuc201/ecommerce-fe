@@ -151,6 +151,7 @@ const Payment = () => {
     const handleShippingMethod = useCallback((e) => {
         setShippingMethod(e.target.value);
     }, []);
+    console.log('addressLocal', addressLocal);
 
     return (
         <div className="container pt-16">
@@ -276,7 +277,7 @@ const Payment = () => {
                                                         </p>
                                                     )}
                                                 </Col>
-                                                {!checkoutInfo?.shippingAddress && (
+                                                {!addressLocal && (
                                                     <>
                                                         <Col span={12}>
                                                             <label className="block text-gray-700">Số nhà</label>

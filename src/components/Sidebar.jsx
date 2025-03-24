@@ -2,7 +2,7 @@ import React from 'react';
 import { Drawer, Avatar, Badge, Menu } from 'antd';
 import { CloseOutlined, ShoppingCartOutlined, UserOutlined } from '@ant-design/icons';
 import { useAppStore } from '~/store/useAppStore';
-import { removeUser } from '~/core/token';
+import { getUser, removeUser } from '~/core/token';
 import { useNavigate } from 'react-router-dom';
 import { path } from '~/config/path';
 import useGetCart from '~/hooks/useGetCart';
@@ -15,6 +15,7 @@ const { SubMenu } = Menu;
 
 const Sidebar = () => {
     const { cartLocal } = useLocalStore();
+    const user = getUser();
     const { toggleSidebar, openSidebar, toggleModal } = useAppStore();
 
     const { data: userDetail } = useGetUserDetail();
@@ -108,7 +109,17 @@ const Sidebar = () => {
                     toggleSidebar();
                 }}
             >
-                <Badge count={dataCart?.totalProduct > 0 || cartLocal?.totalProduct || 0}>
+                <Badge
+                    count={
+                        user
+                            ? dataCart?.totalProduct > 0
+                                ? dataCart?.totalProduct
+                                : 0
+                            : cartLocal?.totalProduct > 0
+                            ? cartLocal?.totalProduct
+                            : 0
+                    }
+                >
                     <ShoppingCartOutlined style={{ fontSize: '30px', color: '#fff' }} />
                 </Badge>
                 <span className="text-[16px] text-[#333]">Giỏ hàng</span>
