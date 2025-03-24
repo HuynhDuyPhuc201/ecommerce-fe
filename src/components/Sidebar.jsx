@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Drawer, Avatar, Badge, Menu } from 'antd';
 import { CloseOutlined, ShoppingCartOutlined, UserOutlined } from '@ant-design/icons';
 import { useAppStore } from '~/store/useAppStore';
@@ -10,6 +10,11 @@ import SearchBar from './SearchBar';
 import { Typography } from 'antd';
 import useGetUserDetail from '~/hooks/useGetUserDetail';
 import { useLocalStore } from '~/store/useLocalStore';
+import styled from 'styled-components';
+
+const HeightCss = styled.div`
+    height: '100px !important';
+`;
 
 const Sidebar = () => {
     const { cartLocal } = useLocalStore();
@@ -37,12 +42,23 @@ const Sidebar = () => {
             }, 200);
         }
     };
+    const [openKeys, setOpenKeys] = useState(['user']); // Luôn mở "Tài khoản"
 
     // Chuyển đổi từ SubMenu sang items theo chuẩn mới của Ant Design
     const menuItems = [
         {
             key: 'user',
-            label: 'Tài khoản',
+            label: user ? user.name : <span className="text-[18px]">Tài khoản</span>,
+            icon: user?.avatar ? (
+                <img
+                    src={user?.avatar}
+                    alt=""
+                    referrerpolicy="no-referrer"
+                    className="w-[40px] h-[40px] rounded-full object-cover"
+                />
+            ) : (
+                <UserOutlined style={{ fontSize: '18px' }} />
+            ),
             children: user
                 ? [
                       userDetail?.user?.isAdmin
@@ -80,17 +96,15 @@ const Sidebar = () => {
                 <SearchBar placeholder="Search" size="large" text="Tìm kiếm" />
             </div>
 
-            <div className="p-5 flex items-center">
-                {userDetail?.user?.avatar ? (
-                    <Avatar src={userDetail?.user?.avatar} size={70} className="mr-3" />
-                ) : (
-                    <UserOutlined style={{ fontSize: '30px', color: '#fff' }} />
-                )}
-                {userDetail?.user?.name && <span className="text-[16px] text-[#333]">{userDetail?.user?.name}</span>}
-            </div>
-
             {/* Menu mới sử dụng `items` thay vì `children` */}
-            <Menu mode="inline" className="text-[16px]" onClick={handleMenuClick} items={menuItems} />
+            <Menu
+                mode="inline"
+                openKeys={openKeys}
+                onOpenChange={(keys) => setOpenKeys(keys)}
+                className="text-[16px] mt-10"
+                onClick={handleMenuClick}
+                items={menuItems}
+            />
 
             {!user?.isAdmin && (
                 <div
@@ -111,9 +125,10 @@ const Sidebar = () => {
                                 : 0
                         }
                     >
-                        <ShoppingCartOutlined style={{ fontSize: '30px', color: '#fff' }} />
+                        <ShoppingCartOutlined style={{ fontSize: '20px', color: '#000' }} />
                     </Badge>
-                    <span className="text-[16px] text-[#333]">Giỏ hàng</span>
+
+                    <span className="text-[16px] text-[#333] pl-5">Giỏ hàng</span>
                 </div>
             )}
         </Drawer>
