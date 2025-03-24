@@ -165,12 +165,15 @@ const Header = forwardRef((props, ref) => {
                         {windowWidth >= 1000 ? (
                             <>
                                 <div className="account flex pl-[20px] items-center ">
-                                    {(userDetail?.user && userDetail?.user?.avatar) || user?.avatar ? (
-                                        <img
-                                            src={userDetail?.user?.avatar || user?.avatar}
-                                            alt=""
-                                            className="w-[50px] h-[50px] rounded-full object-cover"
-                                        />
+                                    {user?.avatar ? (
+                                        <>
+                                            <img
+                                                src={user?.avatar}
+                                                alt=""
+                                                referrerpolicy="no-referrer"
+                                                className="w-[50px] h-[50px] rounded-full object-cover"
+                                            />
+                                        </>
                                     ) : (
                                         <UserOutlined style={{ fontSize: '30px', color: '#fff' }} />
                                     )}

@@ -2,7 +2,7 @@ import React from 'react';
 import { Drawer, Avatar, Badge, Menu } from 'antd';
 import { CloseOutlined, ShoppingCartOutlined, UserOutlined } from '@ant-design/icons';
 import { useAppStore } from '~/store/useAppStore';
-import { getUser, removeUser } from '~/core/token';
+import { getUser, removeToken, removeUser } from '~/core/token';
 import { useNavigate } from 'react-router-dom';
 import { path } from '~/config/path';
 import useGetCart from '~/hooks/useGetCart';
@@ -11,24 +11,20 @@ import { Typography } from 'antd';
 import useGetUserDetail from '~/hooks/useGetUserDetail';
 import { useLocalStore } from '~/store/useLocalStore';
 
-const { SubMenu } = Menu;
-
 const Sidebar = () => {
     const { cartLocal } = useLocalStore();
     const user = getUser();
     const { toggleSidebar, openSidebar, toggleModal } = useAppStore();
-
     const { data: userDetail } = useGetUserDetail();
-
     const navigate = useNavigate();
     const { data: dataCart } = useGetCart();
 
     const handleLogout = () => {
         removeUser();
         removeToken();
-        navigate('/', { replace: true }); // Điều hướng mà không tạo history mới
+        navigate('/', { replace: true });
         toggleSidebar();
-        window.location.replace('/'); // Chỉ dùng nếu cần reset toàn bộ app state
+        window.location.replace('/');
     };
 
     const handleMenuClick = ({ key }) => {
@@ -37,11 +33,32 @@ const Sidebar = () => {
         } else {
             navigate(key);
             setTimeout(() => {
-                toggleSidebar(); // Đảm bảo Drawer đóng sau khi chuyển trang
-            }, 200); // Delay nhỏ để tránh bị xung đột UI
+                toggleSidebar();
+            }, 200);
         }
-        toggleSidebar(); // Đóng Drawer sau khi chọn menu
     };
+
+    // Chuyển đổi từ SubMenu sang items theo chuẩn mới của Ant Design
+    const menuItems = [
+        {
+            key: 'user',
+            label: 'Tài khoản',
+            children: user
+                ? [
+                      userDetail?.user?.isAdmin
+                          ? { key: path.Admin, label: 'Quản lý hệ thống' }
+                          : { key: path.Account.Profile, label: 'Thông tin người dùng' },
+                      !userDetail?.user?.isAdmin && { key: path.Account.MyOrder, label: 'Đơn hàng' },
+                      { key: 'logout', label: 'Đăng xuất' },
+                  ].filter(Boolean)
+                : [],
+        },
+        !user && {
+            key: 'login',
+            label: 'Đăng nhập & Đăng ký',
+            onClick: toggleModal,
+        },
+    ].filter(Boolean);
 
     return (
         <Drawer
@@ -69,64 +86,36 @@ const Sidebar = () => {
                 ) : (
                     <UserOutlined style={{ fontSize: '30px', color: '#fff' }} />
                 )}
-
                 {userDetail?.user?.name && <span className="text-[16px] text-[#333]">{userDetail?.user?.name}</span>}
             </div>
 
-            {/* User Menu */}
-            <Menu mode="inline" className="text-[20px]" onClick={handleMenuClick}>
-                <SubMenu key="user" title="Tài khoản" className="text-[16px] text-[#333] cursor-pointer">
-                    {userDetail?.user && (
-                        <>
-                            <Menu.Item
-                                className="text-[16px]"
-                                key={userDetail?.user?.isAdmin ? path.Admin : path.Account.Profile}
-                            >
-                                {userDetail?.user?.isAdmin ? 'Quản lý hệ thống' : 'Thông tin người dùng'}
-                            </Menu.Item>
-                            {!userDetail?.user?.isAdmin && (
-                                <Menu.Item key={path.Account.MyOrder} className="text-[16px] text-[#333]">
-                                    Đơn hàng
-                                </Menu.Item>
-                            )}
-                            <Menu.Item key="logout" className="text-[16px] text-[#333]">
-                                Đăng xuất
-                            </Menu.Item>
-                        </>
-                    )}
+            {/* Menu mới sử dụng `items` thay vì `children` */}
+            <Menu mode="inline" className="text-[16px]" onClick={handleMenuClick} items={menuItems} />
 
-                    {!userDetail?.user?.isAdmin && (
-                        <>
-                            <Menu.Item className="text-[16px] text-[#333]" onClick={() => toggleModal()}>
-                                Đăng nhập & Đăng ký
-                            </Menu.Item>
-                        </>
-                    )}
-                </SubMenu>
-            </Menu>
-
-            <div
-                className="p-10 flex items-center cursor-pointer text-xl mt-5"
-                onClick={() => {
-                    navigate(path.Cart);
-                    toggleSidebar();
-                }}
-            >
-                <Badge
-                    count={
-                        user
-                            ? dataCart?.totalProduct > 0
-                                ? dataCart?.totalProduct
-                                : 0
-                            : cartLocal?.totalProduct > 0
-                            ? cartLocal?.totalProduct
-                            : 0
-                    }
+            {!user?.isAdmin && (
+                <div
+                    className="p-10 flex items-center cursor-pointer text-xl mt-5"
+                    onClick={() => {
+                        navigate(path.Cart);
+                        toggleSidebar();
+                    }}
                 >
-                    <ShoppingCartOutlined style={{ fontSize: '30px', color: '#fff' }} />
-                </Badge>
-                <span className="text-[16px] text-[#333]">Giỏ hàng</span>
-            </div>
+                    <Badge
+                        count={
+                            user
+                                ? dataCart?.totalProduct > 0
+                                    ? dataCart?.totalProduct
+                                    : 0
+                                : cartLocal?.totalProduct > 0
+                                ? cartLocal?.totalProduct
+                                : 0
+                        }
+                    >
+                        <ShoppingCartOutlined style={{ fontSize: '30px', color: '#fff' }} />
+                    </Badge>
+                    <span className="text-[16px] text-[#333]">Giỏ hàng</span>
+                </div>
+            )}
         </Drawer>
     );
 };

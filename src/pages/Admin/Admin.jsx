@@ -33,7 +33,7 @@ const Admin = () => {
     return (
         <>
             <Header />
-            <div className="pt-[50px] md:pt-[70px]">
+            <div className="pt-[70px] md:pt-[70px] ">
                 <Row>
                     <Col sm={24} xs={24} md={4}>
                         <Menu
