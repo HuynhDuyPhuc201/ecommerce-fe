@@ -9,6 +9,8 @@ const MyOrder = () => {
     const { data } = useQuery({
         queryKey: ['orders'],
         queryFn: async () => orderService.getOrder(),
+        refetchOnWindowFocus: false, // Tắt refetch khi tab focus lại
+        refetchOnReconnect: false, // Tắt refetch khi mạng có lại
     });
 
     const [isModalVisible, setIsModalVisible] = useState(false);

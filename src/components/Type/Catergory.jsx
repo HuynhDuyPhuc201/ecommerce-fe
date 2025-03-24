@@ -10,6 +10,10 @@ const Category = () => {
     const { data } = useQuery({
         queryKey: ['category'],
         queryFn: async () => await productService.getCategory(),
+        refetchOnWindowFocus: false, // Tắt refetch khi tab focus lại
+        refetchOnReconnect: false, // Tắt refetch khi mạng có lại
+        staleTime: 5 * 60 * 1000,
+        cacheTime: 1000 * 60 * 30,
     });
 
     return (

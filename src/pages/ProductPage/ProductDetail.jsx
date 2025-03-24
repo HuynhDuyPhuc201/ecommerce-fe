@@ -26,7 +26,6 @@ const ProductDetail = () => {
     const { cartLocal } = useLocalStore();
     const [quantity, setQuantity] = useState(1);
     const [isLoading, setIsloading] = useState(false);
-    const [modalConfig, setModalConfig] = useState(false);
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
     const { data: dataUser } = useGetUserDetail();
@@ -65,6 +64,8 @@ const ProductDetail = () => {
         queryKey: ['products', idCate],
         queryFn: async () => await productService.getAll(`?limit=8&page=1&categories=${idCate}`),
         // enabled: Boolean(idCate), // Chỉ gọi khi idCate tồn tại
+        refetchOnWindowFocus: false, // Tắt refetch khi tab focus lại
+        refetchOnReconnect: false, // Tắt refetch khi mạng có lại
     });
 
     const { data: dataCart, refetch: refetchCart } = useGetCart();

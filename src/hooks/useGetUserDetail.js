@@ -9,6 +9,8 @@ const useGetUserDetail = () => {
         queryFn: async () => await userService?.getDetail(user?._id),
         enabled: !!user, // Chỉ chạy khi user tồn tại
         retry: 0, // Không retry nếu lỗi
+        refetchOnWindowFocus: false, // Tắt refetch khi tab focus lại
+        refetchOnReconnect: false, // Tắt refetch khi mạng có lại
     });
 
     return { data, refetch, isFetching };

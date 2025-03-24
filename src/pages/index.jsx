@@ -64,9 +64,13 @@ const Index = () => {
     }, [currentPage, sort, id, searchParams]);
 
     // 🛠 Fetch sản phẩm với react-query
-    const { data, isFetching } = useQuery({
+    const { data, isLoading } = useQuery({
         queryKey: ['products', sort, rating, price, id, searchParams, currentPage, name],
         queryFn: async () => await productService.getAll(query),
+        refetchOnWindowFocus: false, // Tắt refetch khi tab focus lại
+        refetchOnReconnect: false, // Tắt refetch khi mạng có lại
+        staleTime: 5 * 60 * 1000,
+        cacheTime: 1000 * 60 * 30,
     });
 
     // 🛠 Thay đổi cách sắp xếp
@@ -90,7 +94,7 @@ const Index = () => {
 
     return (
         <div className="py-0 container my-20">
-            {/* <HomeSlider arrImg={arrImg} /> */}
+            <HomeSlider arrImg={arrImg} />
 
             {windowWidth > 500 && (
                 <div className="p-4 flex items-center justify-end font-[sans-serif]">
@@ -135,7 +139,7 @@ const Index = () => {
 
                 <Col xs={24} sm={18} md={18}>
                     <Row gutter={[12, 12]} style={{ rowGap: '16px', marginTop: '20px' }}>
-                        {isFetching
+                        {isLoading
                             ? // Hiển thị danh sách Skeleton khi đang tải dữ liệu
                               Array.from({ length: 8 }).map((_, i) => (
                                   <Col lg={6} md={8} sm={12} xs={12} key={i}>

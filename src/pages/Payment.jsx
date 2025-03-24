@@ -9,11 +9,10 @@ import useGetCart from '~/hooks/useGetCart';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { path } from '~/config/path';
 import { orderService } from '~/services/order.service';
-import { useQuery } from '@tanstack/react-query';
 import { productService } from '~/services/product.service';
 import { useLocalStore } from '~/store/useLocalStore';
 import { paymentMethods, shippingOptions } from '~/constants/dummyData';
-import { userService } from '~/services/user.service';
+import InputForm from '~/components/InputForm';
 
 const Payment = () => {
     const { state: checkoutInfo } = useLocation();
@@ -337,55 +336,31 @@ const Payment = () => {
                                                 {!addressLocal && (
                                                     <>
                                                         <Col span={12}>
-                                                            <label className="block text-gray-700">Số nhà</label>
-                                                            <input
-                                                                {...addressForm.register('houseNumber', {
-                                                                    required: true ? 'Trường này là bắt buộc' : '',
-                                                                })}
-                                                                type="text"
-                                                                className="w-full p-2 border rounded-lg"
+                                                            <InputForm
+                                                                error={addressForm.formState.errors['houseNumber']}
                                                                 placeholder=""
+                                                                name="houseNumber"
+                                                                required={false}
+                                                                label={'Số nhà'}
                                                             />
-                                                            {addressForm?.formState?.errors?.houseNumber && (
-                                                                <p style={{ color: 'red' }}>
-                                                                    {
-                                                                        addressForm?.formState?.errors?.houseNumber
-                                                                            .message
-                                                                    }
-                                                                </p>
-                                                            )}
                                                         </Col>
                                                         <Col span={12}>
-                                                            <label className="block text-gray-700">Quận / huyện</label>
-                                                            <input
-                                                                {...addressForm.register('district', {
-                                                                    required: true ? `Trường này là bắt buộc` : '',
-                                                                })}
-                                                                type="text"
-                                                                className="w-full p-2 border rounded-lg"
+                                                            <InputForm
+                                                                error={addressForm.formState.errors['district']}
                                                                 placeholder=""
+                                                                name="district"
+                                                                required={false}
+                                                                label={'Quận / huyện'}
                                                             />
-                                                            {addressForm?.formState?.errors?.district && (
-                                                                <p style={{ color: 'red' }}>
-                                                                    {addressForm?.formState?.errors?.district.message}
-                                                                </p>
-                                                            )}
                                                         </Col>
                                                         <Col span={12}>
-                                                            <label className="block text-gray-700">Thành phố</label>
-                                                            <input
-                                                                {...addressForm.register('city', {
-                                                                    required: true ? `Trường này là bắt buộc` : '',
-                                                                })}
-                                                                type="text"
-                                                                className="w-full p-2 border rounded-lg"
-                                                                placeholder=""
+                                                            <InputForm
+                                                                error={addressForm.formState.errors['city']}
+                                                                placeholder="Nhập địa chỉ"
+                                                                name="city"
+                                                                required={false}
+                                                                label={'Thành phố'}
                                                             />
-                                                            {addressForm?.formState?.errors?.city && (
-                                                                <p style={{ color: 'red' }}>
-                                                                    {addressForm?.formState?.errors?.city.message}
-                                                                </p>
-                                                            )}
                                                         </Col>
                                                     </>
                                                 )}

@@ -35,6 +35,8 @@ const AdminUser = () => {
     const { data: dataUser, refetch } = useQuery({
         queryKey: ['user'],
         queryFn: async () => await adminService.getAll(),
+        refetchOnWindowFocus: false, // Tắt refetch khi tab focus lại
+        refetchOnReconnect: false, // Tắt refetch khi mạng có lại
     });
 
     const handleOk = () => {

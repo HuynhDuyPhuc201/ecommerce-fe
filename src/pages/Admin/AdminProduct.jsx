@@ -35,11 +35,15 @@ const AdminProduct = () => {
         queryKey: ['category'],
         queryFn: async () => await productService.getCategory(),
         staleTime: 5 * 60 * 1000, // Cache trong 5 phút
+        refetchOnWindowFocus: false, // Tắt refetch khi tab focus lại
+        refetchOnReconnect: false, // Tắt refetch khi mạng có lại
     });
 
     const { data: dataProduct, refetch: refetchProduct } = useQuery({
         queryKey: ['products', state.currentPage],
         queryFn: async () => await productService.getAll(`?limit=8&page=${state.currentPage}`),
+        refetchOnWindowFocus: false, // Tắt refetch khi tab focus lại
+        refetchOnReconnect: false, // Tắt refetch khi mạng có lại
     });
 
     // set lại dataSource và chỉnh lại categories từ dạng id thành title

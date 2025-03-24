@@ -170,7 +170,7 @@ const Header = forwardRef((props, ref) => {
                                             <img
                                                 src={user?.avatar}
                                                 alt=""
-                                                referrerpolicy="no-referrer"
+                                                referrerPolicy="no-referrer"
                                                 className="w-[50px] h-[50px] rounded-full object-cover"
                                             />
                                         </>

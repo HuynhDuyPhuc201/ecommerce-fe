@@ -6,6 +6,8 @@ const useGetProductDetail = (id) => {
         queryKey: ['productDetail', id],
         queryFn: async () => await productService?.getDetail(id),
         enabled: !!id,
+        refetchOnWindowFocus: false, // Tắt refetch khi tab focus lại
+        refetchOnReconnect: false, // Tắt refetch khi mạng có lại
     });
     return { data, refetch, isFetching };
 };

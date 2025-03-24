@@ -1,10 +1,11 @@
 import React from 'react';
 import { useFormContext } from 'react-hook-form';
 
-const InputForm = ({ placeholder, name, type, error, required, ...props }) => {
+const InputForm = ({ label, placeholder, name, type, error, required, ...props }) => {
     const { register } = useFormContext(); // Lấy errors từ form context
     return (
         <>
+            {label && <label className="block text-gray-700">{label}</label>}
             <input
                 {...register(name, { required: !required ? `Trường này là bắt buộc` : false })}
                 placeholder={placeholder}

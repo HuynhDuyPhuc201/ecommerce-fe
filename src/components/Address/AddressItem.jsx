@@ -5,6 +5,7 @@ import { userService } from '~/services/user.service';
 import { FormProvider, useForm } from 'react-hook-form';
 import InputForm from '../InputForm';
 import useGetUserDetail from '~/hooks/useGetUserDetail';
+import UpdateAddressForm from '../Form/UpdateAddressForm';
 
 const AddressItem = () => {
     const [modalConfig, setModalConfig] = useState(false);
@@ -83,56 +84,9 @@ const AddressItem = () => {
                 ))}
             </Row>
 
-            <FormProvider {...addressForm}>
-                <Modal title="Cập nhật địa chỉ" open={modalConfig} onCancel={handleCancel} footer={null}>
-                    <form onSubmit={addressForm.handleSubmit(onSubmit)}>
-                        <Row gutter={[18, 18]}>
-                            <Col md={12}>
-                                <label className="block text-gray-700">Số nhà</label>
-                                <InputForm
-                                    error={addressForm.formState.errors['houseNumber']}
-                                    placeholder=""
-                                    name="houseNumber"
-                                    required={false}
-                                />
-                            </Col>
-                            <Col md={12}>
-                                <label className="block text-gray-700">Quận / huyện</label>
-                                <InputForm
-                                    error={addressForm.formState.errors['district']}
-                                    placeholder=""
-                                    name="district"
-                                    required={false}
-                                />
-                            </Col>
-                            <Col md={24}>
-                                <label className="block text-gray-700">Thành phố</label>
-                                <InputForm
-                                    error={addressForm.formState.errors['city']}
-                                    placeholder="Nhập địa chỉ"
-                                    name="city"
-                                    required={false}
-                                />
-                            </Col>
-                            <Col xs={24} md={24}>
-                                <div className="flex items-center gap-3">
-                                    <label className="block text-gray-700">Địa chỉ mặc định</label>
-                                    <input
-                                        {...addressForm.register('defaultAddress')}
-                                        type="checkbox"
-                                        className="p-2 border rounded-lg"
-                                    />
-                                </div>
-                            </Col>
-                            <div className="flex items-center justify-center w-full">
-                                <button className="w-1/2 mt-5 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                    Cập nhật địa chỉ
-                                </button>
-                            </div>
-                        </Row>
-                    </form>
-                </Modal>
-            </FormProvider>
+            <Modal title="Cập nhật địa chỉ" open={modalConfig} onCancel={handleCancel} footer={null}>
+                <UpdateAddressForm onSubmit={onSubmit} useForm={addressForm} />
+            </Modal>
         </>
     );
 };

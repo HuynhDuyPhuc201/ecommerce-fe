@@ -24,6 +24,8 @@ const SearchBar = forwardRef(({ placeholder, size = 'small', text }, ref) => {
         queryKey: ['products', debouncedSearch],
         queryFn: async () => await productService.getAll(`?q=${debouncedSearch}`),
         enabled: !!debouncedSearch, // Chỉ fetch khi có dữ liệu
+        refetchOnWindowFocus: false, // Tắt refetch khi tab focus lại
+        refetchOnReconnect: false, // Tắt refetch khi mạng có lại
     });
 
     // Cập nhật kết quả tìm kiếm khi API trả về dữ liệu mới
