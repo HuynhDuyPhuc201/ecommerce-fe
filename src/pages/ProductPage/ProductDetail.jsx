@@ -67,7 +67,7 @@ const ProductDetail = () => {
         // enabled: Boolean(idCate), // Chỉ gọi khi idCate tồn tại
     });
 
-    const { data: dataCart, refetchCart } = useGetCart();
+    const { data: dataCart, refetch: refetchCart } = useGetCart();
 
     const handleQuantityChange = useCallback(
         (value) => {
@@ -100,8 +100,8 @@ const ProductDetail = () => {
                 setIsloading(true);
                 const result = await cartService.addCart(cartItem);
                 if (result) {
-                    message.success('Thêm vào giỏ hàng thành công');
                     refetchCart();
+                    message.success('Thêm vào giỏ hàng thành công');
                 }
             } catch (error) {
                 message.error(error.message || 'Có lỗi xảy ra');

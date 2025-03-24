@@ -13,6 +13,7 @@ import { useQuery } from '@tanstack/react-query';
 import { productService } from '~/services/product.service';
 import { useLocalStore } from '~/store/useLocalStore';
 import { paymentMethods, shippingOptions } from '~/constants/dummyData';
+import { userService } from '~/services/user.service';
 
 const Payment = () => {
     const { state: checkoutInfo } = useLocation();
@@ -105,7 +106,7 @@ const Payment = () => {
             if (!result.success) return message.error(result.message);
         } catch (error) {
             if (error) {
-                message.error('Lỗi đặt hàng' || error.response.data?.message);
+                message.error('Lỗi đặt hàng hoặc chưa cập nhật địa chỉ' || error.response.data?.message);
             }
         } finally {
             setLoading(false);
@@ -177,10 +178,7 @@ const Payment = () => {
                                     {/* kiểm tra đại các key có hay không mới cho render ra */}
                                     {checkoutInfo.name && (
                                         <ul className="pt-5">
-                                            <li
-                                                key={checkoutInfo?._id}
-                                                style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}
-                                            >
+                                            <li style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
                                                 <img
                                                     src={checkoutInfo?.image}
                                                     alt="Product"
@@ -199,7 +197,7 @@ const Payment = () => {
                                     <ul className="pt-5">
                                         {checkoutInfo?.orderItems?.map((item, index) => (
                                             <li
-                                                key={item?._id}
+                                                key={index}
                                                 style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}
                                             >
                                                 <img
@@ -271,6 +269,71 @@ const Payment = () => {
                                                         </p>
                                                     )}
                                                 </Col>
+                                                {!addressLocal && (
+                                                    <>
+                                                        <Col span={12}>
+                                                            <label className="block text-gray-700">Số nhà</label>
+                                                            <input
+                                                                {...addressForm.register('houseNumber', {
+                                                                    required: true ? 'Trường này là bắt buộc' : '',
+                                                                })}
+                                                                type="text"
+                                                                className="w-full p-2 border rounded-lg"
+                                                                placeholder=""
+                                                            />
+                                                            {addressForm?.formState?.errors?.houseNumber && (
+                                                                <p style={{ color: 'red' }}>
+                                                                    {
+                                                                        addressForm?.formState?.errors?.houseNumber
+                                                                            .message
+                                                                    }
+                                                                </p>
+                                                            )}
+                                                        </Col>
+                                                        <Col span={12}>
+                                                            <label className="block text-gray-700">Quận / huyện</label>
+                                                            <input
+                                                                {...addressForm.register('district', {
+                                                                    required: true ? `Trường này là bắt buộc` : '',
+                                                                })}
+                                                                type="text"
+                                                                className="w-full p-2 border rounded-lg"
+                                                                placeholder=""
+                                                            />
+                                                            {addressForm?.formState?.errors?.district && (
+                                                                <p style={{ color: 'red' }}>
+                                                                    {addressForm?.formState?.errors?.district.message}
+                                                                </p>
+                                                            )}
+                                                        </Col>
+                                                        <Col span={12}>
+                                                            <label className="block text-gray-700">Thành phố</label>
+                                                            <input
+                                                                {...addressForm.register('city', {
+                                                                    required: true ? `Trường này là bắt buộc` : '',
+                                                                })}
+                                                                type="text"
+                                                                className="w-full p-2 border rounded-lg"
+                                                                placeholder=""
+                                                            />
+                                                            {addressForm?.formState?.errors?.city && (
+                                                                <p style={{ color: 'red' }}>
+                                                                    {addressForm?.formState?.errors?.city.message}
+                                                                </p>
+                                                            )}
+                                                        </Col>
+                                                    </>
+                                                )}
+                                            </Row>
+                                        </form>
+                                    </FormProvider>
+                                </Card>
+                            )}
+                            {user && dataUserDetail?.user?.address.length === 0 && (
+                                <Card title="Thêm thông tin địa chỉ" className="mb-6">
+                                    <FormProvider {...addressForm}>
+                                        <form onSubmit={addressForm.handleSubmit(onSubmitOrder)}>
+                                            <Row gutter={[24, 24]} align="top">
                                                 {!addressLocal && (
                                                     <>
                                                         <Col span={12}>
