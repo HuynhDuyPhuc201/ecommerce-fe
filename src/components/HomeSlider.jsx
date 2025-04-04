@@ -8,7 +8,7 @@ const HomeSlider = ({ arrImg }) => {
         speed: 500,
         slidesToShow: 1,
         slidesToScroll: 1,
-        autoplay: true,
+        // autoplay: true,
         autoplaySpeed: 1000,
         arrows: false, // Ẩn nút prev/next
     };

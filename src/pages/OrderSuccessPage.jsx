@@ -2,7 +2,6 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button, Col } from 'antd';
 import { path } from '~/config/path';
-import useOrderStore from '~/store/useOrderStore';
 import { getUser } from '~/core/token';
 
 const OrderSuccessPage = () => {
@@ -16,7 +15,7 @@ const OrderSuccessPage = () => {
                     {/* <img src={successImage} alt="Success" className="w-24 mx-auto mb-4" /> */}
                     <p className="text-[25px] font-bold  text-green-600">Đặt hàng thành công!</p>
                     <p className="text-[#333] mt-2">
-                        Cảm ơn bạn đã mua sắm tại cửa hàng của chúng tôi. {!user && 'Theo dõi dơn hàng qua Email.'}{' '}
+                        Cảm ơn bạn đã mua sắm tại cửa hàng của chúng tôi. {!user && 'Theo dõi dơn hàng qua Email.'}{' '}<br/>
                         {user ? (
                             <Link to={path.Account.MyOrder} style={{ textDecoration: 'underline' }}>
                                 Xem đơn hàng
@@ -27,13 +26,15 @@ const OrderSuccessPage = () => {
                             </a>
                         )}
                     </p>
+                    <div className="w-[50%] mx-auto mt-4">
                     <Button
                         type="primary"
-                        className="mt-4 w-full bg-blue-500 hover:bg-blue-600"
+                        className="mt-4 w-full bg-blue-500 hover:bg-blue-600 text-[16px]"
                         onClick={() => navigate(path.Home)}
                     >
                         Quay về trang chủ
                     </Button>
+                    </div>
                 </div>
             </div>
         </Col>

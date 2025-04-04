@@ -1,8 +1,8 @@
 import { Button, Col, InputNumber, message, Modal, Row, Table } from 'antd';
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { cart_empty } from '~/constants/images';
 import { formatNumber } from '~/core';
-import { getAddress, getCart, getUser, setAddress, setCart } from '~/core/token';
+import { getAddress, getUser, setAddress, setCart } from '~/core/token';
 import { cartService } from '~/services/cart.service';
 import AddressModal from '~/components/Address/AddressModal';
 import useGetUserDetail from '~/hooks/useGetUserDetail';
@@ -10,10 +10,11 @@ import useGetCart from '~/hooks/useGetCart';
 import { useNavigate } from 'react-router-dom';
 import { path } from '~/config/path';
 import useOrderStore from '~/store/useOrderStore';
-import { FormProvider, useForm } from 'react-hook-form';
-import './CartPage.css';
+import { useForm } from 'react-hook-form';
 import { useLocalStore } from '~/store/useLocalStore';
 import UpdateAddressForm from '~/components/Form/UpdateAddressForm';
+import './CartPage.css';
+import BreadcrumbComponent from '~/components/Breadcrumb';
 
 const CartPage = () => {
     const user = getUser();
@@ -25,7 +26,7 @@ const CartPage = () => {
     const { refetch: refetchCart, data: dataCart } = useGetCart();
     const { setCheckoutInfo } = useOrderStore();
     const navigate = useNavigate();
-    const addressForm = useForm();
+    const addressForm = useForm({ mode: 'onChange' });
 
     const address = useMemo(() => {
         return dataUserDetail?.user?.address.find((item) => item?.defaultAddress) || dataUserDetail?.user.address[0];
@@ -158,6 +159,7 @@ const CartPage = () => {
             totalProduct: user ? dataCart.totalProduct : cartLocal.totalProduct,
             subTotal: selectedTotal,
             shippingAddress: chooseAddress,
+            page: 'cart' // dùng để kiểm tra cho breadcrumb
         };
         navigate(path.Payment, { state: form });
     }, [addressString, idCheckbox, dataCart, user, address, setCheckoutInfo]);
@@ -206,9 +208,10 @@ const CartPage = () => {
 
     return (
         <div className="container pt-16">
+            <BreadcrumbComponent arrayItem={[{ text: 'Giỏ hàng'}]} />
             <Row span={(16, 16)} style={{ gap: '10px' }}>
                 <Col xs={24} sm={24} md={24}>
-                    <h1 className="text-[22px] uppercase pb-6">Giỏ hàng</h1>
+                    <h1 className="text-[22px] uppercase pb-6 mt-5">Giỏ hàng</h1>
                     {idCheckbox?.length > 0 && (
                         <Button style={{ marginBottom: '10px' }} onClick={handleDelete}>
                             Xóa

@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { Card, Button, message, Row, Col, Modal } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
 import { userService } from '~/services/user.service';
-import { FormProvider, useForm } from 'react-hook-form';
-import InputForm from '../InputForm';
+import {useForm } from 'react-hook-form';
 import useGetUserDetail from '~/hooks/useGetUserDetail';
 import UpdateAddressForm from '../Form/UpdateAddressForm';
 

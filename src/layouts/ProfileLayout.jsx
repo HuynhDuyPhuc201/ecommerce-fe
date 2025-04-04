@@ -1,11 +1,12 @@
 import { NavLink, Outlet } from 'react-router-dom';
 import { Row, Col } from 'antd';
+import BreadcrumbComponent from '~/components/Breadcrumb';
 
 function ProfileLayout() {
     return (
         <section className="pt-12 pb-12">
             <div className="container">
-                {/* Header */}
+                <BreadcrumbComponent arrayItem={[ { text: 'Tài khoản' }]} />
                 <div className="text-center mb-10">
                     <h3 className="text-3xl font-bold font-sans">Tài khoản của tôi</h3>
                 </div>

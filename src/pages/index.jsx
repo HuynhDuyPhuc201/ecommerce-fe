@@ -93,8 +93,12 @@ const Index = () => {
     }, []);
 
     return (
-        <div className="py-0 container my-20">
+        <>
+        
+        <div className="max-w-[1240px] w-full m-auto">
             <HomeSlider arrImg={arrImg} />
+        </div>
+        <div className="py-0 container my-20">
 
             {windowWidth > 500 && (
                 <div className="p-4 flex items-center justify-end font-[sans-serif]">
@@ -172,6 +176,9 @@ const Index = () => {
                 />
             </div>
         </div>
+        </>
+        
+
     );
 };
 

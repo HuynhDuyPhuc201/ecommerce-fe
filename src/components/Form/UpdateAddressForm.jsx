@@ -3,7 +3,7 @@ import { FormProvider } from 'react-hook-form';
 import InputForm from '../InputForm';
 import { Col, Row } from 'antd';
 
-function UpdateAddressForm(useForm, onSubmit) {
+function UpdateAddressForm({ useForm, onSubmit }) {
     return (
         <FormProvider {...useForm}>
             <form onSubmit={useForm.handleSubmit(onSubmit)}>
@@ -26,7 +26,7 @@ function UpdateAddressForm(useForm, onSubmit) {
                             label={'Quận / huyện'}
                         />
                     </Col>
-                    <Col span={12}>
+                    <Col span={24}>
                         <InputForm
                             error={useForm.formState.errors['city']}
                             placeholder="Nhập địa chỉ"

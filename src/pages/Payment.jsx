@@ -1,4 +1,4 @@
-import { Button, Card, Col, message, Radio, Row } from 'antd';
+import { Breadcrumb, Button, Card, Col, message, Radio, Row } from 'antd';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { cart_empty } from '~/constants/images';
@@ -13,6 +13,7 @@ import { productService } from '~/services/product.service';
 import { useLocalStore } from '~/store/useLocalStore';
 import { paymentMethods, shippingOptions } from '~/constants/dummyData';
 import InputForm from '~/components/InputForm';
+import BreadcrumbComponent from '~/components/Breadcrumb';
 
 const Payment = () => {
     const { state: checkoutInfo } = useLocation();
@@ -147,8 +148,20 @@ const Payment = () => {
         setShippingMethod(e.target.value);
     }, []);
 
+    const arrayBreadcrumb = useMemo(() => {
+        return [
+            { 
+                text: checkoutInfo?.page === 'cart' ? 'Giỏ hàng' : 'Chi tiết sản phẩm', 
+                href: checkoutInfo?.page === 'cart' ? 'cart' : `product-detail/${checkoutInfo?.idCate}/${checkoutInfo?.orderItems[0]?.productId}` 
+            },
+            { text: 'Thanh toán' },
+        ];
+    }, [checkoutInfo]);
+    
+
     return (
         <div className="container pt-16">
+            <BreadcrumbComponent arrayItem={arrayBreadcrumb} />
             <Row span={(16, 16)} style={{ gap: '10px' }}>
                 {dataCart?.listProduct?.length > 0 ||
                 cartLocal?.listProduct?.length > 0 ||

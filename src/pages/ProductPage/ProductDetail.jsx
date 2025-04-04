@@ -1,6 +1,6 @@
 import { Button, Col, InputNumber, message, Row, Typography } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import Slider from 'react-slick';
 import { ShoppingCartOutlined, StarFilled } from '@ant-design/icons';
 import ProductCard from '~/components/ProductCard';
@@ -12,9 +12,10 @@ import { cartService } from '~/services/cart.service';
 import useGetUserDetail from '~/hooks/useGetUserDetail';
 import useGetProductDetail from '~/hooks/useGetProductDetail';
 import useGetCart from '~/hooks/useGetCart';
-import './style.css';
 import { useLocalStore } from '~/store/useLocalStore';
 import { path } from '~/config/path';
+import BreadcrumbComponent from '~/components/Breadcrumb';
+import './style.css';
 
 const { Title, Text } = Typography;
 
@@ -148,14 +149,16 @@ const ProductDetail = () => {
             subTotal: cartItem.price * cartItem.quantity,
             totalProduct: 1,
             userId: user ? user?._id : null,
+            idCate
         };
-        navigate(path.Payment, { state: form });
+        navigate(path.Payment, { state: form  });
     }, [dataDetail, newTotalQuantity]);
 
     const productRecommand = dataProduct?.data.filter((item) => item._id !== id);
 
     return (
         <div className="container pt-10">
+            <BreadcrumbComponent arrayItem={[{ text: 'Chi tiết sản phẩm'}]} />
             <Row gutter={[10, 10]} style={{ alignItems: 'flex-start' }}>
                 <Col md={8} className="md:sticky top-0 pt-5">
                     <div className={`slider-container bg-[#fff] rounded-[8px] p-4 relative`}>

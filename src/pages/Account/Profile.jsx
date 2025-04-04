@@ -1,5 +1,5 @@
 import { Avatar, Button, Col, message, Row, Upload } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { getUser, setUser } from '~/core/token';
 import { EyeInvisibleOutlined, EyeOutlined, UploadOutlined, UserOutlined } from '@ant-design/icons';
@@ -9,6 +9,7 @@ import { useForm } from 'react-hook-form';
 import { path } from '~/config/path';
 import _ from 'lodash';
 import useGetUserDetail from '~/hooks/useGetUserDetail';
+import BreadcrumbComponent from '~/components/Breadcrumb';
 
 const Profile = () => {
     const user = getUser();

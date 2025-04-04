@@ -72,10 +72,8 @@ const Header = forwardRef((props, ref) => {
             <div className="bg-[#1A94FF] h-[70px]  flex items-center absolute z-11 w-full ">
                 <Row className="w-full container justify-between" style={{ alignItems: 'center' }}>
                     <Col span={windowWidth >= 1000 ? 4 : 8}>
-                        <Link to={path.Home}>
-                            <Typography style={{ color: '#fff', fontSize: '20px', fontFamily: 'sans-serif' }}>
+                        <Link to={path.Home} style={{ color: '#fff', fontSize: '20px', fontFamily: 'sans-serif' }}>
                                 My Shop
-                            </Typography>
                         </Link>
                     </Col>
                     <Col span={windowWidth >= 1000 ? 12 : 0}>
@@ -188,7 +186,7 @@ const Header = forwardRef((props, ref) => {
                                         </Dropdown>
                                     </div>
                                     <CaretDownOutlined
-                                        style={{ color: '#fff', cursor: 'pointer', padding: '5px 0 0 5px' }}
+                                        style={{ color: '#fff', cursor: 'pointer', padding: '2px 0 0 5px' }}
                                     />
                                 </div>
                                 {!user?.isAdmin && (
