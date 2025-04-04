@@ -8,7 +8,7 @@ const HomeSlider = ({ arrImg }) => {
         speed: 500,
         slidesToShow: 1,
         slidesToScroll: 1,
-        // autoplay: true,
+        autoplay: true,
         autoplaySpeed: 1000,
         arrows: false, // Ẩn nút prev/next
     };
@@ -23,7 +23,7 @@ const HomeSlider = ({ arrImg }) => {
                                 src={item}
                                 alt="slider"
                                 preview={false}
-                                className="w-full h-auto max-h-full object-cover "
+                                className="w-full max-h-full object-cover xs:h-[500px] sm:h-[500px] h-auto"
                             />
                         );
                     })}
