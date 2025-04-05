@@ -44,9 +44,9 @@ const Price = ({ priceObj }) => {
                     <span className="p-2 bg-slate-200 rounded-[10px]  ml-2">5.000.000</span>
                 </div>
 
-                <div className=" text-center text-xl font-semibold text-gray-800 cursor-pointer ">
-                    <span className="text-[16px]">Giá từ:</span>{' '}
-                    <span className="p-2 bg-slate-200 rounded-[10px] text-[16px]">
+                <div className=" text-center text-xl  text-gray-800 ">
+                    <span className="text-[14px]">Giá từ:</span>{' '}
+                    <span className="p-2   text-[14px]">
                         {`0 - ${formatNumber(Number(priceValue))}`} VND
                     </span>
                 </div>
