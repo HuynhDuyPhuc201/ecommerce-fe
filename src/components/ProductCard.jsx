@@ -49,6 +49,7 @@ const ProductCard = ({ item }) => {
                     name: item.name,
                     price: item.price,
                     image: item.image?.[0]?.thumbUrl,
+                    quantity:1
                 },
             ],
             shippingAddress: address,

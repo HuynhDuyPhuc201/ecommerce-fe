@@ -158,7 +158,6 @@ const Payment = () => {
         ];
     }, [checkoutInfo]);
     
-
     return (
         <div className="container pt-16">
             <BreadcrumbComponent arrayItem={arrayBreadcrumb} />
