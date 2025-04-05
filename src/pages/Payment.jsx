@@ -1,29 +1,33 @@
-import { Breadcrumb, Button, Card, Col, message, Radio, Row } from 'antd';
+import {Col, message, Row } from 'antd';
 import React, { useCallback, useMemo, useState } from 'react';
-import { useForm, FormProvider } from 'react-hook-form';
-import { cart_empty } from '~/constants/images';
-import { formatNumber } from '~/core';
+import { useForm } from 'react-hook-form';
 import { getAddress, getUser, setCart } from '~/core/token';
 import useGetUserDetail from '~/hooks/useGetUserDetail';
 import useGetCart from '~/hooks/useGetCart';
-import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { path } from '~/config/path';
 import { orderService } from '~/services/order.service';
 import { productService } from '~/services/product.service';
 import { useLocalStore } from '~/store/useLocalStore';
 import { paymentMethods, shippingOptions } from '~/constants/dummyData';
-import InputForm from '~/components/InputForm';
 import BreadcrumbComponent from '~/components/Breadcrumb';
+import CustomerInformation from '~/components/checkout/CustomerInformation';
+import OrderInformation from '~/components/checkout/OrderInformation';
+import NewAddressForm from '~/components/Address/NewAddressForm';
+import PaymentMethodCard from '~/components/checkout/PaymentMethodCard';
+import ShippingMethodCard from '~/components/checkout/ShippingMethodCard';
+import AddressDisplay from '~/components/checkout/AddressDisplay';
+import OrderSummary from '~/components/checkout/OrderSummary';
 
 const Payment = () => {
-    const { state: checkoutInfo } = useLocation();
-    const navigate = useNavigate();
-    const { data: dataUserDetail } = useGetUserDetail();
     const user = getUser();
-    const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
+    const { state: checkoutInfo } = useLocation();
+    const { data: dataUserDetail } = useGetUserDetail();
     const { setCartLocal, cartLocal } = useLocalStore();
-    const addressLocal = getAddress();
     const { refetch: refetchCart, data: dataCart } = useGetCart();
+    const addressLocal = getAddress();
+    const [loading, setLoading] = useState(false);
     const [discountCode, setDiscountCode] = useState({
         code: '',
         discountAmount: 0,
@@ -102,7 +106,6 @@ const Payment = () => {
             } else {
                 message.error(result.message);
             }
-
             if (!result.success) return message.error(result.message);
         } catch (error) {
             if (error) {
@@ -150,375 +153,79 @@ const Payment = () => {
 
     const arrayBreadcrumb = useMemo(() => {
         return [
-            { 
-                text: checkoutInfo?.page === 'cart' ? 'Giỏ hàng' : 'Chi tiết sản phẩm', 
-                href: checkoutInfo?.page === 'cart' ? 'cart' : `product-detail/${checkoutInfo?.idCate}/${checkoutInfo?.orderItems[0]?.productId}` 
+            {
+                text: checkoutInfo?.page === 'cart' ? 'Giỏ hàng' : 'Chi tiết sản phẩm',
+                href:
+                    checkoutInfo?.page === 'cart'
+                        ? 'cart'
+                        : `product-detail/${checkoutInfo?.idCate}/${checkoutInfo?.orderItems[0]?.productId}`,
             },
             { text: 'Thanh toán' },
         ];
     }, [checkoutInfo]);
-    
+
+    const isCartEmpty = 
+    !dataCart?.listProduct?.length && 
+    !cartLocal?.listProduct?.length && 
+    !Object.keys(checkoutInfo || {}).length;
+
     return (
         <div className="container pt-16">
             <BreadcrumbComponent arrayItem={arrayBreadcrumb} />
             <Row span={(16, 16)} style={{ gap: '10px' }}>
-                {dataCart?.listProduct?.length > 0 ||
-                cartLocal?.listProduct?.length > 0 ||
-                Object.keys(checkoutInfo || []).length > 0 ||
-                [] ? (
+                {!isCartEmpty ? (
                     <>
                         <Col xs={24} sm={24} md={15}>
-                            <Card title="Thông tin đơn hàng" className="mb-6">
-                                <div>
-                                    <p>
-                                        <strong>Số lượng sản phẩm:</strong> {checkoutInfo?.totalProduct || `1`}
-                                    </p>
-                                    <p>
-                                        <strong>Tổng tiền:</strong>{' '}
-                                        {/* nếu bấm mua ngay thì totalProduct bằng giá chính nó * số lượng */}
-                                        {formatNumber(
-                                            checkoutInfo?.subTotal || checkoutInfo?.price * checkoutInfo?.quantity || 0,
-                                        )}
-                                        đ
-                                    </p>
-                                    <p className="mt-3">
-                                        <strong>Sản phẩm:</strong>
-                                    </p>
-                                    {/* 1 sản phẩm cho mua ngay */}
-                                    {/*  bấm mua ngay thì mới hiện */}
-                                    {/* kiểm tra đại các key có hay không mới cho render ra */}
-                                    {checkoutInfo.name && (
-                                        <ul className="pt-5">
-                                            <li style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-                                                <img
-                                                    src={checkoutInfo?.image}
-                                                    alt="Product"
-                                                    style={{ width: '70px', height: '70px', marginRight: '10px' }}
-                                                />
-                                                <div>
-                                                    <p>{checkoutInfo?.name}</p>
-                                                    <p>
-                                                        {formatNumber(checkoutInfo?.price || 0)} x{' '}
-                                                        {checkoutInfo?.quantity || 0}
-                                                    </p>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    )}
-                                    <ul className="pt-5">
-                                        {checkoutInfo?.orderItems?.map((item, index) => (
-                                            <li
-                                                key={index}
-                                                style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}
-                                            >
-                                                <img
-                                                    src={item?.image}
-                                                    alt="Product"
-                                                    style={{ width: '70px', height: '70px', marginRight: '10px' }}
-                                                />
-                                                <div>
-                                                    <p>{item?.name}</p>
-                                                    <p>
-                                                        {formatNumber(item?.price || 0)} x {item?.quantity || 0}
-                                                    </p>
-                                                </div>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            </Card>
+                            <OrderInformation checkoutInfo={checkoutInfo} />
                             {!user && (
-                                <Card title="Thông tin khách hàng" className="mb-6">
-                                    <FormProvider {...addressForm}>
-                                        <form onSubmit={addressForm.handleSubmit(onSubmitOrder)}>
-                                            <Row gutter={[24, 24]} align="top">
-                                                <Col span={12}>
-                                                    <label className="block text-gray-700">Họ tên</label>
-                                                    <input
-                                                        {...addressForm.register('name', {
-                                                            required: true ? 'Trường này là bắt buộc' : '',
-                                                        })}
-                                                        type="text"
-                                                        className="w-full p-2 border rounded-lg"
-                                                        placeholder=""
-                                                    />
-                                                    {addressForm?.formState?.errors?.name && (
-                                                        <p style={{ color: 'red' }}>
-                                                            {addressForm?.formState?.errors?.name.message}
-                                                        </p>
-                                                    )}
-                                                </Col>
-                                                <Col span={12}>
-                                                    <label className="block text-gray-700">Email</label>
-                                                    <input
-                                                        {...addressForm.register('email', {
-                                                            required: true ? 'Trường này là bắt buộc' : '',
-                                                        })}
-                                                        type="text"
-                                                        className="w-full p-2 border rounded-lg"
-                                                        placeholder=""
-                                                    />
-                                                    {addressForm?.formState?.errors?.email && (
-                                                        <p style={{ color: 'red' }}>
-                                                            {addressForm?.formState?.errors?.email.message}
-                                                        </p>
-                                                    )}
-                                                </Col>
-                                                <Col span={!checkoutInfo?.shippingAddress ? 12 : 24}>
-                                                    <label className="block text-gray-700">Số điện thoại</label>
-                                                    <input
-                                                        {...addressForm.register('phone', {
-                                                            required: true ? 'Trường này là bắt buộc' : '',
-                                                        })}
-                                                        type="text"
-                                                        className="w-full p-2 border rounded-lg"
-                                                        placeholder=""
-                                                    />
-                                                    {addressForm?.formState?.errors?.phone && (
-                                                        <p style={{ color: 'red' }}>
-                                                            {addressForm?.formState?.errors?.phone.message}
-                                                        </p>
-                                                    )}
-                                                </Col>
-                                                {!addressLocal && (
-                                                    <>
-                                                        <Col span={12}>
-                                                            <label className="block text-gray-700">Số nhà</label>
-                                                            <input
-                                                                {...addressForm.register('houseNumber', {
-                                                                    required: true ? 'Trường này là bắt buộc' : '',
-                                                                })}
-                                                                type="text"
-                                                                className="w-full p-2 border rounded-lg"
-                                                                placeholder=""
-                                                            />
-                                                            {addressForm?.formState?.errors?.houseNumber && (
-                                                                <p style={{ color: 'red' }}>
-                                                                    {
-                                                                        addressForm?.formState?.errors?.houseNumber
-                                                                            .message
-                                                                    }
-                                                                </p>
-                                                            )}
-                                                        </Col>
-                                                        <Col span={12}>
-                                                            <label className="block text-gray-700">Quận / huyện</label>
-                                                            <input
-                                                                {...addressForm.register('district', {
-                                                                    required: true ? `Trường này là bắt buộc` : '',
-                                                                })}
-                                                                type="text"
-                                                                className="w-full p-2 border rounded-lg"
-                                                                placeholder=""
-                                                            />
-                                                            {addressForm?.formState?.errors?.district && (
-                                                                <p style={{ color: 'red' }}>
-                                                                    {addressForm?.formState?.errors?.district.message}
-                                                                </p>
-                                                            )}
-                                                        </Col>
-                                                        <Col span={12}>
-                                                            <label className="block text-gray-700">Thành phố</label>
-                                                            <input
-                                                                {...addressForm.register('city', {
-                                                                    required: true ? `Trường này là bắt buộc` : '',
-                                                                })}
-                                                                type="text"
-                                                                className="w-full p-2 border rounded-lg"
-                                                                placeholder=""
-                                                            />
-                                                            {addressForm?.formState?.errors?.city && (
-                                                                <p style={{ color: 'red' }}>
-                                                                    {addressForm?.formState?.errors?.city.message}
-                                                                </p>
-                                                            )}
-                                                        </Col>
-                                                    </>
-                                                )}
-                                            </Row>
-                                        </form>
-                                    </FormProvider>
-                                </Card>
+                                <CustomerInformation
+                                    addressForm={addressForm}
+                                    onSubmitOrder={onSubmitOrder}
+                                    user={user}
+                                    addressLocal={addressLocal}
+                                />
                             )}
                             {user && dataUserDetail?.user?.address.length === 0 && (
-                                <Card title="Thêm thông tin địa chỉ" className="mb-6">
-                                    <FormProvider {...addressForm}>
-                                        <form onSubmit={addressForm.handleSubmit(onSubmitOrder)}>
-                                            <Row gutter={[24, 24]} align="top">
-                                                {!addressLocal && (
-                                                    <>
-                                                        <Col span={12}>
-                                                            <InputForm
-                                                                error={addressForm.formState.errors['houseNumber']}
-                                                                placeholder=""
-                                                                name="houseNumber"
-                                                                required={false}
-                                                                label={'Số nhà'}
-                                                            />
-                                                        </Col>
-                                                        <Col span={12}>
-                                                            <InputForm
-                                                                error={addressForm.formState.errors['district']}
-                                                                placeholder=""
-                                                                name="district"
-                                                                required={false}
-                                                                label={'Quận / huyện'}
-                                                            />
-                                                        </Col>
-                                                        <Col span={12}>
-                                                            <InputForm
-                                                                error={addressForm.formState.errors['city']}
-                                                                placeholder="Nhập địa chỉ"
-                                                                name="city"
-                                                                required={false}
-                                                                label={'Thành phố'}
-                                                            />
-                                                        </Col>
-                                                    </>
-                                                )}
-                                            </Row>
-                                        </form>
-                                    </FormProvider>
-                                </Card>
+                                <NewAddressForm
+                                    addressForm={addressForm}
+                                    onSubmitOrder={onSubmitOrder}
+                                    addressLocal={addressLocal}
+                                    user={user}
+                                    dataUserDetail={dataUserDetail}
+                                />
                             )}
-                            <Card title="Phương thức thanh toán" className="mb-6">
-                                <Radio.Group
-                                    onChange={(e) => setSelectedPayment(e.target.value)}
-                                    value={selectedPayment}
-                                >
-                                    {paymentMethods?.map((method) => (
-                                        <div key={method.id} style={{ marginBottom: 10 }}>
-                                            <Radio value={method.label}>
-                                                {method.icon} {method.label}
-                                            </Radio>
-                                        </div>
-                                    ))}
-                                </Radio.Group>
-                            </Card>
-
-                            <Card title="Phương thức giao hàng" className="mb-6">
-                                <Radio.Group
-                                    onChange={handleShippingMethod}
-                                    value={shippingMethod}
-                                    style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}
-                                >
-                                    {shippingOptions?.map((option) => (
-                                        <Radio key={option.value} value={option.value}>
-                                            {option.label} - {formatNumber(option.price || 0)}đ
-                                        </Radio>
-                                    ))}
-                                </Radio.Group>
-                            </Card>
+                            <PaymentMethodCard
+                                paymentMethods={paymentMethods}
+                                selectedPayment={selectedPayment}
+                                setSelectedPayment={setSelectedPayment}
+                            />
+                            <ShippingMethodCard
+                                shippingOptions={shippingOptions}
+                                shippingMethod={shippingMethod}
+                                handleShippingMethod={handleShippingMethod}
+                            />
                         </Col>
                         <Col sm={24} xs={24} md={7}>
-                            {addressLocal && (
-                                <div className="category bg-[#fff] rounded-[8px]   p-4 w-full my-2">
-                                    <div className="flex justify-between">
-                                        <p className=" text-[#333]  mb-5">Giao tới</p>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span>{addressString || 'Chưa cập nhật địa chỉ'}</span>{' '}
-                                        {!addressString && user && (
-                                            <Link
-                                                to={path.Account.Address}
-                                                style={{ textDecoration: 'underline', color: '#1A94FF' }}
-                                            >
-                                                Cập nhật
-                                            </Link>
-                                        )}
-                                    </div>
-                                </div>
-                            )}
+                            {addressLocal && <AddressDisplay addressString={addressString} user={user} path={path} />}
                             <Col sm={24} xs={24} md={24}>
-                                <div className="p-4 bg-white rounded-lg shadow-md ">
-                                    <div className="flex justify-between">
-                                        <p className=" text-[#333] mb-5">Đơn hàng</p>
-                                        <Link className=" text-[#5351c7]  mb-5" to={path.Cart}>
-                                            Đổi
-                                        </Link>
-                                    </div>
-                                    <div className="flex justify-between text-gray-700">
-                                        <span>Tạm tính</span>
-                                        <span>
-                                            {formatNumber(
-                                                checkoutInfo?.subTotal ||
-                                                    checkoutInfo?.price * checkoutInfo?.quantity ||
-                                                    0,
-                                            )}
-                                            đ
-                                        </span>
-                                    </div>
-                                    <div className="flex justify-between text-gray-700 mt-2">
-                                        <span>Phí vận chuyển</span>
-                                        <span>{formatNumber(shippingFee || 0)}đ</span>
-                                    </div>
-
-                                    {discountCode.discountAmount > 0 && (
-                                        <div className="flex justify-between text-gray-700 mt-2">
-                                            <span>Mã giảm giá</span>
-                                            <span className="text-[red]">
-                                                -{formatNumber(discountCode.discountAmount || 0)}đ
-                                                <Button
-                                                    style={{ width: '10px', fontSize: '10px', marginLeft: '10px' }}
-                                                    onClick={handleCloseDiscount}
-                                                >
-                                                    X
-                                                </Button>
-                                            </span>
-                                        </div>
-                                    )}
-                                    <div className="flex justify-between text-gray-700 mt-2">
-                                        <span>Giảm giá</span>
-                                        <input
-                                            type="text"
-                                            onChange={(e) =>
-                                                setDiscountCode({
-                                                    code: e.target.value,
-                                                    discountAmount: discountCode.discountAmount,
-                                                })
-                                            }
-                                            value={discountCode.code}
-                                            placeholder="GIAM30, GIAM10"
-                                            className="text-[13px] w-[60%] outline-none border-r-none border-l-none border-t-none border-b-[2px]"
-                                        />
-                                    </div>
-                                    <div className="flex justify-between font-bold mt-4">
-                                        <span>Tổng tiền thanh toán</span>
-                                        <span>{formatNumber(newSubTotal || 0)}đ</span>
-                                    </div>
-                                    <p className="text-sm text-gray-500">(Đã bao gồm VAT nếu có)</p>
-                                    {discountCode.code ? (
-                                        <button
-                                            className="mt-4 w-full bg-red-500 text-white py-2 rounded-lg font-semibold hover:bg-red-600"
-                                            onClick={handleDiscount}
-                                        >
-                                            Áp dụng
-                                        </button>
-                                    ) : (
-                                        <button
-                                            className={`mt-4 w-full bg-red-500 text-white py-2 rounded-lg font-semibold hover:bg-red-600 ${
-                                                loading ? ' opacity-50' : 'opacity-100'
-                                            }`}
-                                            onClick={addressForm.handleSubmit(onSubmitOrder)}
-                                            disabled={loading}
-                                        >
-                                            Đặt hàng (
-                                            {checkoutInfo?.orderItems?.length || (checkoutInfo?.name && 1) || 0})
-                                        </button>
-                                    )}
-                                </div>
+                                <OrderSummary
+                                    checkoutInfo={checkoutInfo}
+                                    path={path}
+                                    shippingFee={shippingFee}
+                                    discountCode={discountCode}
+                                    newSubTotal={newSubTotal}
+                                    loading={loading}
+                                    setDiscountCode={setDiscountCode}
+                                    handleCloseDiscount={handleCloseDiscount}
+                                    handleDiscount={handleDiscount}
+                                    onSubmitOrder={onSubmitOrder}
+                                    addressForm={addressForm}
+                                />
                             </Col>
                         </Col>
                     </>
                 ) : (
-                    <Col sm={24} md={24}>
-                        <div className="flex flex-col justify-center items-center p-4 bg-white rounded-lg shadow-md">
-                            <div className="">
-                                <img src={cart_empty} alt="" className="w-[150px]" />
-                            </div>
-                            <p>Giỏ hàng trống</p>
-                        </div>
-                    </Col>
+                    <EmptyCart />
                 )}
             </Row>
         </div>

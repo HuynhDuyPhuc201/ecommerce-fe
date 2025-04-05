@@ -149,18 +149,18 @@ const ProductDetail = () => {
             subTotal: cartItem.price * cartItem.quantity,
             totalProduct: 1,
             userId: user ? user?._id : null,
-            idCate
+            idCate,
         };
-        navigate(path.Payment, { state: form  });
+        navigate(path.Payment, { state: form });
     }, [dataDetail, newTotalQuantity]);
 
     const productRecommand = dataProduct?.data.filter((item) => item._id !== id);
 
     return (
         <div className="container pt-10">
-            <BreadcrumbComponent arrayItem={[{ text: 'Chi tiết sản phẩm'}]} />
+            <BreadcrumbComponent arrayItem={[{ text: 'Chi tiết sản phẩm' }]} />
             <Row gutter={[10, 10]} style={{ alignItems: 'flex-start' }}>
-                <Col md={8} className="md:sticky top-0 pt-5">
+                <Col md={8} className="md:sticky top-0 pt-5 relative">
                     <div className={`slider-container bg-[#fff] rounded-[8px] p-4 relative`}>
                         <Slider {...settings}>
                             {dataDetail?.image?.map((item, i) => (
@@ -181,29 +181,45 @@ const ProductDetail = () => {
                                 </span>
                             </div>
                         )}
+                         {discount > 0 && (
+                        <div className="absolute left-2 top-2 rounded-md bg-red-500 px-2 py-1 text-lg font-bold text-white">
+                            -{discount.toFixed(0) || 0}%
+                        </div>
+                    )}
                     </div>
                 </Col>
 
                 <Col md={10} className="pt-5">
                     <div className="des bg-[#fff] rounded-[8px] p-6 mb-4">
-                        <div className="">
+                        <div className="text-[20px] font-bold">
                             <span className="font-bold">{dataDetail?.name || ''}</span>
                         </div>
-                        <div className="pt-4">
-                            <span className="pr-2">{dataDetail?.rating || 0}</span>
-                            <StarFilled style={{ color: '#ffff19' }} /> |{' '}
-                            <span className="text-[13px] text-[#888]">đã bán 125</span>
+                        <div className="pt-10 flex items-center">
+                           <span className="pr-2">{dataDetail?.rating || 0}</span>
+                           {[...Array(5)].map((_, i) => (
+                                <svg
+                                    key={i}
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    fill="currentColor"
+                                    className={`h-6 w-6 text-[#ffff19] ${i < Math.floor(dataDetail.rating) ? 'opacity-100' : 'opacity-30'}`}
+                                >
+                                    <path
+                                        fillRule="evenodd"
+                                        d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z"
+                                        clipRule="evenodd"
+                                    />
+                                </svg>
+                            ))}
+                            <span className="text-[13px] text-[#888]">| đã bán 125</span>
                             <span className="text-[13px] text-[#888] pl-5">kho: {dataDetail?.countInstock}</span>
                         </div>
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center  pt-3">
                             <p className="text-[20px] text-[#fc3434] font-bold mt-3 ">
                                 {formatNumber(dataDetail?.price || 0)}
                             </p>
-                            <div className="sale mt-2">
-                                <span className="p-1 bg-slate-200 rounded-[10px] text-[10px]">
-                                    -{discount.toFixed() || 0}%
-                                </span>
-                                <span className="price-sale line-through pl-5 text-[gray] text-[10px]">
+                            <div className="sale mt-3">
+                                <span className="price-sale line-through pl-5 text-[gray] text-[14px]">
                                     {formatNumber(dataDetail?.price_old || 0)}
                                 </span>
                             </div>

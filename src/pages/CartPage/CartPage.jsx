@@ -15,6 +15,7 @@ import { useLocalStore } from '~/store/useLocalStore';
 import UpdateAddressForm from '~/components/Form/UpdateAddressForm';
 import './CartPage.css';
 import BreadcrumbComponent from '~/components/Breadcrumb';
+import EmptyCart from '~/components/cart/EmptyCart';
 
 const CartPage = () => {
     const user = getUser();
@@ -272,14 +273,7 @@ const CartPage = () => {
                         </Col>
                     </>
                 ) : (
-                    <Col xs={24} sm={24} md={24}>
-                        <div className="flex flex-col justify-center items-center p-4 bg-white rounded-lg shadow-md">
-                            <div className="">
-                                <img src={cart_empty} alt="" className="lg:w-[150px] w-[100px]" />
-                            </div>
-                            <p>Giỏ hàng trống</p>
-                        </div>
-                    </Col>
+                    <EmptyCart/>
                 )}
             </Row>
 
