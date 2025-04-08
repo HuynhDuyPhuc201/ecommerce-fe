@@ -6,9 +6,10 @@ import { useQuery } from '@tanstack/react-query';
 import { productService } from '~/services/product.service';
 import { ModalButton } from './component/ModalButton';
 import { ModalForm } from './component/ModalForm';
-import { validImageTypes } from '~/core';
+import { formatNumber, validImageTypes } from '~/core';
 import { adminService } from '~/services/admin.service';
 import { checkImg } from '~/utils/checkImg';
+import TextArea from 'antd/es/input/TextArea';
 const AdminProduct = () => {
     const [state, setState] = useState({
         type: 'product',
