@@ -211,7 +211,7 @@ const ProductDetailModal = ({ open, product, onClose }) => {
                                 size="large"
                                 icon={<ShoppingCartOutlined />}
                                 className="flex-1"
-                                disabled={user?.isAdmin || isLoading || product?.countInstock === 0}
+                                disabled={user?.isAdmin || product?.countInstock === 0}
                                 style={{ background: '#1677ff' }}
                                 onClick={handleAddCart}
                             >

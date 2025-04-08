@@ -114,7 +114,7 @@ const ProductCard = ({ item }) => {
                             className={`rounded-full px-4 !bg-[#fff] !text-[#000] shadow-lg text-[13px] ${
                                 !item.countInstock ? 'opacity-50' : 'opacity-100'
                             }`}
-                            disabled={user?.isAdmin || isLoading || !item.countInstock}
+                            disabled={user?.isAdmin || !item.countInstock}
                             onClick={handleBuyNow}
                         >
                             <ShoppingCart className="h-6 w-6" />
