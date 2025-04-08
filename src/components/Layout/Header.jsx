@@ -117,7 +117,7 @@ const Header = forwardRef((props, ref) => {
                                                 <h4 style={{ margin: 0, fontSize: '16px', color: '#333' }}>
                                                     {item.name}
                                                 </h4>
-                                                <p
+                                                {/* <p
                                                     style={{
                                                         margin: 0,
                                                         fontSize: '14px',
@@ -129,7 +129,7 @@ const Header = forwardRef((props, ref) => {
                                                     }}
                                                 >
                                                     Mô tả: {item.description}
-                                                </p>
+                                                </p> */}
                                             </div>
 
                                             {/* Giá sản phẩm */}

@@ -1,7 +1,7 @@
 import { Button, Card, Carousel } from 'antd';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StarFilled, EyeOutlined, ShoppingCartOutlined } from '@ant-design/icons';
-import { generatePath, Link, useNavigate } from 'react-router-dom';
+import { generatePath, Link, useLocation, useNavigate } from 'react-router-dom';
 import { path } from '~/config/path';
 import { formatNumber } from '~/core';
 import { Eye, ShoppingCart } from 'lucide-react';
@@ -10,6 +10,7 @@ import useGetUserDetail from '~/hooks/useGetUserDetail';
 import ProductDetailModal from './ProductDetailModal';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import { checkImg } from '~/utils/checkImg';
+import { handleScrollTop } from '~/hooks/useScrollTop';
 
 const ProductCard = ({ item }) => {
     const navigate = useNavigate();
@@ -22,9 +23,7 @@ const ProductCard = ({ item }) => {
         [item.price, item.price_old],
     );
 
-    const handleScrollTop = useCallback(() => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, []);
+    const handleClickItem = () => handleScrollTop()
 
     const handleViewClick = (e) => {
         e.preventDefault();
@@ -42,6 +41,7 @@ const ProductCard = ({ item }) => {
 
     let address = dataUser?.user?.address.find((item) => item?.defaultAddress) || dataUser?.user.address[0];
     const handleBuyNow = useCallback(async () => {
+        handleClickItem()
         if (!user) removeAddress();
         const form = {
             orderItems: [
@@ -114,7 +114,7 @@ const ProductCard = ({ item }) => {
                             className={`rounded-full px-4 !bg-[#fff] !text-[#000] shadow-lg text-[13px] ${
                                 !item.countInstock ? 'opacity-50' : 'opacity-100'
                             }`}
-                            disabled={!item.countInstock}
+                            disabled={user?.isAdmin || isLoading || !item.countInstock}
                             onClick={handleBuyNow}
                         >
                             <ShoppingCart className="h-6 w-6" />
@@ -132,7 +132,7 @@ const ProductCard = ({ item }) => {
 
                 <div className="p-4">
                     {/* Product name */}
-                    <Link to={pathURL} onClick={handleScrollTop}>
+                    <Link to={pathURL} onClick={handleClickItem}>
                         <h3 className="mb-1 line-clamp-2 text-[14px] h-[40px] font-medium" title={item.name}>
                             {item.name}
                         </h3>
