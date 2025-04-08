@@ -137,19 +137,21 @@ const AdminProduct = () => {
 
         try {
             let formData = new FormData();
-            if(state.modalConfig.type === 'product'){
-                // Append các field không phải image
-                for (const key in form) {
-                    if (key !== 'image') {
-                        formData.append(key, form[key]);
-                    }
+
+            // Append các field không phải image
+            for (const key in form) {
+                if (key !== 'image') {
+                    formData.append(key, form[key]);
                 }
-    
-                // Xử lý ảnh bị xoá
-                if (state.removedImages?.length > 0) {
-                    formData.append('removedImages', JSON.stringify(state.removedImages));
-                }
-    
+            }
+
+            // Xử lý ảnh bị xoá
+            if (state.removedImages?.length > 0) {
+                formData.append('removedImages', JSON.stringify(state.removedImages));
+            }
+
+          
+            if (state.modalConfig.type === 'product') {
                 // Ảnh mới
                 state.listImage.forEach((file) => {
                     if (file.originFileObj) {
@@ -160,20 +162,28 @@ const AdminProduct = () => {
                 const unchangedImages = state.listImage
                     .filter((file) => !file.originFileObj && file.url)
                     .map((file) => file.url);
-    
-                formData.append('unchangedImages', JSON.stringify(unchangedImages));
-            }
-         
-            const service = state.modalConfig.type === 'product'
-            ? state.modalConfig.action === 'update'
-                ?  adminService.updateProduct 
-                :  adminService.createProduct
-            :  adminService.createCategory
-          
-            const result = await service(state.modalConfig.type === 'product' ? (formData, {
-                headers: { 'Content-Type': 'multipart/form-data' },
-            }) : form);
 
+                formData.append('unchangedImages', JSON.stringify(unchangedImages));
+                
+                
+            }
+
+            let result;
+            const service = state.modalConfig.type === 'product'
+                ? state.modalConfig.action === 'update'
+                    ? adminService.updateProduct
+                    : adminService.createProduct
+                : adminService.createCategory;
+
+            if(state.modalConfig.type === 'product'){
+                result = await service(formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' },
+                });
+            }else{
+                result = await service(form);
+            }
+            
+      
             if (result.success) {
                 message.success(result.message);
                 state.modalConfig.type === 'product' ? refetchProduct() : refetchCategory();
@@ -189,7 +199,7 @@ const AdminProduct = () => {
                 message.error(result.message || 'Có lỗi xảy ra');
             }
         } catch (error) {
-            console.error(error)
+            console.error(error);
             message.error(error.response?.data?.message || 'Lỗi không xác định');
         } finally {
             setIsLoading(false);
@@ -345,8 +355,8 @@ const AdminProduct = () => {
                     pageSize: 5, // Số sản phẩm mỗi trang như BE trả
                     total: state.type === 'product' ? dataProduct?.total : dataCategory.length,
                     onChange: (page) => {
-                      // Cập nhật currentPage và refetch data nếu cần
-                      setState(prevState => ({ ...prevState, currentPage: page }));
+                        // Cập nhật currentPage và refetch data nếu cần
+                        setState((prevState) => ({ ...prevState, currentPage: page }));
                     },
                 }}
             />

@@ -97,7 +97,7 @@ const Footer = () => {
                   type="email" 
                   placeholder="Email của bạn" 
                   required
-                  style={{ color: "#fff"}}
+                  style={{ color: "#000" }}
                 />
                 <Button type="primary" htmlType="submit" style={{ width: "100%" }}>
                   Đăng ký

@@ -16,8 +16,8 @@ export const adminService = {
     },
 
     // category
-    createCategory(body) {
-        return api.post(`/product/create-category`, body);
+    createCategory(form, config = {}) {
+        return api.post(`/product/create-category`, form, config);
     },
     deleteCategory(ids) {
         return api.delete(`/product/delete-cateogry?${ids}`);
