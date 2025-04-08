@@ -14,14 +14,11 @@ import { formattedDate } from '~/core/utils/formatDate';
 import { formatNumber } from '~/core';
 
 const AdminUser = () => {
-    const [type, setType] = useState('user');
     const [idCheckbox, setIdCheckbox] = useState([]);
     const [modalConfig, setModalConfig] = useState({ open: false, type: '', action: '' });
-    const [isModalOpen, setIsModalOpen] = useState({ open: false, type: '' });
     const [imageUrl, setImageUrl] = useState();
     const user = getUser();
     const userForm = useForm({ mode: 'onChange' });
-
     const dataReset = {
         address: '',
         avatar: '',
@@ -39,13 +36,8 @@ const AdminUser = () => {
         refetchOnReconnect: false, // Tắt refetch khi mạng có lại
     });
 
-    const handleOk = () => {
-        setIsModalOpen({ open: false, type: 'ok' });
-    };
-
     const handleCancel = () => {
         // dùng cho cancel modal admin vs cancel modal thường
-        setIsModalOpen({ open: false, type: 'cancel' });
         setModalConfig({ open: false, type: '' });
         setImageUrl('');
         userForm.reset(dataReset);
@@ -160,7 +152,7 @@ const AdminUser = () => {
         return (
             <>
                 {avatar ? (
-                    <img className="w-[50px] h-[50px] object-cover border rounded-[50%]" src={avatar || ''} alt="" />
+                    <img width={50} height={50} className="w-[50px] h-[50px] object-cover border rounded-[50%]" src={avatar || ''} alt="" />
                 ) : (
                     <Avatar size={50} icon={<UserOutlined />} />
                 )}
@@ -236,8 +228,8 @@ const AdminUser = () => {
                             idCheckbox,
                             onChange: setIdCheckbox, // Viết gọn
                         }}
-                        columns={columns[type]}
-                        dataSource={type === 'user' ? dataUser : ''}
+                        columns={columns["user"]}
+                        dataSource={dataUser}
                         scroll={{ x: 800 }}
                     />
                     <ModalForm
@@ -272,7 +264,7 @@ const AdminUser = () => {
                     <Modal title="Chi tiết đơn hàng" open={modalOrder} footer={null} onCancel={handleCancelModalOrder}>
                         {data?.map((item) => {
                             return (
-                                <div class="border border-solid p-2.5 my-2.5 border-[#c6c6c6] rounded-[10px]">
+                                <div className="border border-solid p-2.5 my-2.5 border-[#c6c6c6] rounded-[10px]">
                                     <p>
                                         <strong>Ngày đặt:</strong> {formattedDate(item?.createdAt)}
                                     </p>
@@ -299,6 +291,8 @@ const AdminUser = () => {
                                                 style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}
                                             >
                                                 <img
+                                                    width={70}
+                                                    height={70}
                                                     src={item?.image}
                                                     alt="Product"
                                                     style={{ width: '70px', height: '70px', marginRight: '10px' }}

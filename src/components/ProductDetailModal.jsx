@@ -8,6 +8,7 @@ import { cartService } from '~/services/cart.service';
 import useGetCart from '~/hooks/useGetCart';
 import { getUser, setCart } from '~/core/token';
 import { useLocalStore } from '~/store/useLocalStore';
+import { checkImg } from '~/utils/checkImg';
 
 const { Title, Text } = Typography;
 
@@ -57,7 +58,7 @@ const ProductDetailModal = ({ open, product, onClose }) => {
             return message.error('Số lượng sản phẩm không đủ');
         }
 
-        const imageUrl = product.image?.[0]?.thumbUrl ?? 'default-image-url.jpg';
+        const imageUrl = product.image?.[0] ?? 'default-image-url.jpg';
         const cartItem = {
             productId: product._id,
             name: product.name,
@@ -111,10 +112,12 @@ const ProductDetailModal = ({ open, product, onClose }) => {
                     <div className="w-full md:w-1/2">
                         <div className="slider-container bg-[#fff] rounded-[8px] p-4 relative">
                             <Carousel autoplay>
-                                {product?.image?.map((item, i) => (
+                                {product?.image?.map((url, i) => (
                                     <div key={i}>
                                         <img
-                                            src={item.thumbUrl}
+                                          width={1000} // hoặc bất kỳ số nào gần đúng
+                                          height={350}
+                                            src={checkImg(url)}
                                             className={`h-[350px] w-full object-cover ${
                                                 product.countInstock === 0 ? 'opacity-50' : ''
                                             }`}

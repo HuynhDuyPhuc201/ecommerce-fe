@@ -16,6 +16,7 @@ import UpdateAddressForm from '~/components/Form/UpdateAddressForm';
 import './CartPage.css';
 import BreadcrumbComponent from '~/components/Breadcrumb';
 import EmptyCart from '~/components/cart/EmptyCart';
+import { checkImg } from '~/utils/checkImg';
 
 const CartPage = () => {
     const user = getUser();
@@ -166,7 +167,7 @@ const CartPage = () => {
     }, [addressString, idCheckbox, dataCart, user, address, setCheckoutInfo]);
 
     const renderImage = useCallback((img) => {
-        return img ? <img className="h-[100px] w-full object-cover" src={img} alt="" /> : '';
+        return img ? <img width={100} height={100} className="h-[100px] w-full object-cover" src={checkImg(img)} alt="" /> : '';
     }, []);
 
     const columns = useMemo(

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, forwardRef } from 'react';
-import { Avatar, Badge, Col, List, message, Row, Typography } from 'antd';
+import { Badge, Col, List, message, Row, Typography } from 'antd';
 import { generatePath, Link, useNavigate } from 'react-router-dom';
 import { ShoppingCartOutlined, UserOutlined, MenuOutlined, CaretDownOutlined } from '@ant-design/icons';
 import { Dropdown, Space } from 'antd';
@@ -13,6 +13,7 @@ import { formatNumber } from '~/core';
 import useGetCart from '~/hooks/useGetCart';
 import useGetUserDetail from '~/hooks/useGetUserDetail';
 import { useLocalStore } from '~/store/useLocalStore';
+import { checkImg } from '~/utils/checkImg';
 
 const Header = forwardRef((props, ref) => {
     const user = getUser();
@@ -69,7 +70,7 @@ const Header = forwardRef((props, ref) => {
 
     return (
         <>
-            <div className="bg-[#1A94FF] h-[70px]  flex items-center absolute z-11 w-full ">
+            <div className="bg-[#15395b] h-[70px]  flex items-center z-30 w-full ">
                 <Row className="w-full container justify-between" style={{ alignItems: 'center' }}>
                     <Col span={windowWidth >= 1000 ? 4 : 8}>
                         <Link to={path.Home} style={{ color: '#fff', fontSize: '20px', fontFamily: 'sans-serif' }}>
@@ -99,8 +100,10 @@ const Header = forwardRef((props, ref) => {
                                         >
                                             {/* Ảnh sản phẩm */}
                                             <img
-                                                src={item.image[0].thumbUrl}
+                                                src={checkImg(item.image[0])}
                                                 alt={item.name}
+                                                width={50}
+                                                height={50}
                                                 style={{
                                                     width: 50,
                                                     height: 50,
@@ -166,6 +169,8 @@ const Header = forwardRef((props, ref) => {
                                     {user?.avatar ? (
                                         <>
                                             <img
+                                                width={50}
+                                                height={50}
                                                 src={user?.avatar}
                                                 alt=""
                                                 referrerPolicy="no-referrer"

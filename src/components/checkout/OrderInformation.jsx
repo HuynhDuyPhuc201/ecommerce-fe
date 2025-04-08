@@ -2,6 +2,7 @@ import React from 'react';
 import { Card } from 'antd';
 import CheckoutProductItem from './CheckoutProductItem';
 import { formatNumber } from '~/core';
+import { checkImg } from '~/utils/checkImg';
 
 
 const OrderInformation = ({ checkoutInfo }) => {
@@ -25,7 +26,7 @@ const OrderInformation = ({ checkoutInfo }) => {
         {checkoutInfo.name && (
           <ul className="pt-5">
             <CheckoutProductItem
-              image={checkoutInfo?.image}
+              image={checkoutInfo?.image[0]}
               name={checkoutInfo?.name}
               price={checkoutInfo?.price}
               quantity={checkoutInfo?.quantity}
@@ -38,7 +39,7 @@ const OrderInformation = ({ checkoutInfo }) => {
           {checkoutInfo?.orderItems?.map((item, index) => (
             <CheckoutProductItem
               key={index}
-              image={item?.image}
+              image={checkImg(item?.image)}
               name={item?.name}
               price={item?.price}
               quantity={item?.quantity}

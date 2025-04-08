@@ -15,15 +15,13 @@ const DefaultLayout = () => {
     };
     return (
         <>
-            <div className="relative">
-                <div className="z-30 absolute w-full">
-                    <Header ref={inputRef} />
-                </div>
-                <div className="pt-[50px] md:pt-[70px]" onClick={hanldeClickOutside}>
+            <div className="flex flex-col min-h-screen">
+                <Header />
+                <main className="flex-grow" onClick={hanldeClickOutside}>
                     {isOverlayVisible && <Overlay />}
                     <Outlet />
-                    <Footer />
-                </div>
+                </main>
+                <Footer />
             </div>
         </>
     );

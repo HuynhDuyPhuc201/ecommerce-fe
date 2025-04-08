@@ -30,10 +30,10 @@ export const adminService = {
     deleteProduct(ids) {
         return api.delete(`/product/delete-product?${ids}`);
     },
-    createProduct(form) {
-        return api.post(`/product/create-product`, form);
+    createProduct(form, config = {}) {
+        return api.post(`/product/create-product`, form, config);
     },
-    updateProduct(form) {
-        return api.put(`/product/update-product`, form);
+    updateProduct(form, config = {}) {
+        return api.put(`/product/update-product`, form, config);
     },
 };

@@ -16,6 +16,7 @@ import { useLocalStore } from '~/store/useLocalStore';
 import { path } from '~/config/path';
 import BreadcrumbComponent from '~/components/Breadcrumb';
 import './style.css';
+import { checkImg } from '~/utils/checkImg';
 
 const { Title, Text } = Typography;
 
@@ -33,7 +34,7 @@ const ProductDetail = () => {
     const { data: _data } = useGetProductDetail(id);
 
     const dataDetail = _data?.product || {};
-    const allImage = dataDetail?.image?.map((item) => item.thumbUrl) || [];
+    const allImage = dataDetail?.image?.map((item) => checkImg(item)) || [];
     const discount = ((dataDetail?.price_old - dataDetail?.price) / dataDetail?.price_old) * 100 || 0;
 
     useEffect(() => {
@@ -48,7 +49,7 @@ const ProductDetail = () => {
         customPaging: function (i) {
             return (
                 <Link className="w-[50px] h-[50px]" to="#">
-                    <img src={allImage[i]} className="w-[50px] h-[50px] object-cover" />
+                    <img width={50} height={50} src={allImage[i]} className="w-[50px] h-[50px] object-cover" />
                 </Link>
             );
         },
@@ -94,7 +95,7 @@ const ProductDetail = () => {
         }
 
         const { _id, name, price, countInstock } = dataDetail;
-        const imageUrl = dataDetail.image?.[0]?.thumbUrl ?? 'default-image-url.jpg';
+        const imageUrl = dataDetail.image?.[0] ?? 'default-image-url.jpg';
         const cartItem = { productId: _id, name, price, quantity, image: imageUrl, countInstock };
 
         if (user) {
@@ -141,7 +142,7 @@ const ProductDetail = () => {
             return message.error('Số lượng sản phẩm không đủ');
         }
         const { _id, name, price } = dataDetail;
-        const imageUrl = dataDetail.image?.[0]?.thumbUrl ?? 'default-image-url.jpg';
+        const imageUrl = dataDetail.image?.[0] ?? 'default-image-url.jpg';
         const cartItem = { productId: _id, name, price, quantity, image: imageUrl };
         const form = {
             orderItems: [cartItem],
@@ -157,7 +158,7 @@ const ProductDetail = () => {
     const productRecommand = dataProduct?.data.filter((item) => item._id !== id);
 
     return (
-        <div className="container pt-10">
+        <div className="container pt-10  min-h-screen">
             <BreadcrumbComponent arrayItem={[{ text: 'Chi tiết sản phẩm' }]} />
             <Row gutter={[10, 10]} style={{ alignItems: 'flex-start' }}>
                 <Col md={8} className="md:sticky top-0 pt-5 relative">
@@ -166,7 +167,9 @@ const ProductDetail = () => {
                             {dataDetail?.image?.map((item, i) => (
                                 <div key={i}>
                                     <img
-                                        src={item.thumbUrl}
+                                        width={200} 
+                                        height={350} 
+                                        src={checkImg(item)}
                                         className={`h-[350px] w-full object-cover ${
                                             dataDetail.countInstock === 0 && 'opacity-50'
                                         }`}
@@ -181,11 +184,11 @@ const ProductDetail = () => {
                                 </span>
                             </div>
                         )}
-                         {discount > 0 && (
-                        <div className="absolute left-2 top-2 rounded-md bg-red-500 px-2 py-1 text-lg font-bold text-white">
-                            -{discount.toFixed(0) || 0}%
-                        </div>
-                    )}
+                        {discount > 0 && (
+                            <div className="absolute left-2 top-2 rounded-md bg-red-500 px-2 py-1 text-lg font-bold text-white">
+                                -{discount.toFixed(0) || 0}%
+                            </div>
+                        )}
                     </div>
                 </Col>
 
@@ -195,14 +198,16 @@ const ProductDetail = () => {
                             <span className="font-bold">{dataDetail?.name || ''}</span>
                         </div>
                         <div className="pt-10 flex items-center">
-                           <span className="pr-2">{dataDetail?.rating || 0}</span>
-                           {[...Array(5)].map((_, i) => (
+                            <span className="pr-2">{dataDetail?.rating || 0}</span>
+                            {[...Array(5)].map((_, i) => (
                                 <svg
                                     key={i}
                                     xmlns="http://www.w3.org/2000/svg"
                                     viewBox="0 0 24 24"
                                     fill="currentColor"
-                                    className={`h-6 w-6 text-[#ffff19] ${i < Math.floor(dataDetail.rating) ? 'opacity-100' : 'opacity-30'}`}
+                                    className={`h-6 w-6 text-[#ffff19] ${
+                                        i < Math.floor(dataDetail.rating) ? 'opacity-100' : 'opacity-30'
+                                    }`}
                                 >
                                     <path
                                         fillRule="evenodd"

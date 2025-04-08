@@ -8,12 +8,13 @@ import { Eye, ShoppingCart } from 'lucide-react';
 import { getUser, removeAddress } from '~/core/token';
 import useGetUserDetail from '~/hooks/useGetUserDetail';
 import ProductDetailModal from './ProductDetailModal';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import { checkImg } from '~/utils/checkImg';
 
 const ProductCard = ({ item }) => {
     const navigate = useNavigate();
     const { data: dataUser } = useGetUserDetail();
     const user = getUser();
-    const [isHovering, setIsHovering] = useState(false);
     const [isModalVisible, setIsModalVisible] = useState(false);
 
     const discount = useMemo(
@@ -48,8 +49,8 @@ const ProductCard = ({ item }) => {
                     productId: item._id,
                     name: item.name,
                     price: item.price,
-                    image: item.image?.[0]?.thumbUrl,
-                    quantity:1
+                    image: item.image?.[0],
+                    quantity: 1,
                 },
             ],
             shippingAddress: address,
@@ -62,30 +63,27 @@ const ProductCard = ({ item }) => {
     }, []);
 
     return (
-        <div
-            className="group relative shadow-md cursor-pointer"
-            onMouseEnter={() => setIsHovering(true)}
-            onMouseLeave={() => setIsHovering(false)}
-        >
+        <div className="group relative shadow-md cursor-pointer">
             <div className="border overflow-hidden transition-all duration-300 hover:shadow-lg">
-                <div className="relative h-[200px]  overflow-hidden">
-                    {/* Main product image */}
+                <div className="group relative h-[200px] overflow-hidden">
                     <img
-                        src={item.image[0].thumbUrl}
-                        //   alt={product.name}
-                        className={`h-full w-full object-cover transition-all duration-500 ${
-                            isHovering && item.image?.length > 1 ? 'opacity-0' : 'opacity-100'
-                        } ${!item.countInstock ? 'opacity-50' : ''}`}
+                        width={200} // hoặc bất kỳ số nào gần đúng
+                        height={200}
+                        src={checkImg(item.image[0])}
+                        loading="lazy"
+                        className={`h-full w-full object-cover transition-all duration-500 group-hover:opacity-0
+                            ${!item.countInstock ? 'opacity-50' : 'opacity-100'}
+                        `}
                     />
 
                     {/* Second image on hover effect */}
-                    {item?.image.length > 1 && (
+                    {item.image?.length > 1 && (
                         <img
-                            src={item?.image[1].thumbUrl}
-                            // alt={`${item.name} - alternative view`}
-                            className={`absolute inset-0 h-full w-full object-cover transition-all duration-500 ${
-                                isHovering ? 'opacity-100' : 'opacity-0'
-                            }`}
+                            width={200} // hoặc bất kỳ số nào gần đúng
+                            height={200}
+                            src={checkImg(item.image[1])}
+                            loading="lazy"
+                            className="absolute inset-0 h-full w-full object-cover opacity-0 group-hover:opacity-100 transition-all duration-500"
                         />
                     )}
 
@@ -99,15 +97,11 @@ const ProductCard = ({ item }) => {
                     )}
 
                     {/* Hover action buttons */}
-                    <div
-                        className={`absolute  bottom-2 left-0 right-0 mx-2 flex items-center justify-center gap-2 transition-all duration-300 ${
-                            isHovering ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
-                        }`}
-                    >
+                    <div className="absolute bottom-2 left-0 right-0 mx-2 flex items-center justify-center gap-2 transition-all duration-300 translate-y-10 opacity-0 group-hover:translate-y-0 group-hover:opacity-100">
                         <Button
                             size="lg"
                             variant="secondary"
-                            className="rounded-full px-3 text-[#000]  bg-[#fff] shadow-lg text-[13px]"
+                            className="rounded-full px-3 text-[#000] bg-[#fff] shadow-lg text-[13px]"
                             onClick={handleViewClick}
                         >
                             <Eye className="h-6 w-6" />
@@ -123,7 +117,7 @@ const ProductCard = ({ item }) => {
                             disabled={!item.countInstock}
                             onClick={handleBuyNow}
                         >
-                            <ShoppingCart className=" h-6 w-6" />
+                            <ShoppingCart className="h-6 w-6" />
                             Mua ngay
                         </Button>
                     </div>
@@ -181,11 +175,7 @@ const ProductCard = ({ item }) => {
                     </Link>
                 </div>
             </div>
-            <ProductDetailModal 
-                open={isModalVisible} 
-                product={item} 
-                onClose={handleCloseModal} 
-            />
+            <ProductDetailModal open={isModalVisible} product={item} onClose={handleCloseModal} />
         </div>
     );
 };

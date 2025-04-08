@@ -51,6 +51,8 @@ const Sidebar = () => {
             label: user ? user.name : <span className="text-[18px]">Tài khoản</span>,
             icon: user?.avatar ? (
                 <img
+                    width={40}
+                    height={40}
                     src={user?.avatar}
                     alt=""
                     referrerpolicy="no-referrer"
@@ -87,7 +89,7 @@ const Sidebar = () => {
                 body: { padding: 0 },
             }}
         >
-            <div className="p-7 h-[70px] flex items-center justify-between bg-[#1A94FF]">
+            <div className="p-7 h-[70px] flex items-center justify-between bg-[#15395b]">
                 <Typography style={{ color: '#fff', fontSize: '20px', fontFamily: 'sans-serif' }}>My Shop</Typography>
                 <CloseOutlined className="text-white text-[20px] cursor-pointer" onClick={toggleSidebar} />
             </div>

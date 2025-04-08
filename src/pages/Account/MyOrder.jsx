@@ -42,6 +42,8 @@ const MyOrder = () => {
                     <div className="flex item-center">
                         {list.slice(0, 2).map((item) => (
                             <img
+                                width={50}
+                                height={50}
                                 key={item._id}
                                 src={item.image}
                                 alt="Product"
@@ -118,6 +120,8 @@ const MyOrder = () => {
                                     style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}
                                 >
                                     <img
+                                        width={70}
+                                        height={70}
                                         src={item?.image}
                                         alt="Product"
                                         style={{ width: '70px', height: '70px', marginRight: '10px' }}

@@ -183,6 +183,7 @@ const Payment = () => {
                                     onSubmitOrder={onSubmitOrder}
                                     user={user}
                                     addressLocal={addressLocal}
+                                    checkoutInfo={checkoutInfo}
                                 />
                             )}
                             {user && dataUserDetail?.user?.address.length === 0 && (

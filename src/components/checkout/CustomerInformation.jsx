@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, Row, Col } from 'antd';
 import { FormProvider } from 'react-hook-form';
 
-const CustomerInformation = ({ addressForm, onSubmitOrder, user, addressLocal }) => {
+const CustomerInformation = ({ addressForm, onSubmitOrder, user, addressLocal, checkoutInfo }) => {
   if (user) return null;
   
   return (

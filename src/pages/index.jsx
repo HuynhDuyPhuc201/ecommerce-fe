@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
-import { slider_1, slider_3 } from '~/constants/images';
 import ProductCard from '~/components/ProductCard';
 import Navbar from '~/components/Navbar';
 import { Col, Pagination, Row, Skeleton } from 'antd';
@@ -9,17 +8,17 @@ import { useQuery } from '@tanstack/react-query';
 import HomeSlider from '~/components/HomeSlider';
 
 const Index = () => {
-    const arrImg = [slider_1, slider_3];
+  
     const { id } = useParams();
 
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
     const [searchParams, setSearchParams] = useSearchParams();
-    const page = searchParams.get('page') || 1;
+    const page = useMemo(() => searchParams.get('page') || 1, [searchParams]);
     const [currentPage, setCurrentPage] = useState(page);
     const [sort, setSort] = useState(searchParams.get('sort') || 'asc');
-    const rating = searchParams.get('rating') || '';
-    const price = searchParams.get('price') || 0;
-    const name = searchParams.get('q') || '';
+    const rating = useMemo(() => searchParams.get('rating') || '', [searchParams]);
+    const price = useMemo(() => searchParams.get('price') || 0, [searchParams]);
+    const name = useMemo(() => searchParams.get('q') || '', [searchParams]);
 
     // 🛠 Cập nhật rating
     const updateRating = useCallback(
@@ -94,12 +93,8 @@ const Index = () => {
 
     return (
         <>
-        
-        <div className="max-w-[1240px] w-full m-auto">
-            <HomeSlider arrImg={arrImg} />
-        </div>
         <div className="py-0 container my-20">
-
+            <HomeSlider  />
             {windowWidth > 500 && (
                 <div className="p-4 flex items-center justify-end font-[sans-serif]">
                     <label className="text-[16px] text-[#333] block pr-3" htmlFor="sort-select">
@@ -182,4 +177,6 @@ const Index = () => {
     );
 };
 
-export default Index;
+const MemoizedProductCard = React.memo(ProductCard);
+
+export default React.memo(Index);

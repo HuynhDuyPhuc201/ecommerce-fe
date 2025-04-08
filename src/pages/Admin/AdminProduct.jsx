@@ -1,14 +1,14 @@
 import React, { useMemo, useState } from 'react';
 import { UploadOutlined } from '@ant-design/icons';
-import { Button, message, Table, Divider, Upload } from 'antd';
+import { Button, message, Table, Divider, Upload, Modal } from 'antd';
 import { useForm } from 'react-hook-form';
 import { useQuery } from '@tanstack/react-query';
 import { productService } from '~/services/product.service';
 import { ModalButton } from './component/ModalButton';
 import { ModalForm } from './component/ModalForm';
-import { formatNumber, validImageTypes } from '~/core';
+import { validImageTypes } from '~/core';
 import { adminService } from '~/services/admin.service';
-import TextArea from 'antd/es/input/TextArea';
+import { checkImg } from '~/utils/checkImg';
 const AdminProduct = () => {
     const [state, setState] = useState({
         type: 'product',
@@ -16,6 +16,7 @@ const AdminProduct = () => {
         idCheckbox: [],
         currentPage: 1,
         listImage: [],
+        removedImages: [],
     });
     const resetData = {
         name: '',
@@ -58,6 +59,23 @@ const AdminProduct = () => {
 
     // set id sản phẩm dưới dạng query id=1&id=2
     const query = useMemo(() => state.idCheckbox.map((id) => `id=${id}`).join('&'), [state.idCheckbox]);
+
+    const showDeleteConfirm = (onOk) => {
+        Modal.confirm({
+            title: 'Xác nhận xóa sản phẩm',
+            content: 'Bạn có chắc chắn muốn xóa sản phẩm này không?',
+            okText: 'Xóa',
+            okType: 'danger',
+            cancelText: 'Hủy',
+            onOk() {
+                onOk(); // hàm xử lý khi đồng ý
+            },
+            onCancel() {
+                console.log('Hủy xóa');
+            },
+        });
+    };
+
     const handleDelete = async () => {
         try {
             const service = state.type === 'product' ? adminService.deleteProduct : adminService.deleteCategory;
@@ -72,94 +90,142 @@ const AdminProduct = () => {
         }
     };
 
+    const handleUpload = (info) => {
+        const newFiles = info?.fileList || [];
+
+        // Kiểm tra loại ảnh hợp lệ
+        const isValid = newFiles.every((file) => validImageTypes.includes(file.type));
+        if (!isValid) {
+            return message.error('Chỉ được upload file ảnh hợp lệ!');
+        }
+
+        // Map lại file mới
+        const updatedFiles = newFiles.map((file, index) => {
+            const origin = file.originFileObj || file;
+            if (file.existing) {
+                // Nếu là ảnh cũ, giữ nguyên
+                return file;
+            }
+            return {
+                ...file,
+                originFileObj: origin,
+                key: file.uid || index.toString(),
+                thumbUrl: file.thumbUrl || URL.createObjectURL(origin),
+            };
+        });
+
+        // So sánh với ảnh cũ để tìm ảnh bị xoá
+        const removed = state.listImage.filter((oldFile) => !newFiles.some((newFile) => newFile.uid === oldFile.uid));
+
+        // Lưu lại ảnh bị xóa để gửi qua backend (cloudinary)
+        const removedImages = removed
+            .map((file) => file?.url || file?.thumbUrl) // Cloudinary URL
+            .filter((url) => !!url);
+
+        // Cập nhật state
+        setState((prevState) => ({
+            ...prevState,
+            listImage: updatedFiles,
+            removedImages: removedImages, // 👈 Lưu vào đây để khi submit thì gửi sang BE
+        }));
+    };
+
     const handleSubmit = async (form) => {
         setIsLoading(true);
-        const formUpdate = { ...form, image: state.listImage };
-        const defaultValues = productForm.formState.defaultValues; // Lấy giá trị ban đầu
-        const result = JSON.stringify(defaultValues) === JSON.stringify(formUpdate);
-
-        if (state.modalConfig.action === 'update' && result) {
-            return message.error('Không có gì thay đổi');
-        }
+      
         try {
-            const service =
-                state.modalConfig.type === 'product'
-                    ? state.modalConfig.action === 'update'
-                        ? adminService.updateProduct
-                        : adminService.createProduct
-                    : adminService.createCategory;
-            const result = await service(formUpdate);
-            if (result.success) {
-                message.success(result.message);
-                state.modalConfig.type === 'product' ? refetchProduct() : refetchCategory();
-                setIsLoading(false);
+          const formData = new FormData();
+      
+          // Append các field không phải image
+          for (const key in form) {
+            if (key !== 'image') {
+              formData.append(key, form[key]);
             }
-            state.modalConfig.type === 'product' ? productForm.reset(resetData) : categoryForm.reset();
-            setState({ ...state, modalConfig: { open: false, type: '', action: '' }, listImage: [] });
+          }
+      
+          // Xử lý ảnh bị xoá
+          if (state.removedImages?.length > 0) {
+            formData.append('removedImages', JSON.stringify(state.removedImages));
+          }
+      
+          // Ảnh mới
+          state.listImage.forEach((file) => {
+            if (file.originFileObj) {
+              formData.append('image', file.originFileObj);
+            }
+          });
+      
+          // Ảnh giữ nguyên
+          const unchangedImages = state.listImage
+            .filter((file) => !file.originFileObj && file.url)
+            .map((file) => file.url);
+      
+          formData.append('unchangedImages', JSON.stringify(unchangedImages));
+      
+          const service =
+            state.modalConfig.action === 'update'
+              ? adminService.updateProduct
+              : adminService.createProduct;
+      
+          const result = await service(formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+          });
+      
+          if (result.success) {
+            message.success(result.message);
+            state.modalConfig.type === 'product'
+              ? refetchProduct()
+              : refetchCategory();
+      
+            productForm.reset(resetData);
+            setState({
+              ...state,
+              modalConfig: { open: false, type: '', action: '' },
+              listImage: [],
+            });
+          } else {
+            // Nếu backend return success: false (như "trùng tên", sai định dạng v.v.)
+            message.error(result.message || 'Có lỗi xảy ra');
+          }
         } catch (error) {
-            setIsLoading(true);
-            message.error(error.response?.data?.message || 'Lỗi');
+          message.error(error.response?.data?.message || 'Lỗi không xác định');
+        } finally {
+          setIsLoading(false);
         }
-    };
+      };
 
-    // set lại idCheckbox=[] để button xóa disable
     const handleShowTable = (type) => setState({ ...state, type, idCheckbox: [] });
-
-    const handleClickUpdate = (id) => {
-        const item = dataProduct?.data?.find((item) => item._id === id);
-        // lấy id ra để handleSubmit nhận được
-        setState({
-            ...state,
-            idCheckbox: [item?._id],
-            modalConfig: { open: true, type: 'product', action: 'update' },
-            listImage: item?.image,
-        });
-        productForm.reset(item);
-    };
 
     const handleCancel = () => {
         setState({ ...state, modalConfig: { open: false, type: '' }, listImage: [] });
         state.modalConfig.type === 'product' ? productForm.reset(resetData) : categoryForm.reset();
     };
 
-    const handleUpload = (info) => {
-        const newFiles = info?.fileList; // Danh sách ảnh mới
-        const isValid = newFiles.every((file) => validImageTypes.includes(file.type));
-        if (!isValid) {
-            return message.error('Chỉ được upload file ảnh hợp lệ!');
-        }
-        // Tạo một mảng các promises để đảm bảo tất cả FileReader đã hoàn thành
-        const promises = newFiles.map((file) => {
-            return new Promise((resolve, reject) => {
-                if (!file.thumbUrl) {
-                    const reader = new FileReader();
-                    reader.readAsDataURL(file.originFileObj);
-                    reader.onload = () => {
-                        resolve({
-                            ...file,
-                            key: file.uid,
-                            thumbUrl: reader.result, // Đảm bảo có thumbUrl
-                        });
-                    };
-                    reader.onerror = reject; // Nếu có lỗi, reject promise
-                } else {
-                    resolve(file); // Nếu đã có thumbUrl, giữ nguyên file
-                }
-            });
+    const handleClickUpdate = (id) => {
+        const item = dataProduct?.data?.find((item) => item._id === id);
+        // Chuyển mảng URL thành định dạng fileList như của Upload
+        const imageList =
+            item?.image?.map((url, index) => {
+                return {
+                    uid: `existing-${index}`,
+                    name: `${url?.split('/').pop().split('-').slice(-1).join('-')}`, // hoặc parse từ url
+                    status: 'done',
+                    url: url,
+                    thumbUrl: url,
+                    originFileObj: null, // không có File object
+                    type: 'image/jpeg', // hoặc bạn lấy từ phần mở rộng
+                    existing: true, // Đánh dấu là ảnh cũ đã tồn tại
+                };
+            }) || [];
+
+        setState({
+            ...state,
+            idCheckbox: [item?._id],
+            modalConfig: { open: true, type: 'product', action: 'update' },
+            listImage: imageList || [], // dùng để truyền vào Upload
         });
 
-        Promise.all(promises)
-            .then((updatedFiles) => {
-                // Cập nhật lại listImage trong state sau khi tất cả các thumbUrl đã được tạo
-                setState((prevState) => ({
-                    ...prevState,
-                    listImage: updatedFiles, // Cập nhật danh sách thumbUrl
-                }));
-            })
-            .catch((error) => {
-                console.error('Error reading file:', error);
-                message.error('Đã có lỗi khi tải lên ảnh.');
-            });
+        productForm.reset(item);
     };
 
     const renderUpload = () => {
@@ -174,7 +240,6 @@ const AdminProduct = () => {
                         onChange={handleUpload}
                         fileList={state?.listImage.map((file, index) => ({
                             ...file,
-                            key: file.uid || file._id || index.toString(), // Đảm bảo có key duy nhất
                         }))}
                     >
                         <Button icon={<UploadOutlined />}>Chọn ảnh</Button>
@@ -189,8 +254,15 @@ const AdminProduct = () => {
         return (
             <>
                 <div className="flex item-center">
-                    {images?.slice(0, 2).map((item, index) => (
-                        <img key={index} src={item.thumbUrl} alt="Product" style={{ width: '50px', height: '50px' }} />
+                    {images?.slice(0, 2).map((imgUrl, index) => (
+                        <img
+                            width={50}
+                            height={50}
+                            key={index}
+                            src={checkImg(imgUrl)}
+                            alt="Product"
+                            style={{ width: '50px', height: '50px' }}
+                        />
                     ))}
                     {images?.length > 2 && <span className="pl-2">+{images?.length - 2}</span>}
                 </div>
@@ -241,7 +313,11 @@ const AdminProduct = () => {
             </div>
 
             <Divider />
-            <Button disabled={!state.idCheckbox?.length} onClick={handleDelete} style={{ marginBottom: '10px' }}>
+            <Button
+                disabled={!state.idCheckbox?.length}
+                onClick={() => showDeleteConfirm(() => handleDelete())}
+                style={{ marginBottom: '10px' }}
+            >
                 Xóa
             </Button>
             <div className="  mb-5 md:flex md:flex-row sm:flex-col gap-5 ">
@@ -265,6 +341,7 @@ const AdminProduct = () => {
             />
 
             <ModalForm
+                key={state.modalConfig.open ? 'open' : 'closed'}
                 title={
                     state.modalConfig.type === 'product'
                         ? state.modalConfig.action === 'update'

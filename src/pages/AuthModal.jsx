@@ -31,12 +31,13 @@ const AuthModal = () => {
         try {
             const data = await userService?.login(form);
             if (data.success) {
-                const { token, ...userData } = data;
                 toggleModal();
-                setUser(userData);
-                setToken(token);
+                setUser(data);
                 message.success(data.message);
                 navigate(path.Home);
+                if(data.token){
+                    setToken(data.token)
+                }
                 if (data.isAdmin) {
                     navigate(path.Admin);
                 }
@@ -55,10 +56,11 @@ const AuthModal = () => {
         try {
             const data = await userService?.loginGoogle({ token });
             if (data.success) {
-                const { token, ...userData } = data;
                 toggleModal();
-                setUser(userData);
-                setToken(token);
+                setUser(data);
+                if(data.token){
+                    setToken(data.token)
+                }
                 message.success(data.message);
                 navigate(path.Home);
                 if (data.isAdmin) {
