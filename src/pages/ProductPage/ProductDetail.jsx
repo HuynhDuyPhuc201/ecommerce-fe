@@ -25,7 +25,7 @@ const ProductDetail = () => {
     const navigate = useNavigate();
 
     const { idCate, id } = useParams();
-    const { cartLocal } = useLocalStore();
+    const { cartLocal, setCartLocal} = useLocalStore();
     const [quantity, setQuantity] = useState(1);
     const [isLoading, setIsloading] = useState(false);
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -129,6 +129,7 @@ const ProductDetail = () => {
         cartLocal.totalProduct = cartLocal.listProduct.length;
         cartLocal.subTotal += cartItem.quantity * cartItem.price;
         setCart(cartLocal);
+        setCartLocal(cartLocal);
         handleQuantityChange(1);
         message.success('Thêm vào giỏ hàng thành công');
     };

@@ -14,6 +14,7 @@ import { formattedDate } from '~/core/utils/formatDate';
 import { formatNumber } from '~/core';
 
 const AdminUser = () => {
+    const [currentPage, setCurrentPage] = useState(1);
     const [idCheckbox, setIdCheckbox] = useState([]);
     const [modalConfig, setModalConfig] = useState({ open: false, type: '', action: '' });
     const [imageUrl, setImageUrl] = useState();
@@ -231,6 +232,12 @@ const AdminUser = () => {
                         columns={columns["user"]}
                         dataSource={dataUser}
                         scroll={{ x: 800 }}
+                        pagination={{
+                            current: currentPage,
+                            pageSize: 8,            // Số hàng hiển thị trên mỗi trang (có thể điều chỉnh)
+                            total: dataUser?.length || 0,
+                            onChange: (page) => setCurrentPage(page),
+                          }}
                     />
                     <ModalForm
                         title={modalConfig.action === 'create' ? 'Tạo tài khoản user' : 'Cập nhật tài khoản'}

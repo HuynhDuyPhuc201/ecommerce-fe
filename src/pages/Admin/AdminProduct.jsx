@@ -10,6 +10,7 @@ import { formatNumber, validImageTypes } from '~/core';
 import { adminService } from '~/services/admin.service';
 import { checkImg } from '~/utils/checkImg';
 import TextArea from 'antd/es/input/TextArea';
+import { createReducer } from '@reduxjs/toolkit';
 const AdminProduct = () => {
     const [state, setState] = useState({
         type: 'product',
@@ -43,9 +44,9 @@ const AdminProduct = () => {
 
     const { data: dataProduct, refetch: refetchProduct } = useQuery({
         queryKey: ['products', state.currentPage],
-        queryFn: async () => await productService.getAll(`?limit=8&page=${state.currentPage}`),
-        refetchOnWindowFocus: false, // Tắt refetch khi tab focus lại
-        refetchOnReconnect: false, // Tắt refetch khi mạng có lại
+        queryFn: async () => await productService.getAll(`?limit=5&page=${state.currentPage}`),
+        // refetchOnWindowFocus: false, // Tắt refetch khi tab focus lại
+        // refetchOnReconnect: false, // Tắt refetch khi mạng có lại
     });
 
     // set lại dataSource và chỉnh lại categories từ dạng id thành title
@@ -133,67 +134,67 @@ const AdminProduct = () => {
 
     const handleSubmit = async (form) => {
         setIsLoading(true);
-      
+
         try {
-          const formData = new FormData();
-      
-          // Append các field không phải image
-          for (const key in form) {
-            if (key !== 'image') {
-              formData.append(key, form[key]);
+            let formData = new FormData();
+            if(state.modalConfig.type === 'product'){
+                // Append các field không phải image
+                for (const key in form) {
+                    if (key !== 'image') {
+                        formData.append(key, form[key]);
+                    }
+                }
+    
+                // Xử lý ảnh bị xoá
+                if (state.removedImages?.length > 0) {
+                    formData.append('removedImages', JSON.stringify(state.removedImages));
+                }
+    
+                // Ảnh mới
+                state.listImage.forEach((file) => {
+                    if (file.originFileObj) {
+                        formData.append('image', file.originFileObj);
+                    }
+                });
+                // Ảnh giữ nguyên
+                const unchangedImages = state.listImage
+                    .filter((file) => !file.originFileObj && file.url)
+                    .map((file) => file.url);
+    
+                formData.append('unchangedImages', JSON.stringify(unchangedImages));
             }
-          }
-      
-          // Xử lý ảnh bị xoá
-          if (state.removedImages?.length > 0) {
-            formData.append('removedImages', JSON.stringify(state.removedImages));
-          }
-      
-          // Ảnh mới
-          state.listImage.forEach((file) => {
-            if (file.originFileObj) {
-              formData.append('image', file.originFileObj);
+         
+            const service = state.modalConfig.type === 'product'
+            ? state.modalConfig.action === 'update'
+                ?  adminService.updateProduct 
+                :  adminService.createProduct
+            :  adminService.createCategory
+          
+            const result = await service(state.modalConfig.type === 'product' ? (formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            }) : form);
+
+            if (result.success) {
+                message.success(result.message);
+                state.modalConfig.type === 'product' ? refetchProduct() : refetchCategory();
+
+                productForm.reset(resetData);
+                setState({
+                    ...state,
+                    modalConfig: { open: false, type: '', action: '' },
+                    listImage: [],
+                });
+            } else {
+                // Nếu backend return success: false (như "trùng tên", sai định dạng v.v.)
+                message.error(result.message || 'Có lỗi xảy ra');
             }
-          });
-      
-          // Ảnh giữ nguyên
-          const unchangedImages = state.listImage
-            .filter((file) => !file.originFileObj && file.url)
-            .map((file) => file.url);
-      
-          formData.append('unchangedImages', JSON.stringify(unchangedImages));
-      
-          const service =
-            state.modalConfig.action === 'update'
-              ? adminService.updateProduct
-              : adminService.createProduct;
-      
-          const result = await service(formData, {
-            headers: { 'Content-Type': 'multipart/form-data' },
-          });
-      
-          if (result.success) {
-            message.success(result.message);
-            state.modalConfig.type === 'product'
-              ? refetchProduct()
-              : refetchCategory();
-      
-            productForm.reset(resetData);
-            setState({
-              ...state,
-              modalConfig: { open: false, type: '', action: '' },
-              listImage: [],
-            });
-          } else {
-            // Nếu backend return success: false (như "trùng tên", sai định dạng v.v.)
-            message.error(result.message || 'Có lỗi xảy ra');
-          }
         } catch (error) {
-          message.error(error.response?.data?.message || 'Lỗi không xác định');
+            console.error(error)
+            message.error(error.response?.data?.message || 'Lỗi không xác định');
         } finally {
-          setIsLoading(false);
+            setIsLoading(false);
         }
-      };
+    };
 
     const handleShowTable = (type) => setState({ ...state, type, idCheckbox: [] });
 
@@ -330,7 +331,7 @@ const AdminProduct = () => {
                 </div>
             </div>
             <Table
-                rowKey="_id" // Đảm bảo mỗi hàng có ID duy nhất
+                rowKey="_id"
                 rowClassName={() => 'align-top'}
                 rowSelection={{
                     selectedRowKeys: state.idCheckbox,
@@ -339,6 +340,15 @@ const AdminProduct = () => {
                 columns={columns[state.type]}
                 dataSource={state.type === 'product' ? dataSource : dataCategory}
                 scroll={{ x: 800 }}
+                pagination={{
+                    current: state.currentPage,
+                    pageSize: 5, // Số sản phẩm mỗi trang như BE trả
+                    total: state.type === 'product' ? dataProduct?.total : dataCategory.length,
+                    onChange: (page) => {
+                      // Cập nhật currentPage và refetch data nếu cần
+                      setState(prevState => ({ ...prevState, currentPage: page }));
+                    },
+                }}
             />
 
             <ModalForm

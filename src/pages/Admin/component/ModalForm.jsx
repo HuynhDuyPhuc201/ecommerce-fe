@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Controller, FormProvider } from 'react-hook-form';
 import InputForm from '~/components/InputForm';
 
-export const ModalForm = ({ title, isOpen, onCancel, methods, onSubmit, fields }) => {
+export const ModalForm = ({ title, isOpen, onCancel, methods, onSubmit, fields, isLoading }) => {
     return (
         <FormProvider {...methods}>
             <Modal title={title} open={isOpen} onCancel={onCancel} footer={null}>
@@ -82,8 +82,8 @@ export const ModalForm = ({ title, isOpen, onCancel, methods, onSubmit, fields }
                         ))}
                         <div className="flex items-center justify-center w-full">
                             <button
-                                className="w-1/2 mt-5 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                                disabled={fields.isLoading}
+                                className={`w-1/2 mt-5 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ${isLoading ? "opacity-50" : "opacity-100"}`}
+                                disabled={isLoading}
                             >
                                 {title}
                             </button>

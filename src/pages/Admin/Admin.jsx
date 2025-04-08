@@ -33,22 +33,20 @@ const Admin = () => {
     return (
         <>
             <Header />
-            <div className="pt-[70px] md:pt-[70px] ">
-                <Row>
-                    <Col sm={24} xs={24} md={4}>
-                        <Menu
-                            onClick={onClick}
-                            className="custom-menu"
-                            defaultSelectedKeys={['user']}
-                            mode="inline"
-                            items={items}
-                        />
-                    </Col>
-                    <Col sm={24} md={20}>
-                        <div className="">{renderComponent === 'user' ? <AdminUser /> : <AdminProduct />}</div>
-                    </Col>
-                </Row>
-            </div>
+            <Row>
+                <Col sm={24} xs={24} md={4}>
+                    <Menu
+                        onClick={onClick}
+                        className="custom-menu"
+                        defaultSelectedKeys={['user']}
+                        mode="inline"
+                        items={items}
+                    />
+                </Col>
+                <Col sm={24} md={20}>
+                    <div className="">{renderComponent === 'user' ? <AdminUser /> : <AdminProduct />}</div>
+                </Col>
+            </Row>
         </>
     );
 };

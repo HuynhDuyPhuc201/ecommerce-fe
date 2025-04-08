@@ -14,7 +14,7 @@ const { Title, Text } = Typography;
 
 const ProductDetailModal = ({ open, product, onClose }) => {
     const [quantity, setQuantity] = useState(1);
-    const { cartLocal } = useLocalStore();
+    const { cartLocal, setCartLocal } = useLocalStore();
     const user = getUser();
 
     const discount = product?.price_old ? ((product.price_old - product.price) / product.price_old) * 100 : 0;
@@ -95,6 +95,7 @@ const ProductDetailModal = ({ open, product, onClose }) => {
         cartLocal.totalProduct = cartLocal.listProduct.length;
         cartLocal.subTotal += cartItem.quantity * cartItem.price;
         setCart(cartLocal);
+        setCartLocal(cartLocal);
         handleQuantityChange(1);
         message.success('Thêm vào giỏ hàng thành công');
     };

@@ -31,14 +31,14 @@ const HomeSlider = () => {
                 {arrImg.map((item, i) => (
                     // Sử dụng LazyLoadImage thay vì <img>
                     <div className="h-[500px] object-cover ">
-                        <LazyLoadImage
+                        <img
                             key={i}
                             src={item}
                             alt={`slider-${i}`}
                             // Nếu slide đầu tiên là LCP, bạn có thể đặt loading="eager"
                             loading={i === 0 ? 'eager' : 'lazy'}
-                            width="100%"
-                            height="300px"
+                            width={1000}
+                            height={300}
                             wrapperClassName="w-full !h-[300px] object-cover"
                             // Bạn có thể bỏ qua threshold, delayMethod, delayTime nếu không cần thiết
                         />

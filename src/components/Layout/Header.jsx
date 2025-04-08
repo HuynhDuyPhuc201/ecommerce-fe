@@ -67,7 +67,6 @@ const Header = forwardRef((props, ref) => {
             onClick: handleLogout,
         },
     ].filter(Boolean);
-
     return (
         <>
             <div className="bg-[#15395b] h-[70px]  flex items-center z-30 w-full ">
