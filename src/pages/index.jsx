@@ -112,7 +112,7 @@ const Index = () => {
                 )}
 
                 <Row gutter={[12, 12]} style={{ rowGap: '16px' }}>
-                    <Col md={5}>
+                    <Col md={6}>
                         <Navbar ratingObj={{ updateRating, rating }} priceObj={{ price, updatePrice }} />
                     </Col>
 
@@ -135,7 +135,7 @@ const Index = () => {
                         </Col>
                     )}
 
-                    <Col xs={24} sm={19} md={19}>
+                    <Col xs={24} sm={18} md={18}>
                         <Row gutter={[12, 12]} style={{ rowGap: '16px', marginTop: '20px' }}>
                             {isLoading
                                 ? // Hiển thị danh sách Skeleton khi đang tải dữ liệu
@@ -153,7 +153,7 @@ const Index = () => {
                         </Row>
 
                         {dataProduct?.length === 0 && (
-                            <div className="items-center justify-center text-center">
+                            <div className="text-center">
                                 <p className="text-[17px] font-bold">Không có sản phẩm nào</p>
                             </div>
                         )}

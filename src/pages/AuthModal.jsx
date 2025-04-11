@@ -144,7 +144,7 @@ const AuthModal = () => {
                                     <div className="relative ">
                                         <InputForm
                                             error={loginForm.formState.errors.password}
-                                            placeholder="123456789"
+                                            placeholder="123123"
                                             name="password"
                                             type={showPass ? 'text' : 'password'}
                                         />

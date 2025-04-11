@@ -9,7 +9,6 @@ import { useForm } from 'react-hook-form';
 import { path } from '~/config/path';
 import _ from 'lodash';
 import useGetUserDetail from '~/hooks/useGetUserDetail';
-import BreadcrumbComponent from '~/components/Breadcrumb';
 
 const Profile = () => {
     const user = getUser();
@@ -55,8 +54,15 @@ const Profile = () => {
             reader.readAsDataURL(file); // Đọc file dưới dạng URL base64
         }
     };
-    if (!user && !user?.isAdmin) {
-        message.warning('Yêu cầu đăng nhập');
+    useEffect(() => {
+        if (!user) {
+            message.warning('Yêu cầu đăng nhập');
+        } else if (user?.isAdmin) {
+            message.warning('Không thể thay đổi thông tin Admin');
+        }
+    }, [user]);
+
+    if (!user || user?.isAdmin) {
         return <Navigate to={path.Home} />;
     }
     return (

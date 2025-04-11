@@ -7,7 +7,7 @@ export const useAppStore = create((set) => ({
     openSidebar: false,
     openModal: false,
     showSignUp: false,
-    toggleSidebar: () => set((state) => ({ openSidebar: !state.openSidebar })), // ✅ Lấy state từ store
+    toggleSidebar: (data) => set(() => ({ openSidebar: data })), // ✅ Lấy state từ store
     toggleModal: () => set((state) => ({ openModal: !state.openModal })), // ✅ Lấy state từ store
     setSearchResults: (data) => set(() => ({ searchResults: data })),
     setSearchValue: (data) => set(() => ({ searchValue: data })),

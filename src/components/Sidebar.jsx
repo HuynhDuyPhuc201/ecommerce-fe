@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { Drawer, Avatar, Badge, Menu, List } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Drawer, Badge, Menu, List } from 'antd';
 import { CloseOutlined, ShoppingCartOutlined, UserOutlined } from '@ant-design/icons';
 import { useAppStore } from '~/store/useAppStore';
 import { getUser, removeToken, removeUser } from '~/core/token';
-import { generatePath, Link, useNavigate } from 'react-router-dom';
+import { generatePath, Link, useLocation, useNavigate } from 'react-router-dom';
 import { path } from '~/config/path';
 import useGetCart from '~/hooks/useGetCart';
 import SearchBar from './SearchBar';
@@ -14,22 +14,12 @@ import styled from 'styled-components';
 import { checkImg } from '~/utils/checkImg';
 import { formatNumber } from '~/core';
 
-const HeightCss = styled.div`
-    height: '100px !important';
-`;
-
 const Sidebar = () => {
     const { cartLocal } = useLocalStore();
+    const { pathname } = useLocation();
     const user = getUser();
-    const {
-        toggleSidebar,
-        openSidebar,
-        toggleModal,
-        searchResults,
-        setOverlayVisible,
-        setSearchResults,
-        isOverlayVisible,
-    } = useAppStore();
+    const { toggleSidebar, openSidebar, toggleModal, searchResults, setOverlayVisible, setSearchResults } =
+        useAppStore();
     const { data: userDetail } = useGetUserDetail();
     const navigate = useNavigate();
     const { data: dataCart } = useGetCart();
@@ -38,13 +28,14 @@ const Sidebar = () => {
         removeUser();
         removeToken();
         navigate('/', { replace: true });
-        toggleSidebar();
+        toggleSidebar(false);
         window.location.replace('/');
     };
 
     const hanldeShowSearch = () => {
         setOverlayVisible(false);
         setSearchResults([]);
+        toggleSidebar(false);
     };
 
     const handleMenuClick = ({ key }) => {
@@ -53,7 +44,7 @@ const Sidebar = () => {
         } else {
             navigate(key);
             setTimeout(() => {
-                toggleSidebar();
+                toggleSidebar(false);
             }, 200);
         }
     };
@@ -93,25 +84,32 @@ const Sidebar = () => {
         },
     ].filter(Boolean);
 
+    const handleCloseSibar = () => toggleSidebar(false);
+    useEffect(() => {
+        toggleSidebar(false);
+    }, [pathname]);
+
     return (
         <Drawer
             open={openSidebar}
             placement="left"
             closable={false}
-            onClose={toggleSidebar}
+            onClose={handleCloseSibar}
             styles={{
                 header: { display: 'none' },
                 body: { padding: 0 },
             }}
         >
             <div className="p-7 h-[70px] flex items-center justify-between bg-[#15395b]">
-                <Typography style={{ color: '#fff', fontSize: '20px', fontFamily: 'sans-serif' }}>SHOP</Typography>
-                <CloseOutlined className="text-white text-[20px] cursor-pointer" onClick={toggleSidebar} />
+                <Link to={path.Home} style={{ color: '#fff', fontSize: '20px', fontFamily: 'sans-serif' }}>
+                    SHOP
+                </Link>
+                <CloseOutlined className="text-white text-[20px] cursor-pointer" onClick={handleCloseSibar} />
             </div>
 
             <div className="m-5 border-b-[0.5px] border-solid border-b-[#eae9e9]">
                 <SearchBar placeholder="Search" size="large" text="Tìm kiếm" />
-                {isOverlayVisible && searchResults && searchResults?.length > 0 && (
+                {searchResults && searchResults?.length > 0 && (
                     <List
                         bordered
                         dataSource={searchResults || []}
@@ -196,7 +194,7 @@ const Sidebar = () => {
                     className="p-10 flex items-center cursor-pointer text-xl mt-5"
                     onClick={() => {
                         navigate(path.Cart);
-                        toggleSidebar();
+                        toggleSidebar(false);
                     }}
                 >
                     <Badge

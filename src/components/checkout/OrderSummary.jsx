@@ -40,8 +40,10 @@ const OrderSummary = ({
             .map((item) => item?.code);
     }, [dataDiscount, data]);
 
-    const PlacehoderCode = findCode?.join(', ');
-
+    const PlacehoderCode = dataDiscount?.data
+        ?.filter((item) => item)
+        .map((item) => item.code)
+        .join(', ');
     return (
         <div className="p-4 bg-white rounded-lg shadow-md">
             <div className="flex justify-between">
@@ -105,7 +107,7 @@ const OrderSummary = ({
                             type="text"
                             onChange={handleSearchDiscount}
                             value={searchDiscount}
-                            placeholder={`Vd: ${PlacehoderCode}...`}
+                            placeholder={`${PlacehoderCode}....`}
                             className="text-[13px] w-full outline-none border-r-none border-l-none border-t-none border-b-[2px]"
                         />
                     </div>

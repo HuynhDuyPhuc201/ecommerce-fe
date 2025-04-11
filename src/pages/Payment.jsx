@@ -88,6 +88,7 @@ const Payment = () => {
             itemDiscount.type === 'percent' ? checkoutInfo?.subTotal * (itemDiscount.value / 100) : itemDiscount.value;
         try {
             const result = await adminService.validateDiscount({
+                id: user?._id,
                 code: itemDiscount?.code,
                 subTotal: checkoutInfo?.subTotal,
             });
@@ -120,8 +121,7 @@ const Payment = () => {
             phone: form.phone || dataUserDetail?.user?.phone,
         };
 
-        const checkPayment = shippingOptions.find((item) => item.label === selectedPayment);
-        if (!checkPayment) return message.error('Hiện tại chưa khả dụng');
+        if (selectedPayment !== 'Thanh toán tiền mặt') return message.error('Hiện tại chưa khả dụng');
         try {
             setLoading(true);
             const listOrderItem = {
@@ -129,7 +129,7 @@ const Payment = () => {
                 // nếu như shipping không có (tức là khi dùng button mua ngay, nó không add shipping) thì thêm vào
                 shippingAddress: shippingAddress,
                 deliveryMethod: shippingMethod,
-                paymentMethod: checkPayment,
+                paymentMethod: selectedPayment,
                 subTotal: checkoutInfo?.subTotal,
                 shippingFee,
                 totalPrice,

@@ -30,17 +30,13 @@ const Header = forwardRef((props, ref) => {
         const handleResize = () => setWindowWidth(window.innerWidth);
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
-    }, [window.innerWidth]);
-
-    const handleCloseSidebar = () => {
-        toggleSidebar();
-    };
+    }, []);
 
     const handleLogout = () => {
         removeUser();
         removeToken();
         navigate('/', { replace: true }); // Điều hướng mà không tạo history mới
-        toggleSidebar();
+        toggleSidebar(false);
         window.location.replace('/'); // Chỉ dùng nếu cần reset toàn bộ app state
     };
 
@@ -114,22 +110,12 @@ const Header = forwardRef((props, ref) => {
 
                                             {/* Thông tin sản phẩm */}
                                             <div style={{ flex: 1, cursor: 'pointer' }}>
-                                                <h4 style={{ margin: 0, fontSize: '16px', color: '#333' }}>
+                                                <h4
+                                                    style={{ margin: 0, fontSize: '16px', color: '#333' }}
+                                                    className="line-clamp-2 "
+                                                >
                                                     {item.name}
                                                 </h4>
-                                                {/* <p
-                                                    style={{
-                                                        margin: 0,
-                                                        fontSize: '14px',
-                                                        color: '#888',
-                                                        display: '-webkit-box',
-                                                        WebkitBoxOrient: 'vertical',
-                                                        WebkitLineClamp: 2, // Giới hạn 2 dòng
-                                                        overflow: 'hidden',
-                                                    }}
-                                                >
-                                                    Mô tả: {item.description}
-                                                </p> */}
                                             </div>
 
                                             {/* Giá sản phẩm */}
@@ -140,6 +126,7 @@ const Header = forwardRef((props, ref) => {
                                                         fontSize: '16px',
                                                         fontWeight: 'bold',
                                                         color: '#ff4d4f',
+                                                        paddingLeft: '20px',
                                                     }}
                                                 >
                                                     {formatNumber(item.price || 0)} đ
@@ -215,7 +202,7 @@ const Header = forwardRef((props, ref) => {
                                 )}
                             </>
                         ) : (
-                            <button onClick={handleCloseSidebar}>
+                            <button onClick={() => toggleSidebar(true)}>
                                 <MenuOutlined style={{ fontSize: '30px', color: '#fff', cursor: 'pointer' }} />
                             </button>
                         )}

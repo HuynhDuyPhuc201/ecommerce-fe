@@ -8,9 +8,7 @@ const PaymentMethodCard = ({ paymentMethods, selectedPayment, setSelectedPayment
                 {paymentMethods?.map((method) => (
                     <div key={method.id} style={{ marginBottom: 10, display: 'flex' }}>
                         <Radio value={method.label}>
-                            <div className="flex items-center gap-3">
-                                {method?.icon} {method?.label}
-                            </div>
+                            <div className="flex items-center gap-3">{method?.label}</div>
                         </Radio>
                     </div>
                 ))}
