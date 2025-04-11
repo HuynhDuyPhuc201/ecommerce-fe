@@ -27,12 +27,12 @@ const Address = () => {
                 });
                 setUser(result.userUpdate);
                 refetch();
+                setCreateAddress(false); // ✅ Chỗ này không nên return
             }
-            setLoading(false);
-            return setCreateAddress(false);
         } catch (error) {
-            setLoading(false);
-            message.error(error.response.data?.message);
+            message.error(error.response?.data?.message || 'Lỗi không xác định');
+        } finally {
+            setLoading(false); // ✅ Chỉ để ở đây là đủ
         }
     };
 

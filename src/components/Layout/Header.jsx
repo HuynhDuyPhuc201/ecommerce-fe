@@ -74,7 +74,7 @@ const Header = forwardRef((props, ref) => {
                 <Row className="w-full container justify-between" style={{ alignItems: 'center' }}>
                     <Col span={windowWidth >= 1000 ? 4 : 8}>
                         <Link to={path.Home} style={{ color: '#fff', fontSize: '20px', fontFamily: 'sans-serif' }}>
-                            PHUCHUYNH
+                            SHOP
                         </Link>
                     </Col>
                     <Col span={windowWidth >= 1000 ? 12 : 0}>

@@ -35,7 +35,7 @@ const Footer = () => {
                 <Row gutter={[32, 32]}>
                     {/* Company Information */}
                     <Col xs={24} sm={24} md={12} lg={6}>
-                        <h3 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px' }}>PHUCHUYNH</h3>
+                        <h3 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px' }}>SHOP</h3>
                         <p style={{ marginBottom: '16px', color: '#a6a6a6' }}>
                             Cung cấp các sản phẩm chất lượng cao với giá cả hợp lý và dịch vụ khách hàng tuyệt vời.
                         </p>

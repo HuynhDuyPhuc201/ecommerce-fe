@@ -90,7 +90,7 @@ const Sidebar = () => {
             }}
         >
             <div className="p-7 h-[70px] flex items-center justify-between bg-[#15395b]">
-                <Typography style={{ color: '#fff', fontSize: '20px', fontFamily: 'sans-serif' }}>PHUCHUYNH</Typography>
+                <Typography style={{ color: '#fff', fontSize: '20px', fontFamily: 'sans-serif' }}>SHOP</Typography>
                 <CloseOutlined className="text-white text-[20px] cursor-pointer" onClick={toggleSidebar} />
             </div>
 

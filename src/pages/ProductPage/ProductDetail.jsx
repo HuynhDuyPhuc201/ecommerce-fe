@@ -25,7 +25,7 @@ const ProductDetail = () => {
     const navigate = useNavigate();
 
     const { idCate, id } = useParams();
-    const { cartLocal, setCartLocal} = useLocalStore();
+    const { cartLocal, setCartLocal } = useLocalStore();
     const [quantity, setQuantity] = useState(1);
     const [isLoading, setIsloading] = useState(false);
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -168,8 +168,8 @@ const ProductDetail = () => {
                             {dataDetail?.image?.map((item, i) => (
                                 <div key={i}>
                                     <img
-                                        width={200} 
-                                        height={350} 
+                                        width={200}
+                                        height={350}
                                         src={checkImg(item)}
                                         className={`h-[350px] w-full object-cover ${
                                             dataDetail.countInstock === 0 && 'opacity-50'

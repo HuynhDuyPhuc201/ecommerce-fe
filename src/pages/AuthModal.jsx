@@ -28,6 +28,7 @@ const AuthModal = () => {
     const regitserForm = useForm({ mode: 'onChange' });
 
     const handleLogin = async (form) => {
+        setLoading(true);
         try {
             const data = await userService?.login(form);
             if (data.success) {
@@ -35,18 +36,18 @@ const AuthModal = () => {
                 setUser(data);
                 message.success(data.message);
                 navigate(path.Home);
-                if(data.token){
-                    setToken(data.token)
+
+                if (data.token) {
+                    setToken(data.token);
                 }
                 if (data.isAdmin) {
                     navigate(path.Admin);
                 }
             }
-
-            setLoading(true);
         } catch (error) {
-            setLoading(false);
             message.error(error.response.data?.message);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -58,8 +59,8 @@ const AuthModal = () => {
             if (data.success) {
                 toggleModal();
                 setUser(data);
-                if(data.token){
-                    setToken(data.token)
+                if (data.token) {
+                    setToken(data.token);
                 }
                 message.success(data.message);
                 navigate(path.Home);
@@ -94,11 +95,11 @@ const AuthModal = () => {
                 });
                 setShowSignUp(false);
                 message.success(result.message);
-                setLoading(false);
             }
-            setLoading(false);
         } catch (error) {
             message.error(error.response.data?.message);
+        } finally {
+            setLoading(false);
         }
     };
     const handleOnChangeEmail = (e) => {
@@ -113,14 +114,14 @@ const AuthModal = () => {
             setLoadingSendCode(true);
             const result = await userService.register(form); // giả sử BE có key 'resend' để gửi lại mã
             if (result.success) {
-                setLoadingSendCode(false);
                 message.success('Mã xác thực đã được gửi lại!');
             } else {
                 message.error('Không thể gửi lại mã xác thực, vui lòng thử lại!');
             }
-            setLoadingSendCode(false);
         } catch (error) {
             message.error(error.response.data?.message || 'Có lỗi xảy ra!');
+        } finally {
+            setLoadingSendCode(false);
         }
     };
     return (
