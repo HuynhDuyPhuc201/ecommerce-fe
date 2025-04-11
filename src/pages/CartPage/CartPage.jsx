@@ -31,7 +31,11 @@ const CartPage = () => {
     const addressForm = useForm({ mode: 'onChange' });
 
     const address = useMemo(() => {
-        return dataUserDetail?.user?.address.find((item) => item?.defaultAddress) || dataUserDetail?.user.address[0];
+        return (
+            dataUserDetail?.user?.address?.find((item) => item?.defaultAddress) ||
+            dataUserDetail?.user?.address[0] ||
+            {}
+        );
     }, [dataUserDetail]);
 
     const [chooseAddress, setChooseAddress] = useState(user ? address : addressLocal);

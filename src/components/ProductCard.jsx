@@ -19,11 +19,11 @@ const ProductCard = ({ item }) => {
     const [isModalVisible, setIsModalVisible] = useState(false);
 
     const discount = useMemo(
-        () => (item?.price_old ? ((item.price_old - item.price) / item.price_old) * 100 : 0),
-        [item.price, item.price_old],
+        () => (item?.price_old ? ((item?.price_old - item?.price) / item?.price_old) * 100 : 0),
+        [item?.price, item?.price_old],
     );
 
-    const handleClickItem = () => handleScrollTop()
+    const handleClickItem = () => handleScrollTop();
 
     const handleViewClick = (e) => {
         e.preventDefault();
@@ -39,9 +39,9 @@ const ProductCard = ({ item }) => {
         [item.categories, item._id],
     );
 
-    let address = dataUser?.user?.address.find((item) => item?.defaultAddress) || dataUser?.user.address[0];
+    let address = dataUser?.user?.address?.find((item) => item?.defaultAddress) || dataUser?.user?.address[0] || {};
     const handleBuyNow = useCallback(async () => {
-        handleClickItem()
+        handleClickItem();
         if (!user) removeAddress();
         const form = {
             orderItems: [

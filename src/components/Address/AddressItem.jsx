@@ -26,7 +26,7 @@ const AddressItem = () => {
 
     const handleUpdate = (id) => {
         setModalConfig(true);
-        const itemAddress = data?.user.address.find((item) => item._id === id);
+        const itemAddress = data?.user?.address.find((item) => item?._id === id) || {};
         setAddressId(id);
         addressForm.reset(itemAddress);
     };

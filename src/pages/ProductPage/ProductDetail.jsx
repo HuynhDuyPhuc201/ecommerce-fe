@@ -134,7 +134,7 @@ const ProductDetail = () => {
         message.success('Thêm vào giỏ hàng thành công');
     };
 
-    let address = dataUser?.user?.address.find((item) => item?.defaultAddress) || dataUser?.user.address[0];
+    let address = dataUser?.user?.address?.find((item) => item?.defaultAddress) || dataUser?.user?.address[0] || {};
 
     // button mua ngay
     const handleBuyNow = useCallback(async () => {
