@@ -30,9 +30,9 @@ const Profile = () => {
             return message.error('Không có gì thay đổi');
         }
         try {
-            const data = await userService.update(form);
-            if (data.success) {
-                const { password, ...user } = data.user;
+            const data = await userService?.update(form);
+            if (data?.success) {
+                const { password, ...user } = data?.user;
                 setUser(user);
                 message.success(data.message);
                 refetch();

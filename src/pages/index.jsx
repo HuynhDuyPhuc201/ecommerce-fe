@@ -8,7 +8,6 @@ import { useQuery } from '@tanstack/react-query';
 import HomeSlider from '~/components/HomeSlider';
 
 const Index = () => {
-  
     const { id } = useParams();
 
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -93,87 +92,85 @@ const Index = () => {
 
     return (
         <>
-        <div className="py-0 container my-20">
-            <HomeSlider  />
-            {windowWidth > 500 && (
-                <div className="p-4 flex items-center justify-end font-[sans-serif]">
-                    <label className="text-[16px] text-[#333] block pr-3" htmlFor="sort-select">
-                        Sắp xếp giá theo:
-                    </label>
-                    <select
-                        id="sort-select"
-                        value={sort || ''}
-                        onChange={handleSelectChange}
-                        className="w-[50%] md:w-[20%] p-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    >
-                        <option value="asc">Thấp đến cao</option>
-                        <option value="desc">Cao đến thấp</option>
-                    </select>
-                </div>
-            )}
-
-            <Row gutter={[12, 12]} style={{ rowGap: '16px' }}>
-                <Col md={5}>
-                    <Navbar ratingObj={{ updateRating, rating }} priceObj={{ price, updatePrice }} />
-                </Col>
-
-                {windowWidth < 500 && (
-                    <Col sm={24} xs={24} md={24}>
-                        <div className="p-4 flex items-center justify-end font-[sans-serif]">
-                            <label className="text-[16px] text-[#333] block pr-3" htmlFor="sort-select">
-                                Sắp xếp giá theo:
-                            </label>
-                            <select
-                                id="sort-select"
-                                value={sort || ''}
-                                onChange={handleSelectChange}
-                                className="w-[50%] md:w-[20%] p-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            >
-                                <option value="asc">Thấp đến cao</option>
-                                <option value="desc">Cao đến thấp</option>
-                            </select>
-                        </div>
-                    </Col>
+            <div className="py-0 container my-20">
+                <HomeSlider />
+                {windowWidth > 500 && (
+                    <div className="p-4 flex items-center justify-end font-[sans-serif]">
+                        <label className="text-[16px] text-[#333] block pr-3" htmlFor="sort-select">
+                            Sắp xếp giá theo:
+                        </label>
+                        <select
+                            id="sort-select"
+                            value={sort || ''}
+                            onChange={handleSelectChange}
+                            className="w-[50%] md:w-[20%] p-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        >
+                            <option value="asc">Thấp đến cao</option>
+                            <option value="desc">Cao đến thấp</option>
+                        </select>
+                    </div>
                 )}
 
-                <Col xs={24} sm={19} md={19}>
-                    <Row gutter={[12, 12]} style={{ rowGap: '16px', marginTop: '20px' }}>
-                        {isLoading
-                            ? // Hiển thị danh sách Skeleton khi đang tải dữ liệu
-                              Array.from({ length: 8 }).map((_, i) => (
-                                  <Col lg={6} md={8} sm={12} xs={12} key={i}>
-                                      <Skeleton active style={{ height: "200px"}} />
-                                  </Col>
-                              ))
-                            : // Hiển thị sản phẩm sau khi có dữ liệu
-                              dataProduct?.map((item, i) => (
-                                  <Col lg={6} md={8} sm={12} xs={12} key={i}>
-                                      <ProductCard item={item} />
-                                  </Col>
-                              ))}
-                    </Row>
+                <Row gutter={[12, 12]} style={{ rowGap: '16px' }}>
+                    <Col md={5}>
+                        <Navbar ratingObj={{ updateRating, rating }} priceObj={{ price, updatePrice }} />
+                    </Col>
 
-                    {dataProduct?.length === 0 && (
-                        <div className="items-center justify-center text-center">
-                            <p className="text-[17px] font-bold">Không có sản phẩm nào</p>
-                        </div>
+                    {windowWidth < 500 && (
+                        <Col sm={24} xs={24} md={24}>
+                            <div className="p-4 flex items-center justify-end font-[sans-serif]">
+                                <label className="text-[16px] text-[#333] block pr-3" htmlFor="sort-select">
+                                    Sắp xếp giá theo:
+                                </label>
+                                <select
+                                    id="sort-select"
+                                    value={sort || ''}
+                                    onChange={handleSelectChange}
+                                    className="w-[50%] md:w-[20%] p-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                >
+                                    <option value="asc">Thấp đến cao</option>
+                                    <option value="desc">Cao đến thấp</option>
+                                </select>
+                            </div>
+                        </Col>
                     )}
-                </Col>
-            </Row>
 
-            <div className="flex justify-end">
-                <Pagination
-                    style={{ padding: '16px', display: 'flex', justifyContent: 'center' }}
-                    onChange={onShowSizeChange}
-                    total={data?.total || 0}
-                    pageSize={8}
-                    current={currentPage}
-                />
+                    <Col xs={24} sm={19} md={19}>
+                        <Row gutter={[12, 12]} style={{ rowGap: '16px', marginTop: '20px' }}>
+                            {isLoading
+                                ? // Hiển thị danh sách Skeleton khi đang tải dữ liệu
+                                  Array.from({ length: 8 }).map((_, i) => (
+                                      <Col lg={6} md={8} sm={12} xs={12} key={i}>
+                                          <Skeleton active style={{ height: '200px' }} />
+                                      </Col>
+                                  ))
+                                : // Hiển thị sản phẩm sau khi có dữ liệu
+                                  dataProduct?.map((item, i) => (
+                                      <Col lg={6} md={8} sm={12} xs={12} key={i}>
+                                          <ProductCard item={item} />
+                                      </Col>
+                                  ))}
+                        </Row>
+
+                        {dataProduct?.length === 0 && (
+                            <div className="items-center justify-center text-center">
+                                <p className="text-[17px] font-bold">Không có sản phẩm nào</p>
+                            </div>
+                        )}
+                    </Col>
+                </Row>
+
+                <div className="flex justify-end">
+                    <Pagination
+                        style={{ padding: '16px', display: 'flex', justifyContent: 'center' }}
+                        onChange={onShowSizeChange}
+                        total={data?.total || 0}
+                        pageSize={8}
+                        current={currentPage}
+                    />
+                </div>
             </div>
-        </div>
         </>
-        
-
     );
 };
 

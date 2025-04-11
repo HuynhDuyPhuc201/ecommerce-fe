@@ -161,13 +161,17 @@ const CartPage = () => {
             totalProduct: user ? dataCart.totalProduct : cartLocal.totalProduct,
             subTotal: selectedTotal,
             shippingAddress: chooseAddress,
-            page: 'cart' // dùng để kiểm tra cho breadcrumb
+            page: 'cart', // dùng để kiểm tra cho breadcrumb
         };
         navigate(path.Payment, { state: form });
     }, [addressString, idCheckbox, dataCart, user, address, setCheckoutInfo]);
 
     const renderImage = useCallback((img) => {
-        return img ? <img width={100} height={100} className="h-[100px] w-full object-cover" src={checkImg(img)} alt="" /> : '';
+        return img ? (
+            <img width={100} height={100} className="h-[100px] w-full object-cover" src={checkImg(img)} alt="" />
+        ) : (
+            ''
+        );
     }, []);
 
     const columns = useMemo(
@@ -210,7 +214,7 @@ const CartPage = () => {
 
     return (
         <div className="container pt-16">
-            <BreadcrumbComponent arrayItem={[{ text: 'Giỏ hàng'}]} />
+            <BreadcrumbComponent arrayItem={[{ text: 'Giỏ hàng' }]} />
             <Row span={(16, 16)} style={{ gap: '10px' }}>
                 <Col xs={24} sm={24} md={24}>
                     <h1 className="text-[22px] uppercase pb-6 mt-5">Giỏ hàng</h1>
@@ -274,7 +278,7 @@ const CartPage = () => {
                         </Col>
                     </>
                 ) : (
-                    <EmptyCart/>
+                    <EmptyCart />
                 )}
             </Row>
 

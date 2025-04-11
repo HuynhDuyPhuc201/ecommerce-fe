@@ -4,8 +4,8 @@ export const orderService = {
     getOrder() {
         return api.get(`/order/get`);
     },
-    getOrderAdmin(id) {
-        return api.get(`/order/getOrderAdmin?id=${id}`);
+    getOrderAdmin(query) {
+        return api.get(`/order/getOrderAdmin${query ? query : ''}`);
     },
     createOrder(orders) {
         return api.post(`/order/create`, orders);

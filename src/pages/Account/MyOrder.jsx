@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { formatNumber } from '~/core/utils/formatNumber';
 import { formattedDate } from '~/core/utils/formatDate';
 import { orderService } from '~/services/order.service';
+import { shippingOptions } from '~/constants/dummyData';
 
 const MyOrder = () => {
     const { data } = useQuery({
@@ -60,7 +61,7 @@ const MyOrder = () => {
             title: 'Tổng tiền',
             width: 70,
             responsive: ['xs', 'sm', 'md', 'lg'],
-            dataIndex: 'subTotal',
+            dataIndex: 'totalPrice',
             render: (item) => <p>{formatNumber(item || 0)}</p>,
         },
         {
@@ -98,7 +99,8 @@ const MyOrder = () => {
                             <strong>Ngày đặt:</strong> {formattedDate(selectedOrder?.createdAt)}
                         </p>
                         <p>
-                            <strong>Phương thức giao hàng:</strong> {selectedOrder?.deliveryMethod}
+                            <strong>Phương thức giao hàng:</strong> {selectedOrder?.deliveryMethod} -{' '}
+                            {formatNumber(selectedOrder.shippingFee || 0)}
                         </p>
                         <p>
                             <strong>Phương thức thanh toán:</strong> {selectedOrder?.paymentMethod}
@@ -107,8 +109,15 @@ const MyOrder = () => {
                         <p>
                             <strong>Số lượng sản phẩm:</strong> {selectedOrder?.totalProduct}
                         </p>
+                        {selectedOrder?.discountPrice !== 0 && (
+                            <p className="flex gap-2">
+                                <strong>Giảm giá:</strong>{' '}
+                                <p className="text-[#f00]"> -{formatNumber(selectedOrder.discountPrice || 0)}</p>
+                            </p>
+                        )}
+
                         <p>
-                            <strong>Tổng tiền:</strong> {formatNumber(selectedOrder?.subTotal || 0)}
+                            <strong>Tổng tiền:</strong> {formatNumber(selectedOrder?.totalPrice || 0)}
                         </p>
                         <p className="mt-3">
                             <strong>Sản phẩm:</strong>

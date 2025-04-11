@@ -67,13 +67,14 @@ const Header = forwardRef((props, ref) => {
             onClick: handleLogout,
         },
     ].filter(Boolean);
+
     return (
         <>
             <div className="bg-[#15395b] h-[70px]  flex items-center z-30 w-full ">
                 <Row className="w-full container justify-between" style={{ alignItems: 'center' }}>
                     <Col span={windowWidth >= 1000 ? 4 : 8}>
                         <Link to={path.Home} style={{ color: '#fff', fontSize: '20px', fontFamily: 'sans-serif' }}>
-                                My Shop
+                            PHUCHUYNH
                         </Link>
                     </Col>
                     <Col span={windowWidth >= 1000 ? 12 : 0}>

@@ -1,4 +1,4 @@
-import {Col, message, Row } from 'antd';
+import { Col, message, Row } from 'antd';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { getAddress, getUser, setCart } from '~/core/token';
@@ -18,6 +18,9 @@ import PaymentMethodCard from '~/components/checkout/PaymentMethodCard';
 import ShippingMethodCard from '~/components/checkout/ShippingMethodCard';
 import AddressDisplay from '~/components/checkout/AddressDisplay';
 import OrderSummary from '~/components/checkout/OrderSummary';
+import { useQuery } from '@tanstack/react-query';
+import { adminService } from '~/services/admin.service';
+import { useDebounce } from '~/hooks/useDebounce';
 
 const Payment = () => {
     const user = getUser();
@@ -28,16 +31,17 @@ const Payment = () => {
     const { refetch: refetchCart, data: dataCart } = useGetCart();
     const addressLocal = getAddress();
     const [loading, setLoading] = useState(false);
-    const [discountCode, setDiscountCode] = useState({
-        code: '',
-        discountAmount: 0,
-    });
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedDiscount, setSelectedDiscount] = useState(null);
+    const [discountPriced, setDiscountPriced] = useState(0);
+
     const [selectedPayment, setSelectedPayment] = useState(null);
     const [shippingMethod, setShippingMethod] = useState('standard');
 
     const addressForm = useForm({ mode: 'onChange' });
 
-    const [chooseAddress, setChooseAddress] = useState(user ? checkoutInfo.shippingAddress : addressLocal);
+    const chooseAddress = user ? checkoutInfo?.shippingAddress : addressLocal;
     const addressString = useMemo(() => {
         return Object.entries(checkoutInfo?.shippingAddress || chooseAddress || {})
             .filter(([key]) => key !== '_id' && key !== 'defaultAddress')
@@ -45,15 +49,58 @@ const Payment = () => {
             .join(', ');
     }, [checkoutInfo?.shippingAddress]);
 
+    const [searchDiscount, setSearchDiscount] = useState('');
+    const handleSearchDiscount = (e) => {
+        const value = e.target.value;
+        setSearchDiscount(value);
+    };
+
+    const debouncedSearch = useDebounce(searchDiscount, 300);
+
+    const { data: dataDiscount, refetch: refetchDiscount } = useQuery({
+        queryKey: ['discount', debouncedSearch],
+        queryFn: async () => await adminService.getAllDiscount(`?code=${debouncedSearch}`),
+        staleTime: 5 * 60 * 1000,
+    });
+
     // phí ship
     const shippingFee = useMemo(() => {
         return shippingOptions.find((option) => option.value === shippingMethod)?.price || 0;
     }, [shippingMethod]);
 
     // tổng tiền
-    const newSubTotal = useMemo(() => {
-        return (checkoutInfo?.subTotal || 0) + shippingFee - (discountCode.discountAmount || 0);
-    }, [checkoutInfo?.subTotal, shippingFee, discountCode.discountAmount]);
+    let totalPrice = useMemo(() => {
+        return discountPriced
+            ? checkoutInfo?.subTotal + shippingFee - discountPriced
+            : checkoutInfo?.subTotal + shippingFee + discountPriced;
+    }, [checkoutInfo?.subTotal, shippingFee, discountPriced]);
+
+    const handleDiscount = async (id) => {
+        const itemDiscount = dataDiscount?.data.find((item) => item._id === id);
+        // nếu mà trùng id => tức là nút hủy chọn => move nó
+        if (selectedDiscount?._id || 0 === itemDiscount?._id) {
+            setIsModalOpen(false);
+            setSelectedDiscount(null);
+            setDiscountPriced(0);
+            return;
+        }
+        const discountPrice =
+            itemDiscount.type === 'percent' ? checkoutInfo?.subTotal * (itemDiscount.value / 100) : itemDiscount.value;
+        try {
+            const result = await adminService.validateDiscount({
+                code: itemDiscount?.code,
+                subTotal: checkoutInfo?.subTotal,
+            });
+            if (result.success) {
+                setIsModalOpen(false);
+                setSelectedDiscount(itemDiscount);
+                setDiscountPriced(discountPrice);
+                message.success(result.message);
+            }
+        } catch (error) {
+            message.error(error.response.data?.message || 'Lỗi khi áp mã');
+        }
+    };
 
     if (Object.keys(checkoutInfo || []).length <= 0) return <Navigate to={path.Home} />;
 
@@ -81,7 +128,12 @@ const Payment = () => {
                 shippingAddress: shippingAddress,
                 deliveryMethod: shippingMethod,
                 paymentMethod: selectedPayment,
-                subTotal: newSubTotal,
+                subTotal: checkoutInfo?.subTotal,
+                shippingFee,
+                totalPrice,
+                discount: selectedDiscount?.code,
+                discountPrice: discountPriced,
+                isPaid: true,
                 ...inforUser,
             };
             const result = await orderService.createOrder(listOrderItem);
@@ -128,28 +180,17 @@ const Payment = () => {
         }
     };
 
-    const handleDiscount = () => {
-        let discountAmount = discountCode.discountAmount;
-        if (discountCode.code) {
-            if (discountCode.code === 'GIAM30') {
-                discountAmount = (checkoutInfo?.subTotal * 30) / 100; // Giảm giá 30%
-            } else if (discountCode.code === 'GIAM10') {
-                discountAmount = (checkoutInfo?.subTotal * 10) / 100; // Giảm giá 10%
-            }
-        }
-        if (discountCode && !['GIAM30', 'GIAM10'].includes(discountCode.code)) {
-            return message.error('Mã không hợp lệ');
-        }
-        setDiscountCode({ code: '', discountAmount: discountAmount });
-    };
-
-    const handleCloseDiscount = () => {
-        setDiscountCode({ discountAmount: 0 });
-    };
-
     const handleShippingMethod = useCallback((e) => {
         setShippingMethod(e.target.value);
     }, []);
+
+    const handleOpen = () => {
+        setIsModalOpen(true);
+    };
+
+    const handleCancle = () => {
+        setIsModalOpen(false);
+    };
 
     const arrayBreadcrumb = useMemo(() => {
         return [
@@ -164,10 +205,8 @@ const Payment = () => {
         ];
     }, [checkoutInfo]);
 
-    const isCartEmpty = 
-    !dataCart?.listProduct?.length && 
-    !cartLocal?.listProduct?.length && 
-    !Object.keys(checkoutInfo || {}).length;
+    const isCartEmpty =
+        !dataCart?.listProduct?.length && !cartLocal?.listProduct?.length && !Object.keys(checkoutInfo || {}).length;
 
     return (
         <div className="container pt-16">
@@ -213,14 +252,19 @@ const Payment = () => {
                                     checkoutInfo={checkoutInfo}
                                     path={path}
                                     shippingFee={shippingFee}
-                                    discountCode={discountCode}
-                                    newSubTotal={newSubTotal}
+                                    totalPrice={totalPrice}
                                     loading={loading}
-                                    setDiscountCode={setDiscountCode}
-                                    handleCloseDiscount={handleCloseDiscount}
                                     handleDiscount={handleDiscount}
                                     onSubmitOrder={onSubmitOrder}
                                     addressForm={addressForm}
+                                    handleOpen={handleOpen}
+                                    handleCancle={handleCancle}
+                                    isModalOpen={isModalOpen}
+                                    selectedDiscount={selectedDiscount}
+                                    discountPriced={discountPriced}
+                                    handleSearchDiscount={handleSearchDiscount}
+                                    dataDiscount={dataDiscount}
+                                    searchDiscount={searchDiscount}
                                 />
                             </Col>
                         </Col>

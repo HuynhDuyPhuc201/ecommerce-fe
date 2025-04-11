@@ -7,13 +7,6 @@ export default {
         'slick-next',
         'slick-dots', // Các class của slick
     ],
-    theme: {
-        extend: {
-            // screens: {
-            //     xs: '320px',
-            //     '3xl': '1600px',
-            // },
-        },
-    },
+    theme: {},
     plugins: [],
 };

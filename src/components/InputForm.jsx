@@ -7,7 +7,7 @@ const InputForm = ({ label, placeholder, name, type, error, required, ...props }
         <>
             {label && <label className="block text-gray-700">{label}</label>}
             <input
-                {...register(name, { required: !required ? `Trường này là bắt buộc` : false })}
+                {...register?.(name, { required: required === true && `Trường này là bắt buộc` })}
                 placeholder={placeholder}
                 type={type}
                 style={{

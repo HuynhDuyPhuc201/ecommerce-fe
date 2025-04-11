@@ -55,7 +55,7 @@ const Sidebar = () => {
                     height={40}
                     src={user?.avatar}
                     alt=""
-                    referrerpolicy="no-referrer"
+                    referrerPolicy="no-referrer"
                     className="w-[40px] h-[40px] rounded-full object-cover"
                 />
             ) : (
@@ -90,7 +90,7 @@ const Sidebar = () => {
             }}
         >
             <div className="p-7 h-[70px] flex items-center justify-between bg-[#15395b]">
-                <Typography style={{ color: '#fff', fontSize: '20px', fontFamily: 'sans-serif' }}>My Shop</Typography>
+                <Typography style={{ color: '#fff', fontSize: '20px', fontFamily: 'sans-serif' }}>PHUCHUYNH</Typography>
                 <CloseOutlined className="text-white text-[20px] cursor-pointer" onClick={toggleSidebar} />
             </div>
 

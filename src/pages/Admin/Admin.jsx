@@ -1,12 +1,13 @@
 import { Col, Menu, Row } from 'antd';
 import React, { useState } from 'react';
-import { AppstoreOutlined, UserOutlined } from '@ant-design/icons';
+import { AppstoreOutlined, LineChartOutlined, UserOutlined } from '@ant-design/icons';
 import Header from '~/components/Layout/Header';
 import AdminUser from './AdminUser';
 import AdminProduct from './AdminProduct';
 import { Navigate } from 'react-router-dom';
 import { path } from '~/config/path';
 import { getUser } from '~/core/token';
+import DashboardChart from './DashboardChart';
 import './admin.css';
 
 const Admin = () => {
@@ -18,12 +19,21 @@ const Admin = () => {
             key: 'user',
             label: 'Người dùng',
             icon: <UserOutlined />,
+            component: <AdminUser />,
         },
         {
             id: 2,
             key: 'product',
             label: 'Sản Phẩm',
             icon: <AppstoreOutlined />,
+            component: <AdminProduct />,
+        },
+        {
+            id: 3,
+            key: 'chart',
+            label: 'Doanh thu',
+            icon: <LineChartOutlined />,
+            component: <DashboardChart />,
         },
     ];
     const onClick = ({ key }) => {
@@ -43,8 +53,14 @@ const Admin = () => {
                         items={items}
                     />
                 </Col>
-                <Col sm={24} md={20}>
-                    <div className="">{renderComponent === 'user' ? <AdminUser /> : <AdminProduct />}</div>
+                <Col sm={24} md={20} style={{ width: '100%' }}>
+                    {items
+                        ?.filter((item, i) => renderComponent === item.key)
+                        .map((item, i) => (
+                            <div className="" key={i}>
+                                {item.component}
+                            </div>
+                        ))}
                 </Col>
             </Row>
         </>

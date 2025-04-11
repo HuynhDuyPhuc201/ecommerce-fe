@@ -5,11 +5,14 @@ import { ArrowLeftOutlined } from '@ant-design/icons';
 import { userService } from '~/services/user.service';
 import { setUser } from '~/core/token';
 import AddressItem from '~/components/Address/AddressItem';
+import useGetUserDetail from '~/hooks/useGetUserDetail';
 
 const Address = () => {
     const addressForm = useForm({ mode: 'onChange' });
     const [createAddress, setCreateAddress] = useState(false);
     const [loading, setLoading] = useState(false);
+    const { data, refetch } = useGetUserDetail();
+
     const onSubmit = async (form) => {
         try {
             setLoading(true);
@@ -23,6 +26,7 @@ const Address = () => {
                     defaultAddress: false,
                 });
                 setUser(result.userUpdate);
+                refetch();
             }
             setLoading(false);
             return setCreateAddress(false);
