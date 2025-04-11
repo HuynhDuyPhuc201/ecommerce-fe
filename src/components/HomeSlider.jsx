@@ -28,7 +28,6 @@ const HomeSlider = () => {
         <div className="wrap">
             <Slider {...settings} style={{ marginBottom: '20px' }}>
                 {arrImg.map((item, i) => (
-                    // Sử dụng LazyLoadImage thay vì <img>
                     <div className="h-[500px] object-cover " key={i}>
                         <img
                             src={item}

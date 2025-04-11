@@ -1,3 +1,6 @@
+import React from 'react';
+import { Camera, WalletCards, Landmark, HandCoins } from 'lucide-react';
+
 export const startArr = [
     {
         id: 1,
@@ -31,7 +34,11 @@ export const priceArr = [
     },
 ];
 
-export const paymentMethods = [{ id: 1, label: 'Thanh toán tiền mặt' }];
+export const paymentMethods = [
+    { id: 1, icon: <HandCoins size={18} />, label: 'Thanh toán tiền mặt', key: 'cash' },
+    { id: 2, icon: <Landmark size={18} />, label: 'Thanh toán qua ngân hàng', key: 'bank' },
+    { id: 3, icon: <WalletCards size={18} />, label: 'Thanh toán qua Momo', key: 'momo' },
+];
 
 export const shippingOptions = [
     { value: 'standard', label: 'Giao tiết kiệm', price: 10000 },

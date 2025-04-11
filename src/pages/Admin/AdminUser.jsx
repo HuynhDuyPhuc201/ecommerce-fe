@@ -50,6 +50,21 @@ const AdminUser = () => {
         setImageUrl('');
         userForm.reset(dataReset);
     };
+    const showDeleteConfirm = (onOk) => {
+        Modal.confirm({
+            title: 'Xác nhận xóa user',
+            content: 'Bạn có chắc chắn muốn xóa user này không?',
+            okText: 'Xóa',
+            okType: 'danger',
+            cancelText: 'Hủy',
+            onOk() {
+                onOk(); // hàm xử lý khi đồng ý
+            },
+            onCancel() {
+                console.log('Hủy xóa');
+            },
+        });
+    };
 
     const handleSubmit = async (form) => {
         const defaultValues = userForm?.formState.defaultValues;
@@ -271,9 +286,14 @@ const AdminUser = () => {
                 onClick={() => setModalConfig({ open: true, type: 'user', action: 'create' })}
             />
             <Divider />
-            <Button disabled={!idCheckbox?.length} onClick={handleDelete} style={{ marginBottom: '10px' }}>
+            <Button
+                disabled={!idCheckbox?.length}
+                onClick={() => showDeleteConfirm(() => handleDelete())}
+                style={{ marginBottom: '10px' }}
+            >
                 Xóa
             </Button>
+
             <Table
                 rowKey="_id"
                 rowSelection={{
@@ -318,6 +338,7 @@ const AdminUser = () => {
             />
             <Modal
                 width={800}
+                height={500}
                 title="Chi tiết đơn hàng"
                 open={modalOrder}
                 footer={null}
@@ -326,7 +347,7 @@ const AdminUser = () => {
             >
                 <div className={`${orders?.data?.length > 1 ? 'grid md:grid-cols-2 gap-5' : ''} text-left`}>
                     {isLoading ? (
-                        <div className="flex items-center justify-center ">Loading...</div>
+                        <div className="flex items-center justify-center h-[300px]">Loading...</div>
                     ) : (
                         orders?.data?.map((item, index) => (
                             <div key={index} className={`border border-solid p-2.5 border-[#c6c6c6] rounded-[10px]`}>

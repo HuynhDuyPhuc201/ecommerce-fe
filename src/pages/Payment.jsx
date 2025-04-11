@@ -55,7 +55,7 @@ const Payment = () => {
         setSearchDiscount(value);
     };
 
-    const debouncedSearch = useDebounce(searchDiscount, 300);
+    const debouncedSearch = useDebounce(searchDiscount, 500);
 
     const { data: dataDiscount, refetch: refetchDiscount } = useQuery({
         queryKey: ['discount', debouncedSearch],
@@ -120,6 +120,8 @@ const Payment = () => {
             phone: form.phone || dataUserDetail?.user?.phone,
         };
 
+        const checkPayment = shippingOptions.find((item) => item.label === selectedPayment);
+        if (!checkPayment) return message.error('Hiện tại chưa khả dụng');
         try {
             setLoading(true);
             const listOrderItem = {
@@ -127,7 +129,7 @@ const Payment = () => {
                 // nếu như shipping không có (tức là khi dùng button mua ngay, nó không add shipping) thì thêm vào
                 shippingAddress: shippingAddress,
                 deliveryMethod: shippingMethod,
-                paymentMethod: selectedPayment,
+                paymentMethod: checkPayment,
                 subTotal: checkoutInfo?.subTotal,
                 shippingFee,
                 totalPrice,

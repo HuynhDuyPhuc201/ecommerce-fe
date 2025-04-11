@@ -47,7 +47,6 @@ const Header = forwardRef((props, ref) => {
     const hanldeShowSearch = () => {
         setOverlayVisible(false);
         setSearchResults([]);
-        setSearchValue('');
     };
 
     const items = [
