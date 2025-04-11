@@ -23,7 +23,8 @@ export const adminService = {
     // discount
     createDiscount: (data) => api.post('/discount/createDiscount', data),
     validateDiscount: (data) => api.post(`/discount/validate`, data),
-    getAllDiscount: (code = '') => api.get(`/discount/getDiscount${code}`),
+    getAllDiscount: (code) => api.get(`/discount/getDiscount`),
+    // getAllDiscount: (code) => api.get(`/discount/getDiscount${code}`),
     deleteDiscount: (ids) => api.delete(`/discount/deleteDiscount?${ids}`),
     updateDiscount: (form) => api.put('/discount/updateDiscount', form),
 };

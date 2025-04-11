@@ -292,7 +292,7 @@ const AdminUser = () => {
             />
             <ModalForm
                 title={modalConfig.action === 'create' ? 'Tạo tài khoản user' : 'Cập nhật tài khoản'}
-                action={renderButton}
+                action={modalConfig.action === 'update' && renderButton}
                 isOpen={modalConfig.open}
                 onCancel={handleCancel}
                 methods={userForm}
