@@ -42,9 +42,9 @@ const Sidebar = () => {
         if (key === 'logout') {
             handleLogout();
         } else {
-            navigate(key);
+            toggleSidebar(false);
             setTimeout(() => {
-                toggleSidebar(false);
+                navigate(key);
             }, 200);
         }
     };

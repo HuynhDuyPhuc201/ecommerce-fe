@@ -101,23 +101,23 @@ const ProductCard = ({ item }) => {
                         <Button
                             size="lg"
                             variant="secondary"
-                            className="rounded-full px-3 text-[#000] bg-[#fff] shadow-lg text-[13px]"
+                            className="rounded-full px-3 text-[#000] bg-[#fff] shadow-lg text-[12px] mdtext-[13px]"
                             onClick={handleViewClick}
                         >
-                            <Eye className="h-6 w-6" />
+                            <Eye className="md:h-6 h-5 md:w-6 w-5" />
                             <p>Xem</p>
                         </Button>
 
                         <Button
                             size="sm"
                             variant="default"
-                            className={`rounded-full px-4 !bg-[#fff] !text-[#000] shadow-lg text-[13px] ${
+                            className={`rounded-full px-3 !bg-[#fff] !text-[#000] shadow-lg text-[12px] mdtext-[13px] ${
                                 !item.countInstock ? 'opacity-50' : 'opacity-100'
                             }`}
                             disabled={user?.isAdmin || !item.countInstock}
                             onClick={handleBuyNow}
                         >
-                            <ShoppingCart className="h-6 w-6" />
+                            <ShoppingCart className="md:h-6 h-5 md:w-6 w-5" />
                             Mua ngay
                         </Button>
                     </div>
