@@ -121,7 +121,7 @@ const Payment = () => {
             phone: form.phone || dataUserDetail?.user?.phone,
         };
 
-        if (selectedPayment !== 'Thanh toán tiền mặt') return message.error('Hiện tại chưa khả dụng');
+        if (selectedPayment !== 'Thanh toán tiền mặt') return message.error('Phương thức thanh toán chưa khả dụng');
         try {
             setLoading(true);
             const listOrderItem = {
