@@ -217,7 +217,7 @@ const ProductDetail = () => {
                                     />
                                 </svg>
                             ))}
-                            <span className="text-[13px] text-[#888]">| đã bán 125</span>
+                            <span className="text-[13px] text-[#888]">| đã bán {dataDetail?.sold || 0}</span>
                             <span className="text-[13px] text-[#888] pl-5">kho: {dataDetail?.countInstock}</span>
                         </div>
                         <div className="flex items-center  pt-3">

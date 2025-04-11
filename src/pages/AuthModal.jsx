@@ -137,14 +137,14 @@ const AuthModal = () => {
                                     </Title>
                                     <InputForm
                                         error={loginForm.formState.errors.email}
-                                        placeholder="admin@gmail.com hoặc test@gmail.com"
+                                        placeholder="Tài khoản admin test: admin@gmail.com "
                                         name="email"
                                         type="text"
                                     />
                                     <div className="relative ">
                                         <InputForm
                                             error={loginForm.formState.errors.password}
-                                            placeholder="123123"
+                                            placeholder="Mật khẩu: 123123"
                                             name="password"
                                             type={showPass ? 'text' : 'password'}
                                         />

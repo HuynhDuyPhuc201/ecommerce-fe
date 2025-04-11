@@ -101,7 +101,11 @@ const Sidebar = () => {
             }}
         >
             <div className="p-7 h-[70px] flex items-center justify-between bg-[#15395b]">
-                <Link to={path.Home} style={{ color: '#fff', fontSize: '20px', fontFamily: 'sans-serif' }}>
+                <Link
+                    to={path.Home}
+                    style={{ color: '#fff', fontSize: '20px', fontFamily: 'sans-serif' }}
+                    onClick={handleCloseSibar}
+                >
                     SHOP
                 </Link>
                 <CloseOutlined className="text-white text-[20px] cursor-pointer" onClick={handleCloseSibar} />

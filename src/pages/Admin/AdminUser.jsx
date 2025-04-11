@@ -391,15 +391,22 @@ const AdminUser = () => {
                             </div>
                         ))
                     )}
-                    {!orders?.data?.length && <span>Chưa có đơn hàng</span>}
+
+                    {!orders?.data?.length && (
+                        <div className="text-center">
+                            <span className="">Chưa có đơn hàng</span>
+                        </div>
+                    )}
                 </div>
-                <Pagination
-                    style={{ padding: '16px', display: 'flex', justifyContent: 'center' }}
-                    onChange={onShowSizeChange}
-                    total={orders?.total}
-                    pageSize={4}
-                    current={currentPageOrder}
-                />
+                {orders?.data?.length > 0 && (
+                    <Pagination
+                        style={{ padding: '16px', display: 'flex', justifyContent: 'center' }}
+                        onChange={onShowSizeChange}
+                        total={orders?.total}
+                        pageSize={4}
+                        current={currentPageOrder}
+                    />
+                )}
             </Modal>
         </div>
     );

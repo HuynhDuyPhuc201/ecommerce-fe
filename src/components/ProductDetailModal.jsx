@@ -100,14 +100,7 @@ const ProductDetailModal = ({ open, product, onClose }) => {
         message.success('Thêm vào giỏ hàng thành công');
     };
     return (
-        <Modal
-            open={open} 
-            onCancel={onClose}
-            footer={null}
-            width={1000}
-            centered
-            className="product-detail-modal"
-        >
+        <Modal open={open} onCancel={onClose} footer={null} width={1000} centered className="product-detail-modal">
             {product && (
                 <div className="flex flex-col md:flex-row gap-8">
                     <div className="w-full md:w-1/2">
@@ -116,8 +109,8 @@ const ProductDetailModal = ({ open, product, onClose }) => {
                                 {product?.image?.map((url, i) => (
                                     <div key={i}>
                                         <img
-                                          width={1000} // hoặc bất kỳ số nào gần đúng
-                                          height={350}
+                                            width={1000} // hoặc bất kỳ số nào gần đúng
+                                            height={350}
                                             src={checkImg(url)}
                                             className={`h-[350px] w-full object-cover ${
                                                 product.countInstock === 0 ? 'opacity-50' : ''
@@ -145,7 +138,7 @@ const ProductDetailModal = ({ open, product, onClose }) => {
                                 <Text className="ml-2">{product.rating || 4.5}</Text>
                             </div>
                             <Divider type="vertical" />
-                            <Text type="secondary">Đã bán: {product.sold || 120}</Text>
+                            <Text type="secondary">Đã bán: {product.sold || 0}</Text>
                         </div>
 
                         <div className="bg-gray-50 p-4 rounded-lg mb-4">
