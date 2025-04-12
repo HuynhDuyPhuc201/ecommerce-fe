@@ -21,6 +21,7 @@ import OrderSummary from '~/components/checkout/OrderSummary';
 import { useQuery } from '@tanstack/react-query';
 import { adminService } from '~/services/admin.service';
 import { useDebounce } from '~/hooks/useDebounce';
+import { userService } from '~/services/user.service';
 
 const Payment = () => {
     const user = getUser();
@@ -57,7 +58,7 @@ const Payment = () => {
 
     const debouncedSearch = useDebounce(searchDiscount, 500);
 
-    const { data: dataDiscount, refetch: refetchDiscount } = useQuery({
+    const { data: dataDiscount } = useQuery({
         queryKey: ['discount', debouncedSearch],
         queryFn: async () => await adminService.getAllDiscount(`?code=${debouncedSearch}`),
         staleTime: 5 * 60 * 1000,
@@ -248,7 +249,7 @@ const Payment = () => {
                             />
                         </Col>
                         <Col sm={24} xs={24} md={7}>
-                            {addressLocal && <AddressDisplay addressString={addressString} user={user} path={path} />}
+                            {addressString && <AddressDisplay addressString={addressString} user={user} path={path} />}
                             <Col sm={24} xs={24} md={24}>
                                 <OrderSummary
                                     checkoutInfo={checkoutInfo}

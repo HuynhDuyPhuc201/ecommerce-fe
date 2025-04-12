@@ -116,9 +116,6 @@ const MyOrder = () => {
                             </p>
                         )}
 
-                        <p>
-                            <strong>Tổng tiền:</strong> {formatNumber(selectedOrder?.totalPrice || 0)}
-                        </p>
                         <p className="mt-3">
                             <strong>Sản phẩm:</strong>
                         </p>
@@ -144,6 +141,9 @@ const MyOrder = () => {
                                 </li>
                             ))}
                         </ul>
+                        <p className=" pt-10 border-t-[1px] border-solid border-[#000]">
+                            <strong>Tổng tiền:</strong> {formatNumber(selectedOrder?.totalPrice || 0)}đ
+                        </p>
                     </div>
                 )}
             </Modal>

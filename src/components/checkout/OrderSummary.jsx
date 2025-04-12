@@ -5,6 +5,7 @@ import { formatNumber } from '~/core';
 import { formattedDate } from '~/core/utils/formatDate';
 import { useQuery } from '@tanstack/react-query';
 import { orderService } from '~/services/order.service';
+import AddressDisplay from './AddressDisplay';
 
 const OrderSummary = ({
     checkoutInfo,
@@ -46,6 +47,7 @@ const OrderSummary = ({
         .join(', ');
     return (
         <div className="p-4 bg-white rounded-lg shadow-md">
+            {/* <AddressDisplay /> */}
             <div className="flex justify-between">
                 <p className="text-[#333] mb-5">Đơn hàng</p>
                 <Link className="text-[#5351c7] mb-5" to={path.Cart}>

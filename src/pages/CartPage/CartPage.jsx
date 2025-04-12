@@ -216,19 +216,25 @@ const CartPage = () => {
         [renderImage, handleQuantityChange],
     );
 
+    const checkProduct = dataCart?.listProduct?.length > 0 || cartLocal?.listProduct?.length > 0;
+
     return (
         <div className="container pt-16">
             <BreadcrumbComponent arrayItem={[{ text: 'Giỏ hàng' }]} />
             <Row span={(16, 16)} style={{ gap: '10px' }}>
                 <Col xs={24} sm={24} md={24}>
                     <h1 className="text-[22px] uppercase pb-6 mt-5">Giỏ hàng</h1>
-                    {idCheckbox?.length > 0 && (
-                        <Button style={{ marginBottom: '10px' }} onClick={handleDelete}>
+                    {checkProduct && (
+                        <Button
+                            disabled={!idCheckbox?.length > 0}
+                            style={{ marginBottom: '10px' }}
+                            onClick={handleDelete}
+                        >
                             Xóa
                         </Button>
                     )}
                 </Col>
-                {dataCart?.listProduct?.length > 0 || cartLocal?.listProduct?.length > 0 ? (
+                {checkProduct ? (
                     <>
                         <Col sm={24} md={18}>
                             <Table
