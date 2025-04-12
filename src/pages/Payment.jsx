@@ -21,8 +21,6 @@ import OrderSummary from '~/components/checkout/OrderSummary';
 import { useQuery } from '@tanstack/react-query';
 import { adminService } from '~/services/admin.service';
 import { useDebounce } from '~/hooks/useDebounce';
-import { userService } from '~/services/user.service';
-import TestAddress from '~/components/Address/testAddress';
 
 const Payment = () => {
     const user = getUser();
