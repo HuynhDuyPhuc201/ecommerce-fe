@@ -20,7 +20,7 @@ const Profile = () => {
 
     // set form mặc định là giá trị detail từ get
     useEffect(() => {
-        updateForm.reset(data?.user);
+        updateForm.reset(data);
     }, [data]);
 
     const onSubmitUpdate = async (form) => {
@@ -77,7 +77,7 @@ const Profile = () => {
                                 <Avatar
                                     size={100}
                                     icon={!imageUrl ? <UserOutlined /> : undefined}
-                                    src={imageUrl || data?.user?.avatar}
+                                    src={imageUrl || data?.avatar || user?.avatar}
                                 />
                                 {/* Nút tải ảnh lên */}
                                 <Upload showUploadList={false} beforeUpload={() => false} onChange={handleUpload}>

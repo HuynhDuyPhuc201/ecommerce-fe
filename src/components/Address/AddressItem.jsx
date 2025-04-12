@@ -26,7 +26,7 @@ const AddressItem = () => {
 
     const handleUpdate = (id) => {
         setModalConfig(true);
-        const itemAddress = data?.user?.address.find((item) => item?._id === id) || {};
+        const itemAddress = data?.address.find((item) => item?._id === id) || {};
         setAddressId(id);
         addressForm.reset(itemAddress);
     };
@@ -52,9 +52,9 @@ const AddressItem = () => {
 
     return (
         <>
-            {!data?.user.address?.length && <p className="text-[20px] text-center py-10">Chưa cập nhật địa chỉ</p>}
+            {!data?.address?.length && <p className="text-[20px] text-center py-10">Chưa cập nhật địa chỉ</p>}
             <Row gutter={[24, 24]} justify="center">
-                {data?.user.address?.map((item) => (
+                {data?.address?.map((item) => (
                     <Col xs={24} sm={12} md={24} lg={12} key={item?._id}>
                         <Card style={{ position: 'relative', padding: '10px' }}>
                             <p>Số nhà: {item?.houseNumber}</p>

@@ -11,7 +11,7 @@ const Address = () => {
     const addressForm = useForm({ mode: 'onChange' });
     const [createAddress, setCreateAddress] = useState(false);
     const [loading, setLoading] = useState(false);
-    const { data, refetch } = useGetUserDetail();
+    const { refetch } = useGetUserDetail();
 
     const onSubmit = async (form) => {
         try {

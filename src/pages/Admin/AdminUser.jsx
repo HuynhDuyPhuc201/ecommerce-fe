@@ -270,6 +270,14 @@ const AdminUser = () => {
                 width: 120,
             },
             {
+                title: 'Email đã xác thực',
+                dataIndex: 'isLogin',
+                ellipsis: true,
+                width: 120,
+                render: (a) =>
+                    a ? <p className="text-[#20a32b]">{'true'}</p> : <p className="text-[#ff1e1e]">{'false'}</p>,
+            },
+            {
                 title: 'Đơn hàng',
                 dataIndex: '_id',
                 width: 120,
@@ -364,7 +372,7 @@ const AdminUser = () => {
                                     <strong>Số lượng:</strong> {item?.totalProduct}
                                 </p>
                                 <p>
-                                    <strong>Tổng tiền:</strong> {formatNumber(item?.totalPrice || 0)}
+                                    <strong>Tổng tiền:</strong> {formatNumber(item?.totalPrice || 0)}₫
                                 </p>
                                 <p className="mt-3">
                                     <strong>Sản phẩm:</strong>
@@ -382,7 +390,7 @@ const AdminUser = () => {
                                             <div>
                                                 <p className="line-clamp-2">{item?.name}</p>
                                                 <p>
-                                                    {formatNumber(item?.price || 0)} x {item?.quantity || 0}
+                                                    {formatNumber(item?.price || 0)}₫ x {item?.quantity || 0}
                                                 </p>
                                             </div>
                                         </li>

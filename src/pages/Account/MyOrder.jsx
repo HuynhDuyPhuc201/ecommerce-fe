@@ -10,6 +10,7 @@ const MyOrder = () => {
     const { data } = useQuery({
         queryKey: ['orders'],
         queryFn: async () => orderService.getOrder(),
+        staleTime: 5 * 60 * 1000, // Cache trong 5 phút
         refetchOnWindowFocus: false, // Tắt refetch khi tab focus lại
         refetchOnReconnect: false, // Tắt refetch khi mạng có lại
     });
@@ -62,7 +63,7 @@ const MyOrder = () => {
             width: 70,
             responsive: ['xs', 'sm', 'md', 'lg'],
             dataIndex: 'totalPrice',
-            render: (item) => <p>{formatNumber(item || 0)}</p>,
+            render: (item) => <p>{formatNumber(item || 0)}₫</p>,
         },
         {
             title: 'Ngày đặt',
@@ -100,7 +101,7 @@ const MyOrder = () => {
                         </p>
                         <p>
                             <strong>Phương thức giao hàng:</strong> {selectedOrder?.deliveryMethod} -{' '}
-                            {formatNumber(selectedOrder.shippingFee || 0)}
+                            {formatNumber(selectedOrder.shippingFee || 0)}₫
                         </p>
                         <p>
                             <strong>Phương thức thanh toán:</strong> {selectedOrder?.paymentMethod}
@@ -112,7 +113,7 @@ const MyOrder = () => {
                         {selectedOrder?.discountPrice !== 0 && (
                             <p className="flex gap-2">
                                 <strong>Giảm giá:</strong>{' '}
-                                <p className="text-[#f00]"> -{formatNumber(selectedOrder.discountPrice || 0)}</p>
+                                <p className="text-[#f00]"> -{formatNumber(selectedOrder.discountPrice || 0)}₫</p>
                             </p>
                         )}
 
@@ -135,14 +136,14 @@ const MyOrder = () => {
                                     <div>
                                         <p>{item?.name}</p>
                                         <p>
-                                            {formatNumber(item?.price || 0)} x {item?.quantity || 0}
+                                            {formatNumber(item?.price || 0)} x {item?.quantity || 0}₫
                                         </p>
                                     </div>
                                 </li>
                             ))}
                         </ul>
                         <p className=" pt-10 border-t-[1px] border-solid border-[#000]">
-                            <strong>Tổng tiền:</strong> {formatNumber(selectedOrder?.totalPrice || 0)}đ
+                            <strong>Tổng tiền:</strong> {formatNumber(selectedOrder?.totalPrice || 0)}₫
                         </p>
                     </div>
                 )}

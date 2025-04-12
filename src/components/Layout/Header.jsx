@@ -129,7 +129,7 @@ const Header = forwardRef((props, ref) => {
                                                         paddingLeft: '20px',
                                                     }}
                                                 >
-                                                    {formatNumber(item.price || 0)} đ
+                                                    {formatNumber(item.price || 0)}₫
                                                 </p>
                                             </div>
                                         </List.Item>
@@ -171,7 +171,7 @@ const Header = forwardRef((props, ref) => {
                                         <Dropdown menu={{ items }} trigger={user ? ['hover'] : []}>
                                             <button onClick={toggleModal} disabled={user} className="cursor-pointer">
                                                 <Space className="text-[#fff] text-[17px]">
-                                                    {userDetail?.user ? userDetail?.user?.name : 'Tài khoản'}
+                                                    {userDetail ? userDetail?.name : 'Tài khoản'}
                                                 </Space>
                                             </button>
                                         </Dropdown>

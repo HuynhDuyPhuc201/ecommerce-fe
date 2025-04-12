@@ -31,11 +31,7 @@ const CartPage = () => {
     const addressForm = useForm({ mode: 'onChange' });
 
     const address = useMemo(() => {
-        return (
-            dataUserDetail?.user?.address?.find((item) => item?.defaultAddress) ||
-            dataUserDetail?.user?.address[0] ||
-            {}
-        );
+        return dataUserDetail?.address?.find((item) => item?.defaultAddress) || dataUserDetail?.address[0] || {};
     }, [dataUserDetail]);
 
     const [chooseAddress, setChooseAddress] = useState(user ? address : addressLocal);
@@ -266,7 +262,7 @@ const CartPage = () => {
                                 <div className="p-4 bg-white rounded-lg shadow-md ">
                                     <div className="flex justify-between text-gray-700">
                                         <span>Tạm tính</span>
-                                        <span>{formatNumber(subTotal || 0)}đ</span>
+                                        <span>{formatNumber(subTotal || 0)}₫</span>
                                     </div>
 
                                     <div className="flex justify-between font-bold mt-4">
@@ -274,7 +270,7 @@ const CartPage = () => {
                                             Tổng tiền <br />
                                             thanh toán
                                         </span>
-                                        <span>{formatNumber(subTotal || 0)}đ</span>
+                                        <span>{formatNumber(subTotal || 0)}₫</span>
                                     </div>
                                     <p className="text-sm text-gray-500">(Đã bao gồm VAT nếu có)</p>
                                     <button
@@ -296,7 +292,7 @@ const CartPage = () => {
                 <AddressModal
                     open={modalConfig}
                     onClose={handleCancel}
-                    addresses={dataUserDetail?.user?.address}
+                    addresses={dataUserDetail?.address}
                     onSelect={handleChooseAddress}
                 />
             ) : (

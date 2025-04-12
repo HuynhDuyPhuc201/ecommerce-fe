@@ -4,7 +4,7 @@ import { FormProvider } from 'react-hook-form';
 import InputForm from '../InputForm';
 
 const NewAddressForm = ({ addressForm, onSubmitOrder, addressLocal, user, dataUserDetail }) => {
-    if (!user || !dataUserDetail?.user || dataUserDetail?.user?.address.length > 0) return null;
+    if (!user || !dataUserDetail || dataUserDetail?.address.length > 0) return null;
 
     return (
         <Card title="Thêm thông tin địa chỉ" className="mb-6">

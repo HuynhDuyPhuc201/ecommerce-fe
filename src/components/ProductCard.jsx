@@ -39,7 +39,7 @@ const ProductCard = ({ item }) => {
         [item.categories, item._id],
     );
 
-    let address = dataUser?.user?.address?.find((item) => item?.defaultAddress) || dataUser?.user?.address[0] || {};
+    let address = dataUser?.address?.find((item) => item?.defaultAddress) || dataUser?.address[0] || {};
     const handleBuyNow = useCallback(async () => {
         handleClickItem();
         if (!user) removeAddress();
@@ -163,11 +163,11 @@ const ProductCard = ({ item }) => {
 
                         {/* Price info */}
                         <div className="flex flex-col">
-                            <p className="text-[16px] font-bold text-red-600">{formatNumber(item?.price) || 0}</p>
+                            <p className="text-[16px] font-bold text-red-600">{formatNumber(item?.price) || 0}₫</p>
                             {item.price_old && (
                                 <div className="flex items-center gap-2">
                                     <span className="text-[13px] text-gray-500 line-through">
-                                        {formatNumber(item.price_old)}
+                                        {formatNumber(item.price_old)}₫
                                     </span>
                                 </div>
                             )}

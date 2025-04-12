@@ -144,12 +144,12 @@ const ProductDetailModal = ({ open, product, onClose }) => {
                         <div className="bg-gray-50 p-4 rounded-lg mb-4">
                             <div className="flex items-end gap-3">
                                 <Title level={2} style={{ color: '#fc3434', margin: 0 }}>
-                                    {formatNumber(product.price || 0)}
+                                    {formatNumber(product.price || 0)}₫
                                 </Title>
                                 {discount > 0 && (
                                     <>
                                         <Text delete type="secondary" className="text-lg">
-                                            {formatNumber(product.price_old || 0)}
+                                            {formatNumber(product.price_old || 0)}₫
                                         </Text>
                                         <Tag color="red" className="ml-2">
                                             -{discount.toFixed()}%

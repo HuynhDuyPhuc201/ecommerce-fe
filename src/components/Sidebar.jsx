@@ -7,10 +7,8 @@ import { generatePath, Link, useLocation, useNavigate } from 'react-router-dom';
 import { path } from '~/config/path';
 import useGetCart from '~/hooks/useGetCart';
 import SearchBar from './SearchBar';
-import { Typography } from 'antd';
 import useGetUserDetail from '~/hooks/useGetUserDetail';
 import { useLocalStore } from '~/store/useLocalStore';
-import styled from 'styled-components';
 import { checkImg } from '~/utils/checkImg';
 import { formatNumber } from '~/core';
 
@@ -69,10 +67,10 @@ const Sidebar = () => {
             ),
             children: user
                 ? [
-                      userDetail?.user?.isAdmin
+                      userDetail?.isAdmin
                           ? { key: path.Admin, label: 'Quản lý hệ thống' }
                           : { key: path.Account.Profile, label: 'Thông tin người dùng' },
-                      !userDetail?.user?.isAdmin && { key: path.Account.MyOrder, label: 'Đơn hàng' },
+                      !userDetail?.isAdmin && { key: path.Account.MyOrder, label: 'Đơn hàng' },
                       { key: 'logout', label: 'Đăng xuất' },
                   ].filter(Boolean)
                 : [],
@@ -164,7 +162,7 @@ const Sidebar = () => {
                                                 paddingLeft: '20px',
                                             }}
                                         >
-                                            {formatNumber(item.price || 0)} đ
+                                            {formatNumber(item.price || 0)}₫
                                         </p>
                                     </div>
                                 </List.Item>

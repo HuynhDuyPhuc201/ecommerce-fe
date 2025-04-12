@@ -24,6 +24,7 @@ const OrderSummary = ({
     handleDiscount,
     dataDiscount,
     searchDiscount,
+    addressString,
 }) => {
     const subTotal = checkoutInfo?.subTotal || checkoutInfo?.price * checkoutInfo?.quantity || 0;
     const itemCount = checkoutInfo?.orderItems?.length || (checkoutInfo?.name && 1) || 0;
@@ -47,22 +48,23 @@ const OrderSummary = ({
         .join(', ');
     return (
         <div className="p-4 bg-white rounded-lg shadow-md">
-            {/* <AddressDisplay /> */}
             <div className="flex justify-between">
                 <p className="text-[#333] mb-5">Đơn hàng</p>
-                <Link className="text-[#5351c7] mb-5" to={path.Cart}>
-                    Đổi
-                </Link>
+                {addressString && (
+                    <Link className="text-[#5351c7] mb-5" to={path.Cart}>
+                        Đổi
+                    </Link>
+                )}
             </div>
 
             <div className="flex justify-between text-gray-700">
                 <span>Tạm tính</span>
-                <span>{formatNumber(subTotal) || 0}đ</span>
+                <span>{formatNumber(subTotal) || 0}₫</span>
             </div>
 
             <div className="flex justify-between text-gray-700 mt-2">
                 <span>Phí vận chuyển</span>
-                <span>{formatNumber(shippingFee || 0)}đ</span>
+                <span>{formatNumber(shippingFee || 0)}₫</span>
             </div>
 
             <div className="flex justify-between text-gray-700 mt-2">
@@ -73,13 +75,13 @@ const OrderSummary = ({
             {selectedDiscount && (
                 <div className="flex justify-between text-gray-700 mt-2">
                     <p>{selectedDiscount.code}</p>
-                    <p className="text-[#f11010]">-{formatNumber(discountPriced)}đ</p>
+                    <p className="text-[#f11010]">-{formatNumber(discountPriced)}₫</p>
                 </div>
             )}
 
             <div className="flex justify-between font-bold mt-4">
                 <span>Tổng tiền thanh toán</span>
-                <span>{formatNumber(totalPrice || 0)}đ</span>
+                <span>{formatNumber(totalPrice || 0)}₫</span>
             </div>
 
             <p className="text-sm text-gray-500">(Đã bao gồm VAT nếu có)</p>
@@ -133,7 +135,7 @@ const OrderSummary = ({
                                                     </p>
                                                     <p className="text-lg">{`Đơn hàng tối thiểu ${formatNumber(
                                                         discount.minOrderValue || 0,
-                                                    )}đ`}</p>
+                                                    )}₫`}</p>
                                                     <p className="text-lg">
                                                         Có hiệu lực từ: {''}
                                                         {formattedDate(discount?.startDate)} -{' '}

@@ -134,7 +134,7 @@ const ProductDetail = () => {
         message.success('Thêm vào giỏ hàng thành công');
     };
 
-    let address = dataUser?.user?.address?.find((item) => item?.defaultAddress) || dataUser?.user?.address[0] || {};
+    let address = dataUser?.address?.find((item) => item?.defaultAddress) || dataUser?.address[0] || {};
 
     // button mua ngay
     const handleBuyNow = useCallback(async () => {
@@ -222,11 +222,11 @@ const ProductDetail = () => {
                         </div>
                         <div className="flex items-center  pt-3">
                             <p className="text-[20px] text-[#fc3434] font-bold mt-3 ">
-                                {formatNumber(dataDetail?.price || 0)}
+                                {formatNumber(dataDetail?.price || 0)}₫
                             </p>
                             <div className="sale mt-3">
                                 <span className="price-sale line-through pl-5 text-[gray] text-[14px]">
-                                    {formatNumber(dataDetail?.price_old || 0)}
+                                    {formatNumber(dataDetail?.price_old || 0)}₫
                                 </span>
                             </div>
                         </div>
@@ -268,7 +268,7 @@ const ProductDetail = () => {
                                             Tạm tính
                                         </Title>
                                         <Title level={4} style={{ color: '#fa541c', marginTop: '5px' }}>
-                                            {formatNumber(quantity * dataDetail?.price || 0)}
+                                            {formatNumber(quantity * dataDetail?.price || 0)}₫
                                         </Title>
                                     </Col>
 
@@ -352,7 +352,7 @@ const ProductDetail = () => {
                                         Tạm tính
                                     </Title>
                                     <Title level={4} style={{ color: '#fa541c', marginTop: '5px' }}>
-                                        {formatNumber(quantity * dataDetail?.price || 0)}
+                                        {formatNumber(quantity * dataDetail?.price || 0)}₫
                                     </Title>
                                 </Col>
 

@@ -46,7 +46,7 @@ const Price = ({ priceObj }) => {
 
                 <div className=" text-center text-xl  text-gray-800 ">
                     <span className="text-[14px]">Giá từ:</span>{' '}
-                    <span className="p-2   text-[14px]">{`0 - ${formatNumber(Number(priceValue))}`} VND</span>
+                    <span className="p-2   text-[14px]">{`0 - ${formatNumber(Number(priceValue))}`}₫</span>
                 </div>
             </Row>
         </div>
