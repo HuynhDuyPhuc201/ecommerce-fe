@@ -26,22 +26,22 @@ const HomeSlider = () => {
 
     return (
         <div className="wrap">
-            <Slider {...settings} style={{ marginBottom: '20px' }}>
-                {arrImg.map((item, i) => (
-                    <div className="h-[500px] object-cover " key={i}>
-                        <img
-                            src={item}
-                            alt={`slider-${i}`}
-                            // Nếu slide đầu tiên là LCP, bạn có thể đặt loading="eager"
-                            loading={i === 0 ? 'eager' : 'lazy'}
-                            width={1000}
-                            height={300}
-                            className="w-full !h-full object-cover"
-                            // Bạn có thể bỏ qua threshold, delayMethod, delayTime nếu không cần thiết
-                        />
-                    </div>
-                ))}
-            </Slider>
+            {/* <Slider {...settings} style={{ marginBottom: '20px' }}> */}
+            {/* {arrImg?.map((item, i) => (
+                <div className="h-[500px] object-cover " key={i}>
+                    <img
+                        src={item}
+                        alt={`slider-${i}`}
+                        // Nếu slide đầu tiên là LCP, bạn có thể đặt loading="eager"
+                        loading={i === 0 ? 'eager' : 'lazy'}
+                        width={1000}
+                        height={300}
+                        className="w-full !h-full object-cover"
+                        // Bạn có thể bỏ qua threshold, delayMethod, delayTime nếu không cần thiết
+                    />
+                </div>
+            ))} */}
+            {/* </Slider> */}
         </div>
     );
 };
