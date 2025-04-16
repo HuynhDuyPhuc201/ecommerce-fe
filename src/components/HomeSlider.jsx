@@ -1,47 +1,52 @@
-import React, { memo, useMemo } from 'react';
-import Slider from 'react-slick';
-import 'react-lazy-load-image-component/src/effects/blur.css';
+import React, { useState, useEffect, memo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { slider_1, slider_2 } from '~/constants/images';
 
 const HomeSlider = () => {
-    // Mảng ảnh slider: em có thể import hoặc lấy từ API
-    const arrImg = [slider_1, slider_2];
+    const images = [slider_1, slider_2];
+    const [index, setIndex] = useState(0);
 
-    // Cache cài đặt slider
-    const settings = useMemo(
-        () => ({
-            dots: true,
-            infinite: true,
-            speed: 500, // điều chỉnh tốc độ chuyển nếu cần
-            slidesToShow: 1,
-            slidesToScroll: 1,
-            // autoplay: true,
-            // autoplaySpeed: 3000,
-            arrows: false,
-            // Nếu có thể, thử tắt lazyLoad của react-slick để tránh trùng với LazyLoadImage
-            // lazyLoad: false,
-        }),
-        [],
-    );
+    // Auto chuyển ảnh mỗi 5 giây
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setIndex((prev) => (prev + 1) % images.length);
+        }, 5000);
+        return () => clearInterval(timer);
+    }, [images.length]);
 
     return (
-        <div className="wrap">
-            {/* <Slider {...settings} style={{ marginBottom: '20px' }}> */}
-            {/* {arrImg?.map((item, i) => (
-                <div className="h-[500px] object-cover " key={i}>
+        <div className="relative w-full h-[500px] overflow-hidden rounded-2xl shadow-lg">
+            <AnimatePresence initial={false}>
+                <motion.div
+                    key={index}
+                    className="w-full h-full absolute top-0 left-0"
+                    initial={{ opacity: 0, x: 100 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -100 }}
+                    transition={{ duration: 0.8 }}
+                >
                     <img
-                        src={item}
-                        alt={`slider-${i}`}
-                        // Nếu slide đầu tiên là LCP, bạn có thể đặt loading="eager"
-                        loading={i === 0 ? 'eager' : 'lazy'}
-                        width={1000}
-                        height={300}
-                        className="w-full !h-full object-cover"
-                        // Bạn có thể bỏ qua threshold, delayMethod, delayTime nếu không cần thiết
+                        src={images[index]}
+                        alt={`slider-${index}`}
+                        loading={index === 0 ? 'eager' : 'lazy'}
+                        fetchpriority={index === 0 ? 'high' : 'auto'}
+                        className="w-full h-full object-cover"
                     />
-                </div>
-            ))} */}
-            {/* </Slider> */}
+                </motion.div>
+            </AnimatePresence>
+
+            {/* Dots */}
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+                {images.map((_, i) => (
+                    <button
+                        key={i}
+                        onClick={() => setIndex(i)}
+                        className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                            i === index ? 'bg-white' : 'bg-white/50'
+                        }`}
+                    />
+                ))}
+            </div>
         </div>
     );
 };
