@@ -1,11 +1,13 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
-import ProductCard from '~/components/ProductCard';
+import  { lazy, Suspense, memo  } from 'react';
+
 import Navbar from '~/components/Navbar';
 import { Col, Pagination, Row, Skeleton } from 'antd';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { productService } from '~/services/product.service';
 import { useQuery } from '@tanstack/react-query';
 import HomeSlider from '~/components/HomeSlider';
+const LazyProductCard = lazy(() => import('~/components/ProductCard'));
 
 const Index = () => {
     const { id } = useParams();
@@ -135,29 +137,31 @@ const Index = () => {
                         </Col>
                     )}
 
-                    <Col xs={24} sm={18} md={18}>
-                        <Row gutter={[12, 12]} style={{ rowGap: '16px', marginTop: '20px' }}>
-                            {isLoading
-                                ? // Hiển thị danh sách Skeleton khi đang tải dữ liệu
-                                  Array.from({ length: 8 }).map((_, i) => (
-                                      <Col lg={6} md={8} sm={12} xs={12} key={i}>
-                                          <Skeleton active style={{ height: '200px' }} />
-                                      </Col>
-                                  ))
-                                : // Hiển thị sản phẩm sau khi có dữ liệu
-                                  dataProduct?.map((item, i) => (
-                                      <Col lg={6} md={8} sm={12} xs={12} key={i}>
-                                          <ProductCard item={item} />
-                                      </Col>
-                                  ))}
-                        </Row>
+<Col xs={24} sm={18} md={18}>
+    <Row gutter={[12, 12]} style={{ rowGap: '16px', marginTop: '20px' }}>
+        {isLoading
+            ? Array.from({ length: 8 }).map((_, i) => (
+                  <Col lg={6} md={8} sm={12} xs={12} key={i}>
+                      <Skeleton active style={{ height: '200px' }} />
+                  </Col>
+              ))
+            : dataProduct?.map((item, i) => (
+                  <Col lg={6} md={8} sm={12} xs={12} key={i}>
+                      <Suspense
+                          fallback={<Skeleton active style={{ height: '200px' }} />}
+                      >
+                          <LazyProductCard item={item} />
+                      </Suspense>
+                  </Col>
+              ))}
+    </Row>
 
-                        {dataProduct?.length === 0 && (
-                            <div className="text-center">
-                                <p className="text-[17px] font-bold">Không có sản phẩm nào</p>
-                            </div>
-                        )}
-                    </Col>
+    {dataProduct?.length === 0 && (
+        <div className="text-center">
+            <p className="text-[17px] font-bold">Không có sản phẩm nào</p>
+        </div>
+    )}
+</Col>
                 </Row>
 
                 <div className="flex justify-end">
@@ -174,6 +178,4 @@ const Index = () => {
     );
 };
 
-const MemoizedProductCard = React.memo(ProductCard);
-
-export default React.memo(Index);
+export default memo(Index);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, forwardRef } from 'react';
-import { Badge, Col, List, message, Row, Typography } from 'antd';
+import { Badge, Col, List, Row } from 'antd';
 import { generatePath, Link, useNavigate } from 'react-router-dom';
 import { ShoppingCartOutlined, UserOutlined, MenuOutlined, CaretDownOutlined } from '@ant-design/icons';
 import { Dropdown, Space } from 'antd';
@@ -8,17 +8,15 @@ import Sidebar from '../Sidebar';
 import { path } from '~/config/path';
 import AuthModal from '~/pages/AuthModal';
 import { useAppStore } from '~/store/useAppStore';
-import { getUser, removeUser, removeToken, getCart } from '~/core/token';
+import { getUser, removeUser, removeToken } from '~/core/token';
 import { formatNumber } from '~/core';
 import useGetCart from '~/hooks/useGetCart';
-import useGetUserDetail from '~/hooks/useGetUserDetail';
 import { useLocalStore } from '~/store/useLocalStore';
 import { checkImg } from '~/utils/checkImg';
 
 const Header = forwardRef((props, ref) => {
     const user = getUser();
 
-    const { data: userDetail } = useGetUserDetail();
     const navigate = useNavigate();
     const { data: dataCart } = useGetCart();
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -171,7 +169,7 @@ const Header = forwardRef((props, ref) => {
                                         <Dropdown menu={{ items }} trigger={user ? ['hover'] : []}>
                                             <button onClick={toggleModal} disabled={user} className="cursor-pointer">
                                                 <Space className="text-[#fff] text-[17px]">
-                                                    {userDetail ? userDetail?.name : 'Tài khoản'}
+                                                    {user ? user?.name : 'Tài khoản'}
                                                 </Space>
                                             </button>
                                         </Dropdown>

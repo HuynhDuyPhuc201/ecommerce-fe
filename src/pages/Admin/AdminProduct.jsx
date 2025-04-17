@@ -11,10 +11,8 @@ import { adminService } from '~/services/admin.service';
 import { checkImg } from '~/utils/checkImg';
 import TextArea from 'antd/es/input/TextArea';
 import { modalButtonData, tabTableAdminProduct } from '~/constants/dummyData';
-import moment from 'moment';
 import { formattedDate } from '~/core/utils/formatDate';
 import { toInputDate } from '~/core/utils/toInputDate';
-// import dayjs from 'dayjs';
 
 const AdminProduct = () => {
     const [state, setState] = useState({
@@ -476,13 +474,13 @@ const AdminProduct = () => {
                 title: 'Bắt đầu',
                 dataIndex: 'startDate',
                 width: 130,
-                render: (date) => moment(date).format('DD/MM/YYYY'),
+                render: (date) => formattedDate(date),
             },
             {
                 title: 'Kết thúc',
                 dataIndex: 'endDate',
                 width: 130,
-                render: (date) => moment(date).format('DD/MM/YYYY'),
+                render: (date) => formattedDate(date),
             },
             {
                 title: 'Kích hoạt',
