@@ -141,7 +141,7 @@ const Payment = () => {
             const result = await orderService.createOrder(listOrderItem);
             if (result.success) {
                 message.success(result.message);
-                refetchCart();
+                if (user) refetchCart();
                 navigate(path.OrderSuccess);
                 updateStockAfterOrder(listOrderItem?.orderItems);
                 if (!user) {

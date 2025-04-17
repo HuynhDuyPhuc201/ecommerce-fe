@@ -68,6 +68,9 @@ const CartPage = () => {
     }, []);
 
     const onSubmitAddress = useCallback((form) => {
+        if (form.houseNumber.trim() === '' || form.district.trim() === '' || form.city.trim() === '') {
+            return message.warning('Nhập thiếu thông tin');
+        }
         setModalConfig(false);
         setChooseAddress(form);
         if (!user) {

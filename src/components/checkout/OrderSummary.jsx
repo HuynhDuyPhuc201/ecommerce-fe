@@ -6,6 +6,7 @@ import { formattedDate } from '~/core/utils/formatDate';
 import { useQuery } from '@tanstack/react-query';
 import { orderService } from '~/services/order.service';
 import AddressDisplay from './AddressDisplay';
+import { getUser } from '~/core/token';
 
 const OrderSummary = ({
     checkoutInfo,
@@ -29,9 +30,12 @@ const OrderSummary = ({
     const subTotal = checkoutInfo?.subTotal || checkoutInfo?.price * checkoutInfo?.quantity || 0;
     const itemCount = checkoutInfo?.orderItems?.length || (checkoutInfo?.name && 1) || 0;
 
+    const user = getUser();
     const { data } = useQuery({
         queryKey: ['orders'],
         queryFn: async () => orderService.getOrder(),
+        enabled: !!user, // Chỉ chạy khi user tồn tại
+        retry: 0, // Không retry nếu lỗi
         refetchOnWindowFocus: false, // Tắt refetch khi tab focus lại
         refetchOnReconnect: false, // Tắt refetch khi mạng có lại
     });
@@ -41,6 +45,8 @@ const OrderSummary = ({
             .filter((itemDiscount) => data?.some((itemData) => itemData?.discount === itemDiscount?.code))
             .map((item) => item?.code);
     }, [dataDiscount, data]);
+
+    console.log('findCode', findCode);
 
     const PlacehoderCode = dataDiscount?.data
         ?.filter((item) => item)

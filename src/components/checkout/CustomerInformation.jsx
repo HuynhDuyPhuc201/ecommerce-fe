@@ -15,6 +15,7 @@ const CustomerInformation = ({ addressForm, onSubmitOrder, user, addressLocal, c
                             <input
                                 {...addressForm.register('name', {
                                     required: 'Trường này là bắt buộc',
+                                    validate: (value) => value.trim() !== '' || 'Không được để trống khoảng trắng',
                                 })}
                                 type="text"
                                 className="w-full p-2 border rounded-lg"
@@ -29,6 +30,7 @@ const CustomerInformation = ({ addressForm, onSubmitOrder, user, addressLocal, c
                             <input
                                 {...addressForm.register('email', {
                                     required: 'Trường này là bắt buộc',
+                                    validate: (value) => value.trim() !== '' || 'Không được để trống khoảng trắng',
                                 })}
                                 type="text"
                                 className="w-full p-2 border rounded-lg"
@@ -43,6 +45,7 @@ const CustomerInformation = ({ addressForm, onSubmitOrder, user, addressLocal, c
                             <input
                                 {...addressForm.register('phone', {
                                     required: 'Trường này là bắt buộc',
+                                    validate: (value) => value.trim() !== '' || 'Không được để trống khoảng trắng',
                                 })}
                                 type="text"
                                 className="w-full p-2 border rounded-lg"
@@ -59,6 +62,8 @@ const CustomerInformation = ({ addressForm, onSubmitOrder, user, addressLocal, c
                                     <input
                                         {...addressForm.register('houseNumber', {
                                             required: 'Trường này là bắt buộc',
+                                            validate: (value) =>
+                                                value.trim() !== '' || 'Không được để trống khoảng trắng',
                                         })}
                                         type="text"
                                         className="w-full p-2 border rounded-lg"
@@ -75,6 +80,8 @@ const CustomerInformation = ({ addressForm, onSubmitOrder, user, addressLocal, c
                                     <input
                                         {...addressForm.register('district', {
                                             required: 'Trường này là bắt buộc',
+                                            validate: (value) =>
+                                                value.trim() !== '' || 'Không được để trống khoảng trắng',
                                         })}
                                         type="text"
                                         className="w-full p-2 border rounded-lg"
@@ -91,6 +98,8 @@ const CustomerInformation = ({ addressForm, onSubmitOrder, user, addressLocal, c
                                     <input
                                         {...addressForm.register('city', {
                                             required: 'Trường này là bắt buộc',
+                                            validate: (value) =>
+                                                value.trim() !== '' || 'Không được để trống khoảng trắng',
                                         })}
                                         type="text"
                                         className="w-full p-2 border rounded-lg"

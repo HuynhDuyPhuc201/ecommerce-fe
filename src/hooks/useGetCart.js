@@ -1,9 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
-import { getUser } from '~/core/token';
 import { cartService } from '~/services/cart.service';
 
-const useGetCart = () => {
-    const user = getUser();
+const useGetCart = (user) => {
     const { data, isFetching, refetch } = useQuery({
         queryKey: ['cart'],
         queryFn: async () => cartService.getCart(),
