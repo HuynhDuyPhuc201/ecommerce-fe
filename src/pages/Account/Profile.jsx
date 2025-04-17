@@ -9,6 +9,7 @@ import { useForm } from 'react-hook-form';
 import { path } from '~/config/path';
 import _ from 'lodash';
 import useGetUserDetail from '~/hooks/useGetUserDetail';
+import HelmetComponent from '~/components/Helmet';
 
 const Profile = () => {
     const user = getUser();
@@ -67,6 +68,7 @@ const Profile = () => {
     }
     return (
         <div className="w-full mx-auto bg-white p-6 rounded-lg shadow-md">
+            <HelmetComponent title="Thông tin tài khoản" />
             <h2 className="text-2xl font-semibold mb-4">Thông tin tài khoản</h2>
             <FormProvider {...updateForm}>
                 <form onSubmit={updateForm.handleSubmit(onSubmitUpdate)}>

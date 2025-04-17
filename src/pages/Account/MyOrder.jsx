@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { formatNumber } from '~/core/utils/formatNumber';
 import { formattedDate } from '~/core/utils/formatDate';
 import { orderService } from '~/services/order.service';
-import { shippingOptions } from '~/constants/dummyData';
+import HelmetComponent from '~/components/Helmet';
 
 const MyOrder = () => {
     const { data } = useQuery({
@@ -93,6 +93,7 @@ const MyOrder = () => {
                     <p className="text-[20px] text-center py-10">Đơn hàng trống</p>
                 </div>
             )}
+            <HelmetComponent title="Thông tin tài khoản" />
             <Modal title="Chi tiết đơn hàng" open={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
                 {selectedOrder && (
                     <div>

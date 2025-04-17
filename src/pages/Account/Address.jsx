@@ -6,6 +6,7 @@ import { userService } from '~/services/user.service';
 import { setUser } from '~/core/token';
 import AddressItem from '~/components/Address/AddressItem';
 import useGetUserDetail from '~/hooks/useGetUserDetail';
+import HelmetComponent from '~/components/Helmet';
 
 const Address = () => {
     const addressForm = useForm({ mode: 'onChange' });
@@ -42,6 +43,7 @@ const Address = () => {
 
     return (
         <div className="w-full mx-auto bg-white p-6 rounded-lg shadow-md">
+            <HelmetComponent title="Thông tin tài khoản" />
             <div className="flex items-center my-6">
                 {createAddress && (
                     <Button icon={<ArrowLeftOutlined />} onClick={() => setCreateAddress(false)}>

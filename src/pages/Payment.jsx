@@ -21,6 +21,7 @@ import OrderSummary from '~/components/checkout/OrderSummary';
 import { useQuery } from '@tanstack/react-query';
 import { adminService } from '~/services/admin.service';
 import { useDebounce } from '~/hooks/useDebounce';
+import HelmetComponent from '~/components/Helmet';
 
 const Payment = () => {
     const user = getUser();
@@ -212,6 +213,7 @@ const Payment = () => {
 
     return (
         <div className="container pt-16">
+            <HelmetComponent title="Thanh toán" />
             <BreadcrumbComponent arrayItem={arrayBreadcrumb} />
             <Row span={(16, 16)} style={{ gap: '10px' }}>
                 {!isCartEmpty ? (

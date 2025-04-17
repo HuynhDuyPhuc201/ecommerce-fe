@@ -9,6 +9,7 @@ import { path } from '~/config/path';
 import { getUser } from '~/core/token';
 import DashboardChart from './DashboardChart';
 import './admin.css';
+import HelmetComponent from '~/components/Helmet';
 
 const Admin = () => {
     const [renderComponent, setRenderComponent] = useState('user');
@@ -42,6 +43,7 @@ const Admin = () => {
     if (!user?.isAdmin) return <Navigate to={path.Home} />;
     return (
         <>
+            <HelmetComponent title="Admin" />
             <Header />
             <Row>
                 <Col sm={24} xs={24} md={4}>

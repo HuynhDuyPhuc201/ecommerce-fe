@@ -17,6 +17,7 @@ import './CartPage.css';
 import BreadcrumbComponent from '~/components/Breadcrumb';
 import EmptyCart from '~/components/cart/EmptyCart';
 import { checkImg } from '~/utils/checkImg';
+import HelmetComponent from '~/components/Helmet';
 
 const CartPage = () => {
     const user = getUser();
@@ -219,6 +220,7 @@ const CartPage = () => {
 
     return (
         <div className="container pt-16">
+            <HelmetComponent title="Giỏ hàng" />
             <BreadcrumbComponent arrayItem={[{ text: 'Giỏ hàng' }]} />
             <Row span={(16, 16)} style={{ gap: '10px' }}>
                 <Col xs={24} sm={24} md={24}>

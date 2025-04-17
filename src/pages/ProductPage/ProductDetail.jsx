@@ -17,6 +17,7 @@ import { path } from '~/config/path';
 import BreadcrumbComponent from '~/components/Breadcrumb';
 import './style.css';
 import { checkImg } from '~/utils/checkImg';
+import HelmetComponent from '~/components/Helmet';
 
 const { Title, Text } = Typography;
 
@@ -160,6 +161,7 @@ const ProductDetail = () => {
 
     return (
         <div className="container pt-10  min-h-screen">
+            <HelmetComponent title="Chi tiết sản phẩm" />
             <BreadcrumbComponent arrayItem={[{ text: 'Chi tiết sản phẩm' }]} />
             <Row gutter={[10, 10]} style={{ alignItems: 'flex-start' }}>
                 <Col md={8} className="md:sticky top-0 pt-5 relative">

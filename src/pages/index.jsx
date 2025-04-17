@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
-import  { lazy, Suspense, memo  } from 'react';
+import { lazy, Suspense, memo } from 'react';
 
 import Navbar from '~/components/Navbar';
 import { Col, Pagination, Row, Skeleton } from 'antd';
@@ -7,6 +7,7 @@ import { useParams, useSearchParams } from 'react-router-dom';
 import { productService } from '~/services/product.service';
 import { useQuery } from '@tanstack/react-query';
 import HomeSlider from '~/components/HomeSlider';
+import HelmetComponent from '~/components/Helmet';
 const LazyProductCard = lazy(() => import('~/components/ProductCard'));
 
 const Index = () => {
@@ -94,6 +95,7 @@ const Index = () => {
 
     return (
         <>
+            <HelmetComponent title="Trang chủ" />
             <div className="py-0 container my-20">
                 <HomeSlider />
                 {windowWidth > 500 && (
@@ -137,31 +139,29 @@ const Index = () => {
                         </Col>
                     )}
 
-<Col xs={24} sm={18} md={18}>
-    <Row gutter={[12, 12]} style={{ rowGap: '16px', marginTop: '20px' }}>
-        {isLoading
-            ? Array.from({ length: 8 }).map((_, i) => (
-                  <Col lg={6} md={8} sm={12} xs={12} key={i}>
-                      <Skeleton active style={{ height: '200px' }} />
-                  </Col>
-              ))
-            : dataProduct?.map((item, i) => (
-                  <Col lg={6} md={8} sm={12} xs={12} key={i}>
-                      <Suspense
-                          fallback={<Skeleton active style={{ height: '200px' }} />}
-                      >
-                          <LazyProductCard item={item} />
-                      </Suspense>
-                  </Col>
-              ))}
-    </Row>
+                    <Col xs={24} sm={18} md={18}>
+                        <Row gutter={[12, 12]} style={{ rowGap: '16px', marginTop: '20px' }}>
+                            {isLoading
+                                ? Array.from({ length: 8 }).map((_, i) => (
+                                      <Col lg={6} md={8} sm={12} xs={12} key={i}>
+                                          <Skeleton active style={{ height: '200px' }} />
+                                      </Col>
+                                  ))
+                                : dataProduct?.map((item, i) => (
+                                      <Col lg={6} md={8} sm={12} xs={12} key={i}>
+                                          <Suspense fallback={<Skeleton active style={{ height: '200px' }} />}>
+                                              <LazyProductCard item={item} />
+                                          </Suspense>
+                                      </Col>
+                                  ))}
+                        </Row>
 
-    {dataProduct?.length === 0 && (
-        <div className="text-center">
-            <p className="text-[17px] font-bold">Không có sản phẩm nào</p>
-        </div>
-    )}
-</Col>
+                        {dataProduct?.length === 0 && (
+                            <div className="text-center">
+                                <p className="text-[17px] font-bold">Không có sản phẩm nào</p>
+                            </div>
+                        )}
+                    </Col>
                 </Row>
 
                 <div className="flex justify-end">
