@@ -1,7 +1,7 @@
-import { Button, Col, Modal, Rate, Row, Switch } from 'antd';
+import { Button, Col, Modal, Rate, Row, Switch, Input } from 'antd';
 import { Controller, FormProvider } from 'react-hook-form';
 import InputForm from '~/components/InputForm';
-
+const { TextArea } = Input;
 export const ModalForm = ({ title, isOpen, onCancel, methods, onSubmit, fields, isLoading, action }) => {
     return (
         <FormProvider {...methods}>
@@ -12,9 +12,7 @@ export const ModalForm = ({ title, isOpen, onCancel, methods, onSubmit, fields, 
                             <Col sm={24} xs={24} md={12} key={i}>
                                 <label className="block text-gray-700 mb-1">{field.label}</label>
                                 <div className="relative">
-                                    {['date', 'textarea', 'text', 'password', 'number', undefined].includes(
-                                        field.type,
-                                    ) && (
+                                    {['date', 'text', 'password', 'number', undefined].includes(field.type) && (
                                         <InputForm
                                             error={methods?.formState.errors[field.name]}
                                             placeholder={field.placeholder}
@@ -24,7 +22,17 @@ export const ModalForm = ({ title, isOpen, onCancel, methods, onSubmit, fields, 
                                             disabled={field.name === 'id'}
                                         />
                                     )}
-
+                                    {field.type === 'textarea' && (
+                                        <TextArea
+                                            error={methods?.formState.errors[field.name]}
+                                            placeholder={field.placeholder}
+                                            name={field.name}
+                                            required={field.required}
+                                            disabled={field.name === 'id'}
+                                            rows={12}
+                                            style={{ height: '50px' }}
+                                        />
+                                    )}
                                     {field.type === 'select' && (
                                         <select
                                             {...methods?.register(field.name)}

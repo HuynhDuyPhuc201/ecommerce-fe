@@ -528,7 +528,7 @@ const AdminProduct = () => {
                     { name: 'price_old', label: 'Giá cũ', placeholder: 'Vd: 30000', type: 'number', required: true },
                     { name: 'price', label: 'Giá mới', placeholder: 'Vd: 20000', type: 'number', required: true },
                     { name: 'countInstock', label: 'Tồn kho', type: 'number', required: true },
-                    { name: 'description', label: 'Mô tả', type: 'text', required: true },
+                    { name: 'description', label: 'Mô tả', type: 'textarea', required: true },
                 ],
             },
             {
@@ -552,7 +552,7 @@ const AdminProduct = () => {
                 type: 'discount',
                 modal: [
                     { name: 'code', label: 'Mã khuyến mãi', type: 'text', required: true },
-                    { name: 'description', label: 'Mô tả', type: 'text', required: true },
+                    { name: 'description', label: 'Mô tả', type: 'textarea', required: true },
                     {
                         name: 'type',
                         label: 'Loại giảm giá',
