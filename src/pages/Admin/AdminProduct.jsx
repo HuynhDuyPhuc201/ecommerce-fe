@@ -438,7 +438,8 @@ const AdminProduct = () => {
                 title: 'Đánh giá',
                 dataIndex: 'rating',
                 width: 100,
-                sorter: (a, b) => a.rating.toFixed(1) - b.rating.toFixed(1),
+                sorter: (a, b) => a.rating - b.rating,
+                render: (value) => value.toFixed(1),
             },
             {
                 title: 'Mô tả',
