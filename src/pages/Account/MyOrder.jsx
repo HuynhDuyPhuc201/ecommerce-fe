@@ -1,22 +1,41 @@
 import { useQuery } from '@tanstack/react-query';
-import { Button, Table, Modal } from 'antd';
-import React, { useState } from 'react';
+import { Button, Table, Modal, message } from 'antd';
+import React, { useEffect, useMemo, useState } from 'react';
 import { formatNumber } from '~/core/utils/formatNumber';
 import { formattedDate } from '~/core/utils/formatDate';
 import { orderService } from '~/services/order.service';
 import HelmetComponent from '~/components/Helmet';
+import { ProductReview } from '~/components/ProductReview';
+import { productService } from '~/services/product.service';
+import { getUser } from '~/core/token';
+import { useForm } from 'react-hook-form';
+import { validImageTypes } from '~/core';
 
 const MyOrder = () => {
-    const { data } = useQuery({
+    const user = getUser();
+    const [state, setState] = useState({
+        listImage: [],
+        removedImages: [],
+    });
+    const reviewForm = useForm({ mode: 'onChange' });
+
+    const { data: dataOrder } = useQuery({
         queryKey: ['orders'],
         queryFn: async () => orderService.getOrder(),
-        staleTime: 5 * 60 * 1000, // Cache trong 5 phút
-        refetchOnWindowFocus: false, // Tắt refetch khi tab focus lại
-        refetchOnReconnect: false, // Tắt refetch khi mạng có lại
+    });
+
+    const { data: dataReview, refetch: refetchReview } = useQuery({
+        queryKey: ['reviews'],
+        queryFn: async () => await productService.getReviews(),
+        staleTime: 5 * 60 * 1000,
+        cacheTime: 30 * 60 * 1000,
     });
 
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState(null);
+    const [modalReview, setModalReview] = useState(false);
+    const [loading, setIsLoading] = useState(false);
+    const [product, setProduct] = useState(null);
 
     const showModal = (record) => {
         setSelectedOrder(record);
@@ -27,12 +46,161 @@ const MyOrder = () => {
         setIsModalVisible(false);
     };
 
+    const handleOkReivew = () => {
+        setModalReview(false);
+    };
+
     const handleCancel = () => {
         setIsModalVisible(false);
     };
 
-    const dataSort = data?.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    const handleCancelReview = () => {
+        setModalReview(false);
+        reviewForm?.reset({
+            productId: '',
+            userId: '',
+            rating: 0,
+            comment: '',
+            images: [],
+        });
+        setState((prevState) => ({
+            ...prevState,
+            listImage: [],
+        }));
+    };
 
+    const handleModalReview = (itemProduct) => {
+        const findReview = dataReview
+            .find((item) => item?.productId === itemProduct?.productId)
+            ?.reviews.find((item) => item.productId === itemProduct?.productId && item.orderId === selectedOrder._id);
+        setModalReview(true);
+        setProduct(itemProduct);
+
+        const imageList =
+            findReview?.images?.map((url, index) => {
+                return {
+                    uid: `existing-${index}`,
+                    name: `${url?.split('/').pop().split('-').slice(-1).join('-')}`, // hoặc parse từ url
+                    status: 'done',
+                    url: url,
+                    thumbUrl: url,
+                    originFileObj: null, // không có File object
+                    type: 'image/jpeg', // hoặc bạn lấy từ phần mở rộng
+                    existing: true, // Đánh dấu là ảnh cũ đã tồn tại
+                };
+            }) || [];
+        setState({
+            ...state,
+            listImage: imageList || [], // dùng để truyền vào Upload
+        });
+        reviewForm.reset(findReview || {});
+    };
+    const handleUpload = (info) => {
+        const newFiles = info?.fileList || [];
+
+        // Kiểm tra loại ảnh hợp lệ
+        const isValid = newFiles.every((file) => validImageTypes.includes(file.type));
+        if (!isValid) {
+            return message.error('Chỉ được upload file ảnh hợp lệ!');
+        }
+
+        // Map lại file mới
+        const updatedFiles = newFiles.map((file, index) => {
+            const origin = file.originFileObj || file;
+            if (file.existing) {
+                // Nếu là ảnh cũ, giữ nguyên
+                return file;
+            }
+            return {
+                ...file,
+                originFileObj: origin,
+                key: file.uid || index.toString(),
+                thumbUrl: file.thumbUrl || URL.createObjectURL(origin),
+            };
+        });
+
+        // So sánh với ảnh cũ để tìm ảnh bị xoá
+        const removed = state.listImage?.filter((oldFile) => !newFiles.some((newFile) => newFile.uid === oldFile.uid));
+
+        // Lưu lại ảnh bị xóa để gửi qua backend (cloudinary)
+        const removedImages = removed
+            .map((file) => file?.url || file?.thumbUrl) // Cloudinary URL
+            .filter((url) => !!url);
+
+        // Cập nhật state
+        setState((prevState) => ({
+            ...prevState,
+            listImage: updatedFiles,
+            removedImages: removedImages, // 👈 Lưu vào đây để khi submit thì gửi sang BE
+        }));
+    };
+
+    const onSubmit = async (form) => {
+        setIsLoading(true);
+        const updateForm = {
+            ...form,
+            productId: product?.productId,
+            userId: user?._id,
+            orderId: selectedOrder?._id,
+        };
+        try {
+            let formData = new FormData();
+
+            // Append các field không phải image
+            for (const key in updateForm) {
+                if (key !== 'images') {
+                    formData.append(key, updateForm[key]);
+                }
+            }
+
+            // Xử lý ảnh bị xoá
+            if (state.removedImages?.length > 0) formData.append('removedImages', JSON.stringify(state.removedImages));
+
+            // Ảnh mới
+            state.listImage.forEach((file) => {
+                if (file.originFileObj) {
+                    formData.append('images', file.originFileObj);
+                }
+            });
+
+            // Ảnh giữ nguyên (không thay đổi)
+            const unchangedImages = state.listImage
+                .filter((file) => !file.originFileObj && file.url)
+                .map((file) => file.url);
+
+            formData.append('unchangedImages', JSON.stringify(unchangedImages));
+
+            const result = await productService.addReview(formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
+
+            if (result.success) {
+                message.success(result.message);
+                refetchReview();
+                reviewForm?.reset({
+                    productId: '',
+                    userId: '',
+                    rating: 0,
+                    comment: '',
+                    image: [],
+                });
+                setState({
+                    ...state,
+                    listImage: [],
+                });
+                setModalReview(false);
+            } else {
+                // Nếu backend return success: false (như "trùng tên", sai định dạng v.v.)
+                message.error(result.message || 'Có lỗi xảy ra');
+            }
+        } catch (error) {
+            message.error(error.response?.data?.message || 'Lỗi không xác định');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const dataSort = dataOrder?.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     const columns = [
         {
             title: 'Sản phẩm',
@@ -112,10 +280,10 @@ const MyOrder = () => {
                             <strong>Số lượng sản phẩm:</strong> {selectedOrder?.totalProduct}
                         </p>
                         {selectedOrder?.discountPrice !== 0 && (
-                            <p className="flex gap-2">
+                            <div className="flex gap-2">
                                 <strong>Giảm giá:</strong>{' '}
                                 <p className="text-[#f00]"> -{formatNumber(selectedOrder.discountPrice || 0)}₫</p>
-                            </p>
+                            </div>
                         )}
 
                         <p className="mt-3">
@@ -125,7 +293,12 @@ const MyOrder = () => {
                             {selectedOrder?.orderItems?.map((item, index) => (
                                 <li
                                     key={item?._id}
-                                    style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        marginBottom: '10px',
+                                        justifyContent: 'space-between',
+                                    }}
                                 >
                                     <img
                                         width={70}
@@ -135,11 +308,12 @@ const MyOrder = () => {
                                         style={{ width: '70px', height: '70px', marginRight: '10px' }}
                                     />
                                     <div>
-                                        <p>{item?.name}</p>
+                                        <p className="max-w-[90%]">{item?.name}</p>
                                         <p>
                                             {formatNumber(item?.price || 0)} x {item?.quantity || 0}₫
                                         </p>
                                     </div>
+                                    <Button onClick={() => handleModalReview(item)}>Xem Đánh giá</Button>
                                 </li>
                             ))}
                         </ul>
@@ -148,6 +322,23 @@ const MyOrder = () => {
                         </p>
                     </div>
                 )}
+            </Modal>
+            <Modal
+                title="Đánh giá sản phẩm"
+                open={modalReview}
+                onOk={handleOkReivew}
+                onCancel={handleCancelReview}
+                footer={null}
+            >
+                <ProductReview
+                    product={product}
+                    handleUpload={handleUpload}
+                    onSubmit={onSubmit}
+                    reviewForm={reviewForm}
+                    state={state}
+                    loading={loading}
+                    selectedOrder={selectedOrder}
+                />
             </Modal>
         </>
     );

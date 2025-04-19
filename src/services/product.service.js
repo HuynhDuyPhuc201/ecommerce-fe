@@ -14,4 +14,18 @@ export const productService = {
     getCategory() {
         return api.get(`/product/getCategory`);
     },
+
+    // review
+    addReview(form, config = {}) {
+        return api.post('/reviews/add', form, config);
+    },
+    updateReview(reviewId) {
+        return api.put(`/reviews/update?${reviewId}`);
+    },
+    getReviews() {
+        return api.get(`/reviews/get`);
+    },
+    deleteAllReviews() {
+        return api.delete(`/reviews/delete-all`);
+    },
 };

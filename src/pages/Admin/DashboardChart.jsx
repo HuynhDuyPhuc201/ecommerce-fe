@@ -6,8 +6,6 @@ import { useQuery } from '@tanstack/react-query';
 import { adminService } from '~/services/admin.service';
 
 const DashboardChart = () => {
-    const { TabPane } = Tabs;
-
     const [monthlyRevenue, setMonthlyRevenue] = useState([]);
     const [weeklyRevenue, setWeeklyRevenue] = useState([]);
 

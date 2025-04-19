@@ -1,14 +1,12 @@
-import { Button, Card, Carousel } from 'antd';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { StarFilled, EyeOutlined, ShoppingCartOutlined } from '@ant-design/icons';
-import { generatePath, Link, useLocation, useNavigate } from 'react-router-dom';
+import { Button } from 'antd';
+import React, { useCallback, useMemo, useState } from 'react';
+import { generatePath, Link, useNavigate } from 'react-router-dom';
 import { path } from '~/config/path';
 import { formatNumber } from '~/core';
 import { Eye, ShoppingCart } from 'lucide-react';
 import { getUser, removeAddress } from '~/core/token';
 import useGetUserDetail from '~/hooks/useGetUserDetail';
 import ProductDetailModal from './ProductDetailModal';
-import { LazyLoadImage } from 'react-lazy-load-image-component';
 import { checkImg } from '~/utils/checkImg';
 import { handleScrollTop } from '~/hooks/useScrollTop';
 
@@ -140,7 +138,7 @@ const ProductCard = ({ item }) => {
                         {/* Rating */}
                         <div className="mb-2 flex items-center mt-5">
                             <span className="mr-1 text-[15px]">{item.rating.toFixed(1)}</span>
-                            <div className="flex text-yellow-400">
+                            <div className="flex text-yellow-400 items-center">
                                 {[...Array(5)].map((_, i) => (
                                     <svg
                                         key={i}

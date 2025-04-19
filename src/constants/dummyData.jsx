@@ -41,9 +41,9 @@ export const paymentMethods = [
 ];
 
 export const shippingOptions = [
-    { value: 'standard', label: 'Giao tiết kiệm', price: 10000 },
-    { value: 'express', label: 'Giao nhanh', price: 20000 },
-    { value: 'fastest', label: 'Hỏa tốc', price: 60000 },
+    { value: 'standard', label: 'Giao tiết kiệm', price: 10000, time: 'Từ 3 - 5 ngày' },
+    { value: 'express', label: 'Giao nhanh', price: 20000, time: 'Từ 2 - 3 ngày' },
+    { value: 'fastest', label: 'Hỏa tốc', price: 60000, time: 'Giao trong ngày' },
 ];
 
 // admin Product

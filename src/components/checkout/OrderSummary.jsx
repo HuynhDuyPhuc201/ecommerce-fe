@@ -46,8 +46,6 @@ const OrderSummary = ({
             .map((item) => item?.code);
     }, [dataDiscount, data]);
 
-    console.log('findCode', findCode);
-
     const PlacehoderCode = dataDiscount?.data
         ?.filter((item) => item)
         .map((item) => item.code)

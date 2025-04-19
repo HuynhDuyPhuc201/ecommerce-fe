@@ -2,7 +2,7 @@ import { Button, Col, InputNumber, message, Row, Typography } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import Slider from 'react-slick';
-import { ShoppingCartOutlined, StarFilled } from '@ant-design/icons';
+import { ShoppingCartOutlined } from '@ant-design/icons';
 import ProductCard from '~/components/ProductCard';
 import { productService } from '~/services/product.service';
 import { useQuery } from '@tanstack/react-query';
@@ -15,9 +15,11 @@ import useGetCart from '~/hooks/useGetCart';
 import { useLocalStore } from '~/store/useLocalStore';
 import { path } from '~/config/path';
 import BreadcrumbComponent from '~/components/Breadcrumb';
-import './style.css';
 import { checkImg } from '~/utils/checkImg';
 import HelmetComponent from '~/components/Helmet';
+import { ReviewCard } from '~/components/ReviewCard';
+import './style.css';
+import { shippingOptions } from '~/constants/dummyData';
 
 const { Title, Text } = Typography;
 
@@ -62,6 +64,13 @@ const ProductDetail = () => {
         slidesToScroll: 1,
         arrows: false, // Ẩn nút prev/next
     };
+
+    const { data: allReviews = [], refetch: refetchReview } = useQuery({
+        queryKey: ['reviews'],
+        queryFn: async () => await productService.getReviews(),
+    });
+
+    const findReview = allReviews?.find((item) => item.productId === dataDetail?._id);
 
     const { data: dataProduct } = useQuery({
         queryKey: ['products', idCate],
@@ -201,24 +210,31 @@ const ProductDetail = () => {
                             <span className="font-bold">{dataDetail?.name || ''}</span>
                         </div>
                         <div className="pt-10 flex items-center">
-                            <span className="pr-2">{dataDetail?.rating || 0}</span>
-                            {[...Array(5)].map((_, i) => (
-                                <svg
-                                    key={i}
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 24 24"
-                                    fill="currentColor"
-                                    className={`h-6 w-6 text-[#ffff19] ${
-                                        i < Math.floor(dataDetail.rating) ? 'opacity-100' : 'opacity-30'
-                                    }`}
-                                >
-                                    <path
-                                        fillRule="evenodd"
-                                        d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z"
-                                        clipRule="evenodd"
-                                    />
-                                </svg>
-                            ))}
+                            {dataDetail?.rating > 0 ? (
+                                <>
+                                    <span className="pr-2">{dataDetail?.rating || 0}</span>
+                                    {[...Array(5)].map((_, i) => (
+                                        <svg
+                                            key={i}
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 24 24"
+                                            fill="currentColor"
+                                            className={`h-6 w-6 text-[#ffff19] ${
+                                                i < Math.floor(dataDetail.rating) ? 'opacity-100' : 'opacity-30'
+                                            }`}
+                                        >
+                                            <path
+                                                fillRule="evenodd"
+                                                d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z"
+                                                clipRule="evenodd"
+                                            />
+                                        </svg>
+                                    ))}
+                                </>
+                            ) : (
+                                <span className="text-[15px] text-[#000]">Chưa có đánh giá &nbsp;&nbsp;&nbsp;</span>
+                            )}
+
                             <span className="text-[13px] text-[#888]">| đã bán {dataDetail?.sold || 0}</span>
                             <span className="text-[13px] text-[#888] pl-5">kho: {dataDetail?.countInstock}</span>
                         </div>
@@ -310,10 +326,38 @@ const ProductDetail = () => {
                             <span className="font-bold">Thông tin vận chuyển</span>
                         </div>
                         <div className="border-solid border-b-2 border-[#f0f0f0] pb-4 mb-4">
-                            <span className="">Giao siêu tốc 2h</span>
-                            <div className="flex justify-between items-center "></div>
-                            <span>Trước 18h hôm nay: 25.000₫</span>
+                            <div className="flex-col">
+                                {shippingOptions?.map((item, i) => (
+                                    <>
+                                        <span className="">{item.label}</span> - <span>{item.time}</span> <br />
+                                    </>
+                                ))}
+                            </div>
                         </div>
+                    </div>
+
+                    <div className="des bg-[#fff] rounded-[8px] p-6 mb-4">
+                        <div className="border-solid border-b-2 border-[#f0f0f0] pb-4 mb-4">
+                            <span className="font-bold">Thông tin chi tiết</span>
+                        </div>
+                        <div className="border-solid border-[#f0f0f0] ">
+                            <p>{dataDetail?.descrireviewsption || 'Không có'}</p>
+                        </div>
+                    </div>
+                    <div className="bg-[#fff] rounded-[8px] p-6 mb-4">
+                        <div className="border-solid border-b-2 border-[#f0f0f0] pb-4 mb-4">
+                            <span className="font-bold">Đánh giá sản phẩm</span>
+                        </div>
+                        <p>{findReview?.reviews?.length === 0 && 'Không có'}</p>
+                        {findReview?.reviews.map((itemReview, index) => (
+                            <div key={itemReview._id}>
+                                <ReviewCard itemReview={itemReview} />
+                                {/* Nếu không phải phần tử cuối cùng thì render border */}
+                                {index < findReview.reviews.length - 1 && (
+                                    <div className="border-solid border-b-2 border-[#f0f0f0]"></div>
+                                )}
+                            </div>
+                        ))}
                     </div>
                     <div className="des bg-[#fff] rounded-[8px] p-6 mb-4">
                         <div className="border-solid border-b-2 border-[#f0f0f0] pb-4 mb-4">
@@ -327,10 +371,6 @@ const ProductDetail = () => {
                                 </Col>
                             ))}
                         </Row>
-                    </div>
-                    <div className="bg-[#fff] rounded-[8px] p-6 mb-4">
-                        <span className="font-bold">Thông tin chi tiết</span>
-                        <p>{dataDetail?.description}</p>
                     </div>
                 </Col>
                 {windowWidth > 1000 && (

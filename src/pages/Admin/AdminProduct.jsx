@@ -28,7 +28,6 @@ const AdminProduct = () => {
         name: '',
         image: '',
         categories: '',
-        rating: '',
         price_old: '',
         price: '',
         countInstock: '',
@@ -121,7 +120,7 @@ const AdminProduct = () => {
                 ...file,
                 originFileObj: origin,
                 key: file.uid || index.toString(),
-                thumbUrl: file.thumbUrl || URL.createObjectURL(origin),
+                thumbUrl: file.thumbUrl || URL?.createObjectURL(origin),
             };
         });
 
@@ -426,10 +425,16 @@ const AdminProduct = () => {
                 title: 'Giá',
                 dataIndex: 'price',
                 width: 100,
+                sorter: (a, b) => a.price - b.price,
                 render: (price) => formatNumber(Number(price || 0)),
             },
-            { title: 'Tồn kho', dataIndex: 'countInstock', width: 100 },
-            { title: 'Đánh giá', dataIndex: 'rating', width: 100 },
+            {
+                title: 'Tồn kho',
+                dataIndex: 'countInstock',
+                width: 100,
+                sorter: (a, b) => a.countInstock - b.countInstock,
+            },
+            { title: 'Đánh giá', dataIndex: 'rating', width: 100, sorter: (a, b) => a.rating - b.rating },
             {
                 title: 'Mô tả',
                 dataIndex: 'description',
@@ -514,7 +519,6 @@ const AdminProduct = () => {
                     { name: 'name', label: 'Tên sản phẩm', type: 'text', required: true },
                     { name: 'image', label: 'Hình', render: renderUpload(), type: 'photo', required: true },
                     { name: 'categories', label: 'Danh mục', type: 'select', options: dataCategory, required: true },
-                    { name: 'rating', label: 'Đánh giá', type: 'rating', required: true },
                     { name: 'price_old', label: 'Giá cũ', placeholder: 'Vd: 30000', type: 'number', required: true },
                     { name: 'price', label: 'Giá mới', placeholder: 'Vd: 20000', type: 'number', required: true },
                     { name: 'countInstock', label: 'Tồn kho', type: 'number', required: true },

@@ -9,7 +9,6 @@ const InputForm = ({ label, placeholder, name, type, error, required, ...props }
             <input
                 {...register?.(name, {
                     required: required === true && `Trường này là bắt buộc`,
-                    validate: (value) => value.trim() !== '' || 'Không được để trống khoảng trắng',
                 })}
                 placeholder={placeholder}
                 type={type}
