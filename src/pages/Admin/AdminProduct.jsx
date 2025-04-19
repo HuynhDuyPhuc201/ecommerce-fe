@@ -434,7 +434,12 @@ const AdminProduct = () => {
                 width: 100,
                 sorter: (a, b) => a.countInstock - b.countInstock,
             },
-            { title: 'Đánh giá', dataIndex: 'rating', width: 100, sorter: (a, b) => a.rating - b.rating },
+            {
+                title: 'Đánh giá',
+                dataIndex: 'rating',
+                width: 100,
+                sorter: (a, b) => a.rating.toFixed(1) - b.rating.toFixed(1),
+            },
             {
                 title: 'Mô tả',
                 dataIndex: 'description',

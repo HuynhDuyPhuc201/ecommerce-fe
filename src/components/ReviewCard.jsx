@@ -45,7 +45,7 @@ export const ReviewCard = ({ itemReview }) => {
                 ))}
             </div>
             <p className="text-gray-700 mb-4">{itemReview?.comment}</p>
-            <div className="w-28 h-2w-28 flex gap-3">
+            <div className="w-28 h-2w-28 flex gap-3 pb-4">
                 {itemReview?.images.map((img, i) => (
                     <img key={i} src={img} alt="" className="w-28 h-28" />
                 ))}

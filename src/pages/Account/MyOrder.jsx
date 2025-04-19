@@ -237,7 +237,9 @@ const MyOrder = () => {
             title: 'Ngày đặt',
             width: 70,
             responsive: ['xs', 'sm', 'md', 'lg'],
+            sorter: (a, b) => a.createdAt - b.createdAt,
             dataIndex: 'createdAt',
+
             render: (item) => formattedDate(item),
         },
         {

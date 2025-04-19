@@ -131,14 +131,15 @@ const ProductDetailModal = ({ open, product, onClose }) => {
                             <div className="flex items-center">
                                 <Rate
                                     allowHalf
-                                    defaultValue={product.rating || 4.5}
+                                    defaultValue={product.rating.toFixed(1) || 0}
                                     disabled
                                     style={{ fontSize: 14 }}
                                 />
-                                <Text className="ml-2">{product.rating || 4.5}</Text>
+                                <Text className="ml-2">{product.rating.toFixed(1) || 0}</Text>
                             </div>
                             <Divider type="vertical" />
                             <Text type="secondary">Đã bán: {product.sold || 0}</Text>
+                            <Text type="secondary">Kho: {product.countInstock || 0}</Text>
                         </div>
 
                         <div className="bg-gray-50 p-4 rounded-lg mb-4">

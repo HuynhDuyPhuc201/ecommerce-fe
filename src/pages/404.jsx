@@ -13,10 +13,6 @@ function Page404() {
                 subTitle="Rất tiếc, trang không tồn tại"
                 extra={
                     <div>
-                        <img
-                            src="https://via.placeholder.com/300x200.png?text=404+Not+Found"
-                            style={{ marginBottom: '20px' }}
-                        />
                         <Button type="primary">
                             <Link to="/">Về trang chủ</Link>
                         </Button>

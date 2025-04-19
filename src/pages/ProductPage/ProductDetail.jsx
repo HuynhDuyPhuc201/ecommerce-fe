@@ -167,7 +167,6 @@ const ProductDetail = () => {
     }, [dataDetail, newTotalQuantity]);
 
     const productRecommand = dataProduct?.data.filter((item) => item._id !== id);
-
     return (
         <div className="container pt-10  min-h-screen">
             <HelmetComponent title="Chi tiết sản phẩm" />
@@ -212,7 +211,7 @@ const ProductDetail = () => {
                         <div className="pt-10 flex items-center">
                             {dataDetail?.rating > 0 ? (
                                 <>
-                                    <span className="pr-2">{dataDetail?.rating || 0}</span>
+                                    <span className="pr-2">{dataDetail?.rating.toFixed(1) || 0}</span>
                                     {[...Array(5)].map((_, i) => (
                                         <svg
                                             key={i}
@@ -325,14 +324,12 @@ const ProductDetail = () => {
                         <div className="border-solid border-b-2 border-[#f0f0f0] pb-4 mb-4">
                             <span className="font-bold">Thông tin vận chuyển</span>
                         </div>
-                        <div className="border-solid border-b-2 border-[#f0f0f0] pb-4 mb-4">
-                            <div className="flex-col">
-                                {shippingOptions?.map((item, i) => (
-                                    <>
-                                        <span className="">{item.label}</span> - <span>{item.time}</span> <br />
-                                    </>
-                                ))}
-                            </div>
+                        <div className="flex-col">
+                            {shippingOptions?.map((item, i) => (
+                                <>
+                                    <span className="">{item.label}</span> - <span>{item.time}</span> <br />
+                                </>
+                            ))}
                         </div>
                     </div>
 
@@ -348,7 +345,7 @@ const ProductDetail = () => {
                         <div className="border-solid border-b-2 border-[#f0f0f0] pb-4 mb-4">
                             <span className="font-bold">Đánh giá sản phẩm</span>
                         </div>
-                        <p>{findReview?.reviews?.length === 0 && 'Không có'}</p>
+                        <p>{findReview?.reviews?.length === 0 || (!findReview && 'Không có')}</p>
                         {findReview?.reviews.map((itemReview, index) => (
                             <div key={itemReview._id}>
                                 <ReviewCard itemReview={itemReview} />
