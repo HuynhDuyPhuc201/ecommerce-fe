@@ -20,22 +20,11 @@ const HomeSlider = () => {
         <>
             {/* Preload ảnh đầu tiên */}
             <Helmet>
-                <link
-                    rel="preload"
-                    as="image"
-                    href={slider_1}
-                    fetchpriority="high"
-                />
+                <link rel="preload" as="image" href={slider_1} fetchpriority="high" />
             </Helmet>
 
             {/* Ảnh vô hình để preload thật sự */}
-            <img
-                src={slider_1}
-                alt="preload-slider"
-                style={{ display: 'none' }}
-                loading="eager"
-                fetchpriority="high"
-            />
+            <img src={slider_1} alt="preload-slider" style={{ display: 'none' }} loading="eager" fetchpriority="high" />
 
             {/* Slider chính */}
             <div className="relative w-full h-[500px] overflow-hidden rounded-2xl shadow-lg">
@@ -64,7 +53,7 @@ const HomeSlider = () => {
                         <button
                             key={i}
                             onClick={() => setIndex(i)}
-                            className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                            className={`w-12 h-3 rounded-full transition-all duration-300 ${
                                 i === index ? 'bg-white' : 'bg-white/50'
                             }`}
                             aria-label={`Go to slide ${i + 1}`}

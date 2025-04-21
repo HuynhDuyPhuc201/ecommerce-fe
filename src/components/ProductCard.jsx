@@ -69,6 +69,7 @@ const ProductCard = ({ item }) => {
                         height={200}
                         src={checkImg(item.image[0])}
                         loading="lazy"
+                        alt={item?.name || ''}
                         className={`h-full w-full object-cover transition-all duration-500 group-hover:opacity-0
                             ${!item.countInstock ? 'opacity-50' : 'opacity-100'}
                         `}
@@ -122,7 +123,7 @@ const ProductCard = ({ item }) => {
 
                     {/* Discount tag */}
                     {discount > 0 && (
-                        <div className="absolute left-2 top-2 rounded-md bg-red-500 px-2 py-1 text-lg font-bold text-white">
+                        <div className="absolute left-2 top-2 rounded-md bg-red-700 px-2 py-1 text-lg font-bold text-white">
                             -{discount.toFixed(0)}%
                         </div>
                     )}
@@ -161,10 +162,10 @@ const ProductCard = ({ item }) => {
 
                         {/* Price info */}
                         <div className="flex flex-col">
-                            <p className="text-[16px] font-bold text-red-600">{formatNumber(item?.price) || 0}₫</p>
+                            <p className="text-[16px] font-bold text-red-800">{formatNumber(item?.price) || 0}₫</p>
                             {item.price_old && (
                                 <div className="flex items-center gap-2">
-                                    <span className="text-[13px] text-gray-500 line-through">
+                                    <span className="text-[13px] text-gray-700 line-through">
                                         {formatNumber(item.price_old)}₫
                                     </span>
                                 </div>

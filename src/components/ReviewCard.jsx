@@ -1,5 +1,4 @@
 import { Button } from 'antd';
-import { Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { path } from '~/config/path';
 import { getUser } from '~/core/token';

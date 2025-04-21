@@ -8,6 +8,7 @@ import { productService } from '~/services/product.service';
 import { useQuery } from '@tanstack/react-query';
 import HomeSlider from '~/components/HomeSlider';
 import HelmetComponent from '~/components/Helmet';
+import SortDropdown from '~/components/SortDropdown ';
 const LazyProductCard = lazy(() => import('~/components/ProductCard'));
 
 const Index = () => {
@@ -98,22 +99,7 @@ const Index = () => {
             <HelmetComponent title="Trang chủ" />
             <div className="py-0 container my-20">
                 <HomeSlider />
-                {windowWidth > 500 && (
-                    <div className="p-4 flex items-center justify-end font-[sans-serif]">
-                        <label className="text-[16px] text-[#333] block pr-3" htmlFor="sort-select">
-                            Sắp xếp giá theo:
-                        </label>
-                        <select
-                            id="sort-select"
-                            value={sort || ''}
-                            onChange={handleSelectChange}
-                            className="w-[50%] md:w-[20%] p-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                        >
-                            <option value="asc">Thấp đến cao</option>
-                            <option value="desc">Cao đến thấp</option>
-                        </select>
-                    </div>
-                )}
+                {windowWidth > 500 && <SortDropdown sort={sort} onChange={handleSelectChange} />}
 
                 <Row gutter={[12, 12]} style={{ rowGap: '16px' }}>
                     <Col md={6}>
@@ -122,20 +108,7 @@ const Index = () => {
 
                     {windowWidth < 500 && (
                         <Col sm={24} xs={24} md={24}>
-                            <div className="p-4 flex items-center justify-end font-[sans-serif]">
-                                <label className="text-[16px] text-[#333] block pr-3" htmlFor="sort-select">
-                                    Sắp xếp giá theo:
-                                </label>
-                                <select
-                                    id="sort-select"
-                                    value={sort || ''}
-                                    onChange={handleSelectChange}
-                                    className="w-[50%] md:w-[20%] p-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                >
-                                    <option value="asc">Thấp đến cao</option>
-                                    <option value="desc">Cao đến thấp</option>
-                                </select>
-                            </div>
+                            <SortDropdown sort={sort} onChange={handleSelectChange} />
                         </Col>
                     )}
 

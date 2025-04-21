@@ -19,23 +19,27 @@ const Category = () => {
     return (
         <div className="category bg-[#fff] rounded-[8px] p-10 w-full my-2">
             <p className="text-[20px] text-[#333] font-bold mb-5">Danh mục</p>
-            <Link
-                className={`text-[16px]  cursor-pointer ${pathname === '/' ? 'text-[#69b1ff]' : 'text-[#333]'}`}
-                to={path.Home}
-            >
-                <li>Tất cả</li>
-            </Link>
-            {data?.map((item, index) => (
-                <NavLink
-                    to={{ pathname: `/${item.id}` }}
-                    key={index}
-                    className={`text-[16px] text-[#333] cursor-pointer ${
-                        item.id == id ? 'text-[#69b1ff]' : 'text-[#333]'
-                    }`}
-                >
-                    <li> {item?.title}</li>
-                </NavLink>
-            ))}
+            <ul>
+                <li>
+                    <Link
+                        className={`text-[16px] cursor-pointer ${pathname === '/' ? 'text-[#005fcc]' : 'text-[#222]'}`}
+                        to={path.Home}
+                    >
+                        Tất cả
+                    </Link>
+                </li>
+
+                {data?.map((item, index) => (
+                    <li key={index}>
+                        <NavLink
+                            to={`/${item.id}`}
+                            className={`text-[16px] cursor-pointer ${item.id == id ? 'text-[#005fcc]' : 'text-[#222]'}`}
+                        >
+                            {item?.title}
+                        </NavLink>
+                    </li>
+                ))}
+            </ul>
         </div>
     );
 };
