@@ -36,7 +36,6 @@ const Profile = () => {
                 setUser(user);
                 message.success(data.message);
                 refetch();
-                setShowLogout(false);
             }
         } catch (error) {
             message.error(error.response.data?.message);
@@ -63,19 +62,6 @@ const Profile = () => {
             message.warning('Không thể thay đổi thông tin Admin');
         }
     }, [user]);
-
-    const valPass = updateForm.watch('password');
-    const valNewPass = updateForm.watch('newPassword');
-    const [showLogout, setShowLogout] = useState(false);
-    useEffect(() => {
-        const shouldShow = valPass?.trim() !== '' && valNewPass?.trim() !== '';
-        const comparePass = valPass && valNewPass && valPass !== valNewPass;
-        if (shouldShow && comparePass) {
-            setShowLogout(true);
-        } else {
-            setShowLogout(false);
-        }
-    }, [valPass, valNewPass, showLogout]);
 
     if (!user || user?.isAdmin) {
         return <Navigate to={path.Home} />;
@@ -170,19 +156,6 @@ const Profile = () => {
                                         </div>
                                     </div>
                                 </Col>
-
-                                {showLogout && (
-                                    <Col xs={24} md={24}>
-                                        <div className={`flex items-center gap-3`}>
-                                            <input
-                                                {...updateForm.register('logoutDevice')}
-                                                type="checkbox"
-                                                className="p-2 border rounded-lg"
-                                            />
-                                            <label className=" text-gray-700">Đăng xuất tất cả các thiết bị khác</label>
-                                        </div>
-                                    </Col>
-                                )}
 
                                 <Col xs={24} md={12}>
                                     <button className="w-1/2 bg-blue-500 hover:bg-blue-700 text-white  mt-5 font-bold py-2 px-4 rounded">
