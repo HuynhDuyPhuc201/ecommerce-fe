@@ -8,11 +8,10 @@ import Sidebar from '../Sidebar';
 import { path } from '~/config/path';
 import AuthModal from '~/pages/AuthModal';
 import { useAppStore } from '~/store/useAppStore';
-import { getUser, removeUser, removeToken } from '~/core/token';
-import { formatNumber } from '~/core';
+import { getUser, removeUser, removeToken } from '~/config/token';
 import useGetCart from '~/hooks/useGetCart';
 import { useLocalStore } from '~/store/useLocalStore';
-import { checkImg } from '~/utils/checkImg';
+import { formatNumber } from '~/utils/formatNumber';
 
 const Header = forwardRef((props, ref) => {
     const user = getUser();
@@ -93,7 +92,7 @@ const Header = forwardRef((props, ref) => {
                                         >
                                             {/* Ảnh sản phẩm */}
                                             <img
-                                                src={checkImg(item.image[0])}
+                                                src={item.image[0]}
                                                 alt={item.name}
                                                 width={50}
                                                 height={50}

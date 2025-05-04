@@ -10,29 +10,26 @@ function UpdateAddressForm({ useForm, onSubmit }) {
                 <Row gutter={[24, 24]} align="top">
                     <Col span={12}>
                         <InputForm
-                            error={useForm?.formState.errors['houseNumber']}
-                            placeholder=""
+                            error={useForm.formState.errors['houseNumber']}
                             name="houseNumber"
                             required={true}
-                            label={'Số nhà'}
+                            label="Số nhà"
                         />
                     </Col>
                     <Col span={12}>
                         <InputForm
-                            error={useForm?.formState.errors['district']}
-                            placeholder=""
+                            error={useForm.formState.errors['district']}
                             name="district"
                             required={true}
-                            label={'Quận / huyện'}
+                            label="Quận / huyện"
                         />
                     </Col>
                     <Col span={24}>
                         <InputForm
-                            error={useForm?.formState.errors['city']}
-                            placeholder="Nhập địa chỉ"
+                            error={useForm.formState.errors['city']}
                             name="city"
                             required={true}
-                            label={'Thành phố'}
+                            label="Thành phố"
                         />
                     </Col>
                 </Row>

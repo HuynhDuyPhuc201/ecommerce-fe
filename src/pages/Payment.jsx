@@ -1,7 +1,7 @@
 import { Col, message, Row } from 'antd';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { getAddress, getUser, setCart } from '~/core/token';
+import { getAddress, getUser, setCart } from '~/config/token';
 import useGetUserDetail from '~/hooks/useGetUserDetail';
 import useGetCart from '~/hooks/useGetCart';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';

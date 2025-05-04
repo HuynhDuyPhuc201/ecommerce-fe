@@ -5,11 +5,11 @@ import { ModalButton } from './component/ModalButton';
 import { useForm } from 'react-hook-form';
 import { ModalForm } from './component/ModalForm';
 import { useQuery } from '@tanstack/react-query';
-import { getUser } from '~/core/token';
+import { getUser } from '~/config/token';
 import { adminService } from '~/services/admin.service';
 import { orderService } from '~/services/order.service';
-import { formattedDate } from '~/core/utils/formatDate';
-import { formatNumber } from '~/core';
+import { formattedDate } from '~/utils/formatDate';
+import { formatNumber } from '~/utils/formatNumber';
 
 const fetchOrder = async (id, page = 1) => {
     const result = await orderService.getOrderAdmin(`?limit=4&page=${page}&id=${id}`);
@@ -270,7 +270,7 @@ const AdminUser = () => {
                 width: 120,
             },
             {
-                title: 'Email đã xác thực',
+                title: 'Xác thực',
                 dataIndex: 'isLogin',
                 ellipsis: true,
                 width: 120,

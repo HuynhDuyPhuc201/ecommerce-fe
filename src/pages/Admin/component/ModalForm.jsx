@@ -1,6 +1,7 @@
 import { Button, Col, Modal, Rate, Row, Switch, Input } from 'antd';
 import { Controller, FormProvider } from 'react-hook-form';
 import InputForm from '~/components/InputForm';
+import { FIELD_REQUIRED_MESSAGE } from '~/utils/validator';
 const { TextArea } = Input;
 export const ModalForm = ({ title, isOpen, onCancel, methods, onSubmit, fields, isLoading, action }) => {
     return (
@@ -20,43 +21,71 @@ export const ModalForm = ({ title, isOpen, onCancel, methods, onSubmit, fields, 
                                             required={field.required}
                                             type={field.type}
                                             disabled={field.name === 'id'}
+                                            pattern={field.pattern}
                                         />
                                     )}
                                     {field.type === 'textarea' && (
-                                        <TextArea
-                                            error={methods?.formState.errors[field.name]}
-                                            placeholder={field.placeholder}
+                                        <Controller
                                             name={field.name}
-                                            required={field.required}
-                                            disabled={field.name === 'id'}
-                                            rows={12}
-                                            style={{ height: '50px' }}
+                                            control={methods?.control}
+                                            rules={{ required: field.required && FIELD_REQUIRED_MESSAGE }}
+                                            render={({ field: ctrl, fieldState }) => (
+                                                <>
+                                                    <TextArea
+                                                        {...ctrl}
+                                                        placeholder={field.placeholder}
+                                                        disabled={field.name === 'id'}
+                                                        rows={6}
+                                                        className="resize-none"
+                                                    />
+                                                    {fieldState.error && (
+                                                        <p style={{ color: 'red' }}>{fieldState.error.message}</p>
+                                                    )}
+                                                </>
+                                            )}
                                         />
                                     )}
                                     {field.type === 'select' && (
-                                        <select
-                                            {...methods?.register(field.name)}
-                                            className="w-full mt-1 p-2 border border-gray-300 rounded-md"
-                                            defaultValue=""
-                                        >
-                                            <option value="" disabled>
-                                                Chọn một giá trị
-                                            </option>
-                                            {field.options?.map((item, i) => (
-                                                <option key={i} value={item.id || item.value}>
-                                                    {item.title || item.label}
+                                        <>
+                                            <select
+                                                {...methods?.register(field.name, {
+                                                    required: field.required && FIELD_REQUIRED_MESSAGE,
+                                                })}
+                                                className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+                                                defaultValue=""
+                                                disabled={field.name === 'id'}
+                                            >
+                                                <option value="" disabled>
+                                                    Chọn một giá trị
                                                 </option>
-                                            ))}
-                                        </select>
+                                                {field.options?.map((item, i) => (
+                                                    <option key={i} value={item.id || item.value}>
+                                                        {item.title || item.label}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                            {methods?.formState.errors[field.name]?.message && (
+                                                <p style={{ color: 'red' }}>
+                                                    {methods?.formState.errors[field.name]?.message}
+                                                </p>
+                                            )}
+                                        </>
                                     )}
 
                                     {field.type === 'rating' && (
                                         <Controller
                                             name={field.name}
                                             control={methods?.control}
-                                            defaultValue={0}
-                                            render={({ field }) => (
-                                                <Rate allowHalf {...field} onChange={field.onChange} />
+                                            rules={{ required: field.required && FIELD_REQUIRED_MESSAGE }}
+                                            render={({ field: ctrl, fieldState }) => (
+                                                <>
+                                                    <Rate {...ctrl} />
+                                                    {fieldState.error && (
+                                                        <p className="text-red-500 text-sm mt-1">
+                                                            {fieldState.error.message}
+                                                        </p>
+                                                    )}
+                                                </>
                                             )}
                                         />
                                     )}

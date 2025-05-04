@@ -17,7 +17,7 @@ const NewAddressForm = ({ addressForm, onSubmitOrder, addressLocal, user, dataUs
                                 placeholder=""
                                 name="houseNumber"
                                 required={true}
-                                label={'Số nhà'}
+                                label='Số nhà'
                             />
                         </Col>
                         <Col span={12}>
@@ -26,7 +26,7 @@ const NewAddressForm = ({ addressForm, onSubmitOrder, addressLocal, user, dataUs
                                 placeholder=""
                                 name="district"
                                 required={true}
-                                label={'Quận / huyện'}
+                                label='Quận / huyện'
                             />
                         </Col>
                         <Col span={24}>
@@ -35,7 +35,7 @@ const NewAddressForm = ({ addressForm, onSubmitOrder, addressLocal, user, dataUs
                                 placeholder="Nhập địa chỉ"
                                 name="city"
                                 required={true}
-                                label={'Thành phố'}
+                                label='Thành phố'
                             />
                         </Col>
                     </Row>

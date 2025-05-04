@@ -9,46 +9,41 @@ const Rating = ({ ratingObj }) => {
     const [selectRating, setSelectRating] = useState(null);
 
     const [searchParams] = useSearchParams();
-    const ratingParams = useMemo(() => searchParams.get('rating'), [searchParams] || '');
+    const ratingParams = useMemo(() => searchParams.get('rating'), [searchParams]);
 
     const handleRatingChange = useCallback(
         (e) => {
             const value = e.target?.value;
             setSelectRating((prev) => {
-                const newRating = prev === value ? null : value;
-                updateRating(newRating);
-                return newRating;
+                return prev === value ? null : value;
             });
         },
-        [updateRating, selectRating],
+        [],
     );
-
-    // Khi component mount, nếu ratingParams === null, updateRating('') sẽ chạy ngay.
-    // Điều này thay đổi searchParams, làm component re-render vô tận.
-    // Thêm điều kiện kiểm tra selectRating !== null để tránh re-render không cần thiết:
+    // Cập nhật `updateRating` khi `selectRating` thay đổi
     useEffect(() => {
-        if (ratingParams === null && selectRating !== null) {
-            setSelectRating(null);
-            updateRating('');
-        }
-    }, [ratingParams, selectRating]);
+        return selectRating !== null ?  updateRating(selectRating) : updateRating('');
+    }, [selectRating, updateRating, ratingParams]);
+
+    // khi chuyển danh mục khác thì xóa rating (ratingParams === null)
+    useEffect(() => {
+        return ratingParams === null ?  setSelectRating(null) : updateRating('');
+    }, [ratingParams]);
 
     return (
-        <>
-            <div className="category bg-[#fff] rounded-[8px] p-10 w-full my-2">
-                <p className="text-[20px] text-[#333] font-bold mb-5">Đánh giá</p>
-                <Row>
-                    {startArr?.map((item) => (
-                        <RatingItem
-                            key={item.value}
-                            value={item.value}
-                            onChange={handleRatingChange}
-                            checked={selectRating === item.value}
-                        />
-                    ))}
-                </Row>
-            </div>
-        </>
+        <div className="category bg-[#fff] rounded-[8px] p-10 w-full my-2">
+            <p className="text-[20px] text-[#333] font-bold mb-5">Đánh giá</p>
+            <Row>
+                {startArr?.map((item) => (
+                    <RatingItem
+                        key={item.value}
+                        value={item.value}
+                        onChange={handleRatingChange}
+                        checked={selectRating === item.value}
+                    />
+                ))}
+            </Row>
+        </div>
     );
 };
 

@@ -6,7 +6,7 @@ import AdminUser from './AdminUser';
 import AdminProduct from './AdminProduct';
 import { Navigate } from 'react-router-dom';
 import { path } from '~/config/path';
-import { getUser } from '~/core/token';
+import { getUser } from '~/config/token';
 import DashboardChart from './DashboardChart';
 import './admin.css';
 import HelmetComponent from '~/components/Helmet';

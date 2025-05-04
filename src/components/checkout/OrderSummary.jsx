@@ -1,12 +1,12 @@
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Button, Modal } from 'antd';
-import { formatNumber } from '~/core';
-import { formattedDate } from '~/core/utils/formatDate';
+import { formatNumber } from '~/utils/formatNumber';
+import { formattedDate } from '~/utils/formatDate';
 import { useQuery } from '@tanstack/react-query';
 import { orderService } from '~/services/order.service';
 import AddressDisplay from './AddressDisplay';
-import { getUser } from '~/core/token';
+import { getUser } from '~/config/token';
 
 const OrderSummary = ({
     checkoutInfo,

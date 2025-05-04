@@ -1,14 +1,13 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { Modal, Carousel, Rate, Tag, Descriptions, Button, Divider, Typography, message } from 'antd';
 import { ShoppingCartOutlined, CheckCircleOutlined } from '@ant-design/icons';
-import { formatNumber } from '~/core';
+import { formatNumber } from '~/utils/formatNumber';
 import { useQuery } from '@tanstack/react-query';
 import { productService } from '~/services/product.service';
 import { cartService } from '~/services/cart.service';
 import useGetCart from '~/hooks/useGetCart';
-import { getUser, setCart } from '~/core/token';
+import { getUser, setCart } from '~/config/token';
 import { useLocalStore } from '~/store/useLocalStore';
-import { checkImg } from '~/utils/checkImg';
 
 const { Title, Text } = Typography;
 
@@ -111,7 +110,7 @@ const ProductDetailModal = ({ open, product, onClose }) => {
                                         <img
                                             width={1000} // hoặc bất kỳ số nào gần đúng
                                             height={350}
-                                            src={checkImg(url)}
+                                            src={url}
                                             className={`h-[350px] w-full object-cover ${
                                                 product.countInstock === 0 ? 'opacity-50' : ''
                                             }`}

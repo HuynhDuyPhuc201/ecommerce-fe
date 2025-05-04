@@ -4,13 +4,14 @@ import React, { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import InputForm from '~/components/InputForm';
 import Button from '~/components/Button';
-import { setToken, setUser } from '~/core/token';
+import { setToken, setUser } from '~/config/token';
 import { useAppStore } from '~/store/useAppStore';
 import { userService } from '~/services/user.service';
 import { login } from '~/constants/images';
 import { path } from '~/config/path';
 import { useNavigate } from 'react-router-dom';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
+import { EMAIL_RULE, EMAIL_RULE_MESSAGE, PASSWORD_RULE, PASSWORD_RULE_MESSAGE } from '~/utils/validator';
 
 const AuthModal = () => {
     const { Title } = Typography;
@@ -141,20 +142,30 @@ const AuthModal = () => {
                                         Đăng nhập bằng Email
                                     </Title>
                                     <InputForm
-                                        error={loginForm.formState.errors.email}
+                                        error={loginForm.formState.errors['email']}
                                         placeholder="Tài khoản admin test: admin@gmail.com "
                                         name="email"
                                         type="text"
+                                        required={true}
+                                        pattern={{
+                                            value: EMAIL_RULE,
+                                            message: EMAIL_RULE_MESSAGE,
+                                        }}
                                     />
                                     <div className="relative ">
                                         <InputForm
-                                            error={loginForm.formState.errors.password}
+                                            error={loginForm.formState.errors['password']}
                                             placeholder="Mật khẩu: 123123"
                                             name="password"
                                             type={showPass ? 'text' : 'password'}
+                                            required={true}
+                                            pattern={{
+                                                value: PASSWORD_RULE,
+                                                message: PASSWORD_RULE_MESSAGE,
+                                            }}
                                         />
                                         <div
-                                            className="absolute top-[50%] right-2 transform -translate-y-1/2 cursor-pointer w-[20px] h-[20px]"
+                                            className="absolute top-[35%] right-2 transform -translate-y-1/2 cursor-pointer w-[20px] h-[20px]"
                                             onClick={() => setShowPass(!showPass)}
                                         >
                                             {showPass ? <EyeOutlined /> : <EyeInvisibleOutlined />}
@@ -204,19 +215,24 @@ const AuthModal = () => {
                                     <Row gutter={[12, 12]}>
                                         <Col span={12}>
                                             <InputForm
-                                                error={regitserForm.formState.errors.name}
+                                                error={regitserForm.formState.errors['name']}
                                                 placeholder="Name..."
                                                 name="name"
                                                 type="text"
+                                                required={true}
                                             />
                                             <div className="relative">
                                                 <InputForm
-                                                    error={regitserForm.formState.errors.password}
+                                                    error={regitserForm.formState.errors['password']}
                                                     placeholder="Password..."
                                                     name="password"
                                                     type={showPass ? 'text' : 'password'}
+                                                    required={true}
+                                                    pattern={{
+                                                        value: PASSWORD_RULE,
+                                                        message: PASSWORD_RULE_MESSAGE,
+                                                    }}
                                                 />
-
                                                 <div
                                                     className="absolute top-[50%] right-2 transform -translate-y-1/2 cursor-pointer w-[20px] h-[20px]"
                                                     onClick={() => setShowPass(!showPass)}
@@ -227,18 +243,24 @@ const AuthModal = () => {
                                         </Col>
                                         <Col span={12}>
                                             <InputForm
-                                                error={regitserForm.formState.errors.email}
+                                                error={regitserForm.formState.errors['email']}
                                                 placeholder="Email..."
                                                 name="email"
                                                 type="text"
                                                 onChange={handleOnChangeEmail}
+                                                required={true}
+                                                pattern={{
+                                                    value: EMAIL_RULE,
+                                                    message: EMAIL_RULE_MESSAGE,
+                                                }}
                                             />
                                             <div className="relative">
                                                 <InputForm
-                                                    error={regitserForm.formState.errors.confirmPassword}
+                                                    error={regitserForm.formState.errors['confirmPassword']}
                                                     placeholder="confirmPassword..."
                                                     name="confirmPassword"
                                                     type={showPassConFirm ? 'text' : 'password'}
+                                                    required={true}
                                                 />
                                                 <div
                                                     className="absolute top-[50%] right-2 transform -translate-y-1/2 cursor-pointer w-[20px] h-[20px]"
@@ -252,9 +274,10 @@ const AuthModal = () => {
                                             <Row gutter={[12, 12]}>
                                                 <Col span={12}>
                                                     <InputForm
-                                                        error={regitserForm.formState.errors.code}
+                                                        error={regitserForm.formState.errors['code']}
                                                         placeholder="Verify Code..."
                                                         name="code"
+                                                        required={true}
                                                     />
                                                 </Col>
                                                 <Col span={12}>

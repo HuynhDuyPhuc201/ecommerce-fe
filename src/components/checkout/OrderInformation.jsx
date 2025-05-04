@@ -1,8 +1,7 @@
 import React from 'react';
 import { Card } from 'antd';
 import CheckoutProductItem from './CheckoutProductItem';
-import { formatNumber } from '~/core';
-import { checkImg } from '~/utils/checkImg';
+import { formatNumber } from '~/utils/formatNumber';
 
 const OrderInformation = ({ checkoutInfo }) => {
     const totalProduct = checkoutInfo?.totalProduct || 1;
@@ -38,7 +37,7 @@ const OrderInformation = ({ checkoutInfo }) => {
                     {checkoutInfo?.orderItems?.map((item, index) => (
                         <CheckoutProductItem
                             key={index}
-                            image={checkImg(item?.image)}
+                            image={item?.image}
                             name={item?.name}
                             price={item?.price}
                             quantity={item?.quantity}

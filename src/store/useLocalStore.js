@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { getAddress, getCart, setCart } from '~/core/token';
+import { getAddress, getCart } from '~/config/token';
 
 const address = getAddress();
 export const useLocalStore = create((set) => ({

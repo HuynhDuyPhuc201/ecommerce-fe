@@ -2,13 +2,12 @@ import { Button } from 'antd';
 import React, { useCallback, useMemo, useState } from 'react';
 import { generatePath, Link, useNavigate } from 'react-router-dom';
 import { path } from '~/config/path';
-import { formatNumber } from '~/core';
+import { formatNumber } from '~/utils/formatNumber';
 import { Eye, ShoppingCart } from 'lucide-react';
-import { getUser, removeAddress } from '~/core/token';
+import { getUser, removeAddress } from '~/config/token';
 import useGetUserDetail from '~/hooks/useGetUserDetail';
 import ProductDetailModal from './ProductDetailModal';
-import { checkImg } from '~/utils/checkImg';
-import { handleScrollTop } from '~/hooks/useScrollTop';
+import { useScrollTop } from '~/hooks/useScrollTop';
 
 const ProductCard = ({ item }) => {
     const navigate = useNavigate();
@@ -21,7 +20,7 @@ const ProductCard = ({ item }) => {
         [item?.price, item?.price_old],
     );
 
-    const handleClickItem = () => handleScrollTop();
+    const handleClickItem = () => useScrollTop();
 
     const handleViewClick = (e) => {
         e.preventDefault();
@@ -67,7 +66,7 @@ const ProductCard = ({ item }) => {
                     <img
                         width={200} // hoặc bất kỳ số nào gần đúng
                         height={200}
-                        src={checkImg(item.image[0])}
+                        src={item.image[0]}
                         loading="lazy"
                         alt={item?.name || ''}
                         className={`h-full w-full object-cover transition-all duration-500 group-hover:opacity-0
@@ -80,7 +79,7 @@ const ProductCard = ({ item }) => {
                         <img
                             width={200} // hoặc bất kỳ số nào gần đúng
                             height={200}
-                            src={checkImg(item.image[1])}
+                            src={item.image[1]}
                             loading="lazy"
                             className="absolute inset-0 h-full w-full object-cover opacity-0 group-hover:opacity-100 transition-all duration-500"
                         />

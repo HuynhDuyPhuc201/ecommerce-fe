@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, Radio } from 'antd';
-import { formatNumber } from '~/core';
+import { formatNumber } from '~/utils/formatNumber';
 
 const ShippingMethodCard = ({ shippingOptions, shippingMethod, handleShippingMethod }) => {
     return (

@@ -1,5 +1,5 @@
 import React from 'react';
-import { formatNumber } from '~/core';
+import { formatNumber } from '~/utils/formatNumber';
 
 const CheckoutProductItem = ({ image, name, price = 0, quantity = 0 }) => {
     return (

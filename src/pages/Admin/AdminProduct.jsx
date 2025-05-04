@@ -6,13 +6,13 @@ import { useQuery } from '@tanstack/react-query';
 import { productService } from '~/services/product.service';
 import { ModalButton } from './component/ModalButton';
 import { ModalForm } from './component/ModalForm';
-import { formatNumber, validImageTypes } from '~/core';
+import { formatNumber } from '~/utils/formatNumber';
+import { validImageTypes } from '~/utils/typeFile';
 import { adminService } from '~/services/admin.service';
-import { checkImg } from '~/utils/checkImg';
 import TextArea from 'antd/es/input/TextArea';
 import { modalButtonData, tabTableAdminProduct } from '~/constants/dummyData';
-import { formattedDate } from '~/core/utils/formatDate';
-import { toInputDate } from '~/core/utils/toInputDate';
+import { formattedDate } from '~/utils/formatDate';
+import { toInputDate } from '~/utils/toInputDate';
 
 const AdminProduct = () => {
     const [state, setState] = useState({
@@ -216,7 +216,7 @@ const AdminProduct = () => {
                 message.error(result.message || 'Có lỗi xảy ra');
             }
         } catch (error) {
-            message.error(error.response?.data?.message || 'Lỗi không xác định');
+            message.error(error.response?.data?.message || 'Sản phẩm: lỗi không xác định');
         } finally {
             setIsLoading(false);
         }
@@ -237,7 +237,7 @@ const AdminProduct = () => {
                 });
             }
         } catch (error) {
-            message.error(error.response?.data?.message || 'Lỗi không xác định');
+            message.error(error.response?.data?.message || 'Danh mục: Lỗi không xác định');
         } finally {
             setIsLoading(false);
         }
@@ -271,7 +271,7 @@ const AdminProduct = () => {
             }
         } catch (error) {
             console.error(error);
-            message.error(error.response?.data?.message || 'Lỗi không xác định');
+            message.error(error.response?.data?.message || 'Mã giảm giá: Lỗi không xác định');
         } finally {
             setIsLoading(false);
         }
@@ -405,7 +405,7 @@ const AdminProduct = () => {
                             width={50}
                             height={50}
                             key={index}
-                            src={checkImg(imgUrl)}
+                            src={imgUrl}
                             alt="Product"
                             style={{ width: '50px', height: '50px' }}
                         />
@@ -416,7 +416,7 @@ const AdminProduct = () => {
         );
     };
 
-    const columns = {
+    const renderColumns = {
         product: [
             { title: 'Tên', dataIndex: 'name', width: 150 },
             { title: 'Hình', dataIndex: 'image', ellipsis: true, width: 200, render: renderImage },
@@ -527,7 +527,13 @@ const AdminProduct = () => {
                     { name: 'categories', label: 'Danh mục', type: 'select', options: dataCategory, required: true },
                     { name: 'price_old', label: 'Giá cũ', placeholder: 'Vd: 30000', type: 'number', required: true },
                     { name: 'price', label: 'Giá mới', placeholder: 'Vd: 20000', type: 'number', required: true },
-                    { name: 'countInstock', label: 'Tồn kho', type: 'number', required: true },
+                    {
+                        name: 'countInstock',
+                        label: 'Tồn kho',
+                        type: 'number',
+                        required: true,
+                        pattern: { message: 'Nhập số' },
+                    },
                     { name: 'description', label: 'Mô tả', type: 'textarea', required: true },
                 ],
             },
@@ -568,7 +574,6 @@ const AdminProduct = () => {
                         label: 'Giá trị giảm',
                         type: 'number',
                         required: true,
-                        placeholder: 'Nhập số % hoặc số tiền...',
                     },
                     { name: 'minOrderValue', label: 'Giá trị đơn hàng tối thiểu', type: 'number' },
                     { name: 'usageLimit', label: 'Giới hạn sử dụng', type: 'number' },
@@ -691,7 +696,7 @@ const AdminProduct = () => {
                     selectedRowKeys: state.idCheckbox,
                     onChange: (keys) => setState({ ...state, idCheckbox: keys }),
                 }}
-                columns={columns?.[state.type]}
+                columns={renderColumns?.[state.type]}
                 dataSource={renderType?.dataSource}
                 // dataSource={state.type === 'product' ? dataTableProduct : dataCategory}
                 scroll={{ x: 800 }}

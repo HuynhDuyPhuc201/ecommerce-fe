@@ -6,8 +6,8 @@ import { ShoppingCartOutlined } from '@ant-design/icons';
 import ProductCard from '~/components/ProductCard';
 import { productService } from '~/services/product.service';
 import { useQuery } from '@tanstack/react-query';
-import { getUser, removeAddress, setCart } from '~/core/token';
-import { formatNumber } from '~/core';
+import { getUser, removeAddress, setCart } from '~/config/token';
+import { formatNumber } from '~/utils/formatNumber';
 import { cartService } from '~/services/cart.service';
 import useGetUserDetail from '~/hooks/useGetUserDetail';
 import useGetProductDetail from '~/hooks/useGetProductDetail';
@@ -15,7 +15,6 @@ import useGetCart from '~/hooks/useGetCart';
 import { useLocalStore } from '~/store/useLocalStore';
 import { path } from '~/config/path';
 import BreadcrumbComponent from '~/components/Breadcrumb';
-import { checkImg } from '~/utils/checkImg';
 import HelmetComponent from '~/components/Helmet';
 import { ReviewCard } from '~/components/ReviewCard';
 import './style.css';
@@ -37,7 +36,7 @@ const ProductDetail = () => {
     const { data: _data } = useGetProductDetail(id);
 
     const dataDetail = _data?.product || {};
-    const allImage = dataDetail?.image?.map((item) => checkImg(item)) || [];
+    const allImage = dataDetail?.image?.map((item) => item) || [];
     const discount = ((dataDetail?.price_old - dataDetail?.price) / dataDetail?.price_old) * 100 || 0;
 
     useEffect(() => {
@@ -180,7 +179,7 @@ const ProductDetail = () => {
                                     <img
                                         width={200}
                                         height={350}
-                                        src={checkImg(item)}
+                                        src={item}
                                         className={`h-[350px] w-full object-cover ${
                                             dataDetail.countInstock === 0 && 'opacity-50'
                                         }`}
@@ -327,7 +326,7 @@ const ProductDetail = () => {
                         <div className="flex-col">
                             {shippingOptions?.map((item, i) => (
                                 <>
-                                    <span className="">{item.label}</span> - <span>{item.time}</span> <br />
+                                    <span className="" key={i}>{item.label}</span> - <span>{item.time}</span> <br />
                                 </>
                             ))}
                         </div>

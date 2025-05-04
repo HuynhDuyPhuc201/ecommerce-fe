@@ -1,16 +1,15 @@
 import { useQuery } from '@tanstack/react-query';
 import { Button, Table, Modal, message } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
-import { formatNumber } from '~/core/utils/formatNumber';
-import { formattedDate } from '~/core/utils/formatDate';
+import { formatNumber } from '~/utils/formatNumber';
+import { formattedDate } from '~/utils/formatDate';
 import { orderService } from '~/services/order.service';
 import HelmetComponent from '~/components/Helmet';
 import { ProductReview } from '~/components/ProductReview';
 import { productService } from '~/services/product.service';
-import { getUser } from '~/core/token';
+import { getUser } from '~/config/token';
 import { useForm } from 'react-hook-form';
-import { validImageTypes } from '~/core';
-
+import { validImageTypes } from '~/utils/typeFile';
 const MyOrder = () => {
     const user = getUser();
     const [state, setState] = useState({

@@ -1,8 +1,8 @@
 import { Button, Col, InputNumber, message, Modal, Row, Table } from 'antd';
 import React, { useState, useMemo, useCallback } from 'react';
 import { cart_empty } from '~/constants/images';
-import { formatNumber } from '~/core';
-import { getAddress, getUser, setAddress, setCart } from '~/core/token';
+import { formatNumber } from '~/utils/formatNumber';
+import { getAddress, getUser, setAddress, setCart } from '~/config/token';
 import { cartService } from '~/services/cart.service';
 import AddressModal from '~/components/Address/AddressModal';
 import useGetUserDetail from '~/hooks/useGetUserDetail';
@@ -16,7 +16,6 @@ import UpdateAddressForm from '~/components/Form/UpdateAddressForm';
 import './CartPage.css';
 import BreadcrumbComponent from '~/components/Breadcrumb';
 import EmptyCart from '~/components/cart/EmptyCart';
-import { checkImg } from '~/utils/checkImg';
 import HelmetComponent from '~/components/Helmet';
 
 const CartPage = () => {
@@ -172,7 +171,7 @@ const CartPage = () => {
 
     const renderImage = useCallback((img) => {
         return img ? (
-            <img width={100} height={100} className="h-[100px] w-full object-cover" src={checkImg(img)} alt="" />
+            <img width={100} height={100} className="h-[100px] w-full object-cover" src={img} alt="" />
         ) : (
             ''
         );

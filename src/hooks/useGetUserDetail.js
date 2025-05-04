@@ -1,4 +1,4 @@
-import { getUser } from '../core/token';
+import { getUser } from '../config/token';
 import { userService } from '../services/user.service';
 import { useQuery } from '@tanstack/react-query';
 

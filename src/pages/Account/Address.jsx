@@ -3,10 +3,11 @@ import React, { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { userService } from '~/services/user.service';
-import { setUser } from '~/core/token';
+import { setUser } from '~/config/token';
 import AddressItem from '~/components/Address/AddressItem';
 import useGetUserDetail from '~/hooks/useGetUserDetail';
 import HelmetComponent from '~/components/Helmet';
+import InputForm from '~/components/InputForm';
 
 const Address = () => {
     const addressForm = useForm({ mode: 'onChange' });
@@ -60,31 +61,31 @@ const Address = () => {
                             <Row gutter={[24, 24]} align="top">
                                 <Col span={12}>
                                     <label className="block text-gray-700">Số nhà</label>
-                                    <input
-                                        {...addressForm.register('houseNumber')}
+                                    <InputForm
+                                        error={addressForm.formState.errors['houseNumber']}
+                                        name="houseNumber"
                                         type="text"
-                                        className="w-full p-2 border rounded-lg"
-                                        placeholder=""
+                                        required={true}
                                     />
                                 </Col>
 
                                 <Col span={12}>
                                     <label className="block text-gray-700">Quận / huyện</label>
-                                    <input
-                                        {...addressForm.register('district')}
+                                    <InputForm
+                                        error={addressForm.formState.errors['district']}
+                                        name="district"
                                         type="text"
-                                        className="w-full p-2 border rounded-lg"
-                                        placeholder=""
+                                        required={true}
                                     />
                                 </Col>
 
                                 <Col xs={24} md={24}>
                                     <label className="block text-gray-700">Thành phố</label>
-                                    <input
-                                        {...addressForm.register('city')}
+                                    <InputForm
+                                        error={addressForm.formState.errors['city']}
+                                        name="city"
                                         type="text"
-                                        className="w-full p-2 border rounded-lg"
-                                        placeholder=""
+                                        required={true}
                                     />
                                 </Col>
 

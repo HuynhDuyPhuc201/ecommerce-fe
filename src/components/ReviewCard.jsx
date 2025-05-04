@@ -1,13 +1,13 @@
 import { Button } from 'antd';
 import { Link } from 'react-router-dom';
 import { path } from '~/config/path';
-import { getUser } from '~/core/token';
-import { formattedDate } from '~/core/utils/formatDate';
-import { handleScrollTop } from '~/hooks/useScrollTop';
+import { getUser } from '~/config/token';
+import { formattedDate } from '~/utils/formatDate';
+import { useScrollTop } from '~/hooks/useScrollTop';
 
 export const ReviewCard = ({ itemReview }) => {
     const user = getUser();
-    const handleClickItem = () => handleScrollTop();
+    const handleClickItem = () => useScrollTop();
     return (
         <div className="border-b border-gray-200 p-4">
             <div className="flex items-center justify-between mb-2">

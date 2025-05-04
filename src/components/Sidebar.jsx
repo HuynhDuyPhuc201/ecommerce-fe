@@ -2,15 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { Drawer, Badge, Menu, List } from 'antd';
 import { CloseOutlined, ShoppingCartOutlined, UserOutlined } from '@ant-design/icons';
 import { useAppStore } from '~/store/useAppStore';
-import { getUser, removeToken, removeUser } from '~/core/token';
+import { getUser, removeToken, removeUser } from '~/config/token';
 import { generatePath, Link, useLocation, useNavigate } from 'react-router-dom';
 import { path } from '~/config/path';
 import useGetCart from '~/hooks/useGetCart';
 import SearchBar from './SearchBar';
 import useGetUserDetail from '~/hooks/useGetUserDetail';
 import { useLocalStore } from '~/store/useLocalStore';
-import { checkImg } from '~/utils/checkImg';
-import { formatNumber } from '~/core';
+import { formatNumber } from '~/utils/formatNumber';
 
 const Sidebar = () => {
     const { cartLocal } = useLocalStore();
@@ -130,7 +129,7 @@ const Sidebar = () => {
                                     }}
                                 >
                                     <img
-                                        src={checkImg(item.image[0])}
+                                        src={item.image[0]}
                                         alt={item.name}
                                         width={50}
                                         height={50}

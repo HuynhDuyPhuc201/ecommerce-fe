@@ -8,6 +8,8 @@ import admin from '../assets/images/user.png';
 import cart_empty from '../assets/images/cartempty.png';
 import logo from '../assets/images/logo.webp';
 import login from '../assets/images/login.png';
+import astronaut from '../assets/images/astronaut.svg';
+import planet from '../assets/images/planet.svg';
 
 export {
     slider_1,
@@ -20,4 +22,6 @@ export {
     cart_empty,
     logo,
     login,
+    astronaut,
+    planet
 };

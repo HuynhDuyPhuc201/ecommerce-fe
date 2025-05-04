@@ -1,15 +1,16 @@
 import { Avatar, Button, Col, message, Row, Upload } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { getUser, setUser } from '~/core/token';
+import { getUser, setUser } from '~/config/token';
 import { EyeInvisibleOutlined, EyeOutlined, UploadOutlined, UserOutlined } from '@ant-design/icons';
 import { userService } from '~/services/user.service';
-import { FormProvider } from 'antd/es/form/context';
-import { useForm } from 'react-hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
 import { path } from '~/config/path';
 import _ from 'lodash';
 import useGetUserDetail from '~/hooks/useGetUserDetail';
 import HelmetComponent from '~/components/Helmet';
+import InputForm from '~/components/InputForm';
+import { PHONE_RULE, PHONE_RULE_MESSAGE } from '~/utils/validator';
 
 const Profile = () => {
     const user = getUser();
@@ -77,7 +78,7 @@ const Profile = () => {
                             <div className="flex flex-col items-center gap-4 p-4 border rounded-lg shadow-md w-full">
                                 {/* Hiển thị avatar */}
                                 <Avatar
-                                    size={100}
+                                    size={150}
                                     icon={!imageUrl ? <UserOutlined /> : undefined}
                                     src={imageUrl || data?.avatar || user?.avatar}
                                 />
@@ -92,42 +93,49 @@ const Profile = () => {
                             <Row gutter={[12, 12]}>
                                 <Col span={12}>
                                     <label className="block text-gray-700">Họ & Tên</label>
-                                    <input
-                                        {...updateForm.register('name')}
+                                    <InputForm
+                                        error={updateForm?.formState.errors['name']}
+                                        name="name"
                                         type="text"
-                                        className="w-full p-2 border rounded-lg"
+                                        required={true}
                                         placeholder="Nhập họ & tên"
                                     />
                                 </Col>
 
                                 <Col span={12}>
                                     <label className="block text-gray-700">Email</label>
-                                    <input
-                                        {...updateForm.register('email')}
+                                    <InputForm
+                                        error={updateForm?.formState.errors['email']}
+                                        name="email"
                                         type="text"
                                         disabled
-                                        className="w-full p-2 border rounded-lg bg-gray-100"
+                                        required={true}
                                         placeholder="abc@example.com"
                                     />
                                 </Col>
 
                                 <Col xs={24} md={24}>
                                     <label className="block text-gray-700">Số điện thoại</label>
-                                    <input
-                                        {...updateForm.register('phone')}
+                                    <InputForm
+                                        error={updateForm?.formState.errors['phone']}
+                                        name="phone"
                                         type="text"
-                                        className="w-full p-2 border rounded-lg"
+                                        required={true}
                                         placeholder="Nhập số điện thoại"
+                                        pattern={{
+                                            value: PHONE_RULE,
+                                            message: PHONE_RULE_MESSAGE,
+                                        }}
                                     />
                                 </Col>
 
                                 <Col xs={24} md={12}>
                                     <label className="block text-gray-700">Mật khẩu cũ</label>
                                     <div className="relative">
-                                        <input
-                                            {...updateForm.register('password')}
+                                        <InputForm
+                                            error={updateForm?.formState.errors['password']}
+                                            name="password"
                                             type={showPass ? 'text' : 'password'}
-                                            className="w-full p-2 border rounded-lg"
                                             placeholder="Nhập mật khẩu"
                                         />
                                         <div
@@ -142,11 +150,11 @@ const Profile = () => {
                                 <Col xs={24} md={12}>
                                     <label className="block text-gray-700">Mật khẩu mới</label>
                                     <div className="relative">
-                                        <input
-                                            {...updateForm.register('newPassword')}
-                                            type={showPass ? 'text' : 'password'}
-                                            className="w-full p-2 border rounded-lg"
+                                        <InputForm
+                                            error={updateForm?.formState.errors['newPassword']}
+                                            name="newPassword"
                                             placeholder="Nhập mật khẩu mới"
+                                            type={showPass ? 'text' : 'password'}
                                         />
                                         <div
                                             className="absolute top-[50%] right-2 transform -translate-y-1/2 cursor-pointer w-[20px] h-[20px]"

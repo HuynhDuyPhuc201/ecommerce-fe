@@ -2,7 +2,7 @@ import { Button, Rate, Upload } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
 import { CloseCircleOutlined, UploadOutlined } from '@ant-design/icons';
 import { Controller, FormProvider } from 'react-hook-form';
-import { formattedDate } from '~/core/utils/formatDate';
+import { formattedDate } from '~/utils/formatDate';
 
 export const ProductReview = (props) => {
     const { product, handleUpload, onSubmit, reviewForm, state, loading, selectedOrder } = props;

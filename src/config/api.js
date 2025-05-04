@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { getToken, setToken } from '../core/token';
+import { getToken, setToken } from './token';
 import { userService } from '~/services/user.service';
 import { API_ROOT } from '~/utils/constants';
 

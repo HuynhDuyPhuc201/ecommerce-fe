@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button, Col } from 'antd';
 import { path } from '~/config/path';
-import { getUser } from '~/core/token';
+import { getUser } from '~/config/token';
 import HelmetComponent from '~/components/Helmet';
 
 const OrderSuccessPage = () => {

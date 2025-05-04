@@ -1,7 +1,7 @@
 import { Row } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { formatNumber } from '~/core';
+import { formatNumber } from '~/utils/formatNumber';
 import './type.css';
 const Price = ({ priceObj }) => {
     const { price, updatePrice } = priceObj;
@@ -19,11 +19,11 @@ const Price = ({ priceObj }) => {
 
     // bị tương tự như rating
     useEffect(() => {
-        if (priceParams === null && priceValue !== 0) {
+        if (priceParams === null ) {
             setPriceValue(0);
             updatePrice('');
         }
-    }, [priceParams, priceValue]);
+    }, [priceParams]);
 
     return (
         <div className="category bg-[#fff] rounded-[8px] p-10 w-full my-2">

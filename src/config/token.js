@@ -2,7 +2,6 @@ const TOKEN_NAME = 'token';
 const USER_NAME = 'user';
 const CART_NAME = 'cart';
 const ADDRESS_NAME = 'address';
-const INSTANTCHECKOUT_NAME = 'instant_checkout';
 
 export const getToken = () => {
     let token = localStorage?.getItem(TOKEN_NAME);
@@ -53,16 +52,4 @@ export const setAddress = (data) => {
 };
 export const removeAddress = () => {
     localStorage.removeItem(ADDRESS_NAME);
-};
-
-//instantCheckout (mua ngay, thanh toán ngay)
-export const getInstantCheckout = () => {
-    let address = localStorage?.getItem(INSTANTCHECKOUT_NAME) || '';
-    if (address) return JSON.parse(address);
-};
-export const setInstantCheckout = (data) => {
-    localStorage.setItem(INSTANTCHECKOUT_NAME, JSON.stringify(data));
-};
-export const removeInstantCheckout = () => {
-    localStorage.removeItem(INSTANTCHECKOUT_NAME);
 };
