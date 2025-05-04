@@ -100,31 +100,37 @@ const ProductDetail = () => {
 
     const handleAddCart = useCallback(async () => {
         if (newTotalQuantity > dataDetail?.countInstock) {
-            return message.error('Số lượng sản phẩm không đủ');
+          return message.error('Số lượng sản phẩm không đủ');
         }
-
-        const { _id, name, price, countInstock } = dataDetail;
-        const imageUrl = dataDetail.image?.[0] ?? 'default-image-url.jpg';
-        const cartItem = { productId: _id, name, price, quantity, image: imageUrl, countInstock };
-
-        if (user) {
-            try {
-                setIsloading(true);
-                const result = await cartService.addCart(cartItem);
-                if (result) {
-                    refetchCart();
-                    message.success('Thêm vào giỏ hàng thành công');
-                }
-            } catch (error) {
-                message.error(error.message || 'Có lỗi xảy ra');
-            } finally {
-                setIsloading(false);
-                handleQuantityChange(1);
-            }
-        } else {
-            updateLocalCart(cartItem);
+      
+        const { _id, name, price, countInstock, image } = dataDetail;
+        const cartItem = {
+          productId: _id,
+          name,
+          price,
+          quantity,
+          image: image?.[0] ?? 'default-image-url.jpg',
+          countInstock,
+        };
+      
+        if (!user) {
+          updateLocalCart(cartItem);
+          return;
         }
-    }, [user, newTotalQuantity, dataDetail, refetchCart]);
+      
+        try {
+          setIsloading(true);
+          await cartService.addCart(cartItem);
+          refetchCart();
+          message.success('Thêm vào giỏ hàng thành công');
+        } catch (error) {
+          message.error(error?.message || 'Có lỗi xảy ra');
+        } finally {
+          setIsloading(false);
+          handleQuantityChange(1);
+        }
+      }, [user, newTotalQuantity, dataDetail, refetchCart]);
+      
 
     // update cart ở local dành cho user không login
     const updateLocalCart = (cartItem) => {
