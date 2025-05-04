@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { Button, Table, Modal, message } from 'antd';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { formatNumber } from '~/utils/formatNumber';
 import { formattedDate } from '~/utils/formatDate';
 import { orderService } from '~/services/order.service';
@@ -216,7 +216,7 @@ const MyOrder = () => {
                                 key={item._id}
                                 src={item.image}
                                 alt="Product"
-                                style={{ width: '50px', height: '50px' }}
+                                className='w-[50px] h-[50px] rounded-lg'
                             />
                         ))}
                         {list.length > 2 && <span className="pl-2">+{list.length - 2}</span>}

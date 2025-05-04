@@ -63,20 +63,36 @@ const SearchBar = forwardRef(({ placeholder, size = 'small', text }, ref) => {
                     borderLeft: 'none',
                     outline: 'none',
                     boxShadow: 'none',
-                    borderRadius: '0',
                     height: '40px',
+                    borderTopLeftRadius: '4px',
+                    borderBottomLeftRadius: '4px',
+                    WebkitBorderTopLeftRadius: '4px',
+                    WebkitBorderBottomLeftRadius: '4px',
+                    MozBorderRadiusTopLeft: '4px',
+                    MozBorderRadiusBottomLeft: '4px',
                 }}
                 placeholder={placeholder}
                 className="w-full p-3"
                 onChange={handleOnChange}
-                value={searchValue} // Hiển thị giá trị trên input
+                value={searchValue}
                 ref={ref}
                 onFocus={() => setOverlayVisible(true)}
             />
+
             <Button
                 size={size}
                 icon={<SearchOutlined />}
-                style={{ fontSize: '17px', borderRadius: '0', border: 'none' }}
+                style={{
+                    fontSize: '17px',
+                    border: 'none',
+                    borderRadius: '0',
+                    borderTopRightRadius: '4px',
+                    borderBottomRightRadius: '4px',
+                    WebkitBorderTopRightRadius: '4px',
+                    WebkitBorderBottomRightRadius: '4px',
+                    MozBorderRadiusTopRight: '4px',
+                    MozBorderRadiusBottomRight: '4px',
+                }}
                 onClick={handleSearch}
             >
                 {text}

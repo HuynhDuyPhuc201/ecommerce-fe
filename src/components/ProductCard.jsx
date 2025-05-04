@@ -60,8 +60,8 @@ const ProductCard = ({ item }) => {
     }, []);
 
     return (
-        <div className="group relative shadow-md cursor-pointer">
-            <div className="border overflow-hidden transition-all duration-300 hover:shadow-lg">
+        <div className="group relative rounded-lg shadow-md cursor-pointer">
+            <div className="border  overflow-hidden transition-all duration-300 hover:shadow-lg">
                 <div className="group relative h-[200px] overflow-hidden">
                     <img
                         width={200} // hoặc bất kỳ số nào gần đúng

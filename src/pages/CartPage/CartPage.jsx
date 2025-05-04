@@ -1,6 +1,5 @@
 import { Button, Col, InputNumber, message, Modal, Row, Table } from 'antd';
 import React, { useState, useMemo, useCallback } from 'react';
-import { cart_empty } from '~/constants/images';
 import { formatNumber } from '~/utils/formatNumber';
 import { getAddress, getUser, setAddress, setCart } from '~/config/token';
 import { cartService } from '~/services/cart.service';
@@ -13,10 +12,10 @@ import useOrderStore from '~/store/useOrderStore';
 import { useForm } from 'react-hook-form';
 import { useLocalStore } from '~/store/useLocalStore';
 import UpdateAddressForm from '~/components/Form/UpdateAddressForm';
-import './CartPage.css';
 import BreadcrumbComponent from '~/components/Breadcrumb';
 import EmptyCart from '~/components/cart/EmptyCart';
 import HelmetComponent from '~/components/Helmet';
+import './CartPage.css';
 
 const CartPage = () => {
     const user = getUser();

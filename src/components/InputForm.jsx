@@ -1,3 +1,4 @@
+import { Alert } from 'antd';
 import React from 'react';
 import { useFormContext } from 'react-hook-form';
 import { FIELD_REQUIRED_MESSAGE } from '~/utils/validator';
@@ -28,7 +29,7 @@ const InputForm = ({ label, placeholder, name, type, required, error, pattern, .
                 {...props}
             />
             {/* Hiển thị lỗi nếu có */}
-            {error && <p style={{ color: 'red' }}>{error?.message || ""}</p>}
+            {error && <Alert showIcon  style={{ margin: '5px 0'}} message={error?.message} type="error" />}
         </>
     );
 };

@@ -143,7 +143,7 @@ const AuthModal = () => {
                                     </Title>
                                     <InputForm
                                         error={loginForm.formState.errors['email']}
-                                        placeholder="Tài khoản admin test: admin@gmail.com "
+                                        placeholder="Tài khoản admin: admin@gmail.com "
                                         name="email"
                                         type="text"
                                         required={true}
@@ -152,7 +152,7 @@ const AuthModal = () => {
                                             message: EMAIL_RULE_MESSAGE,
                                         }}
                                     />
-                                    <div className="relative ">
+                                    <div className="relative">
                                         <InputForm
                                             error={loginForm.formState.errors['password']}
                                             placeholder="Mật khẩu: 123123"
@@ -165,7 +165,7 @@ const AuthModal = () => {
                                             }}
                                         />
                                         <div
-                                            className="absolute top-[35%] right-2 transform -translate-y-1/2 cursor-pointer w-[20px] h-[20px]"
+                                            className="absolute pt-8 mt-2 top-0 right-4 transform -translate-y-1/2 cursor-pointer w-[14px] h-[14px]"
                                             onClick={() => setShowPass(!showPass)}
                                         >
                                             {showPass ? <EyeOutlined /> : <EyeInvisibleOutlined />}

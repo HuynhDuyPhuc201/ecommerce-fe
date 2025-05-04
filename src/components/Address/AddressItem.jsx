@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Card, Button, message, Row, Col, Modal } from 'antd';
+import { Card, Button, message, Row, Col, Modal, Alert } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
 import { userService } from '~/services/user.service';
 import { useForm } from 'react-hook-form';
@@ -69,7 +69,7 @@ const AddressItem = () => {
                                     Cập nhật
                                 </Button>
                                 {item?.defaultAddress && (
-                                    <p style={{ marginRight: 10, marginTop: '10px', color: 'red' }}>Mặc định</p>
+                                    <Alert  style={{ margin: '10px 10px 0 0', color: 'red'}}  message='Mặc định' type="error" />
                                 )}
                             </div>
                             <div

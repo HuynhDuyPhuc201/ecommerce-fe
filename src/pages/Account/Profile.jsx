@@ -1,16 +1,16 @@
 import { Avatar, Button, Col, message, Row, Upload } from 'antd';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { getUser, setUser } from '~/config/token';
 import { EyeInvisibleOutlined, EyeOutlined, UploadOutlined, UserOutlined } from '@ant-design/icons';
 import { userService } from '~/services/user.service';
 import { FormProvider, useForm } from 'react-hook-form';
 import { path } from '~/config/path';
-import _ from 'lodash';
 import useGetUserDetail from '~/hooks/useGetUserDetail';
 import HelmetComponent from '~/components/Helmet';
 import InputForm from '~/components/InputForm';
 import { PHONE_RULE, PHONE_RULE_MESSAGE } from '~/utils/validator';
+import { getUser, setUser } from '~/config/token';
+import _ from 'lodash';
 
 const Profile = () => {
     const user = getUser();

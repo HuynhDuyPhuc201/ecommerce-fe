@@ -5,7 +5,6 @@ import { formatNumber } from '~/utils/formatNumber';
 import { formattedDate } from '~/utils/formatDate';
 import { useQuery } from '@tanstack/react-query';
 import { orderService } from '~/services/order.service';
-import AddressDisplay from './AddressDisplay';
 import { getUser } from '~/config/token';
 
 const OrderSummary = ({

@@ -17,8 +17,8 @@ import { path } from '~/config/path';
 import BreadcrumbComponent from '~/components/Breadcrumb';
 import HelmetComponent from '~/components/Helmet';
 import { ReviewCard } from '~/components/ReviewCard';
-import './style.css';
 import { shippingOptions } from '~/constants/dummyData';
+import './style.css';
 
 const { Title, Text } = Typography;
 

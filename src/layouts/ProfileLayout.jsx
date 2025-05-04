@@ -12,13 +12,12 @@ function ProfileLayout() {
                 </div>
 
                 <Row gutter={[24, 24]}>
-                    {/* Sidebar */}
                     <Col xs={24} md={6}>
                         <nav>
                             <div className="border rounded-lg overflow-hidden bg-[#fff] p-3">
                                 <NavLink
                                     className={({ isActive }) =>
-                                        `block px-4 py-3 mb-3 transition ${
+                                        `rounded-md block px-4 py-3 mb-3 transition ${
                                             isActive ? 'bg-blue-500 text-white font-bold' : 'hover:bg-gray-100'
                                         }`
                                     }
@@ -29,7 +28,7 @@ function ProfileLayout() {
                                 </NavLink>
                                 <NavLink
                                     className={({ isActive }) =>
-                                        `block px-4 py-3 mb-3 transition ${
+                                        `rounded-md block px-4 py-3 mb-3 transition ${
                                             isActive ? 'bg-blue-500 text-white font-bold' : 'hover:bg-gray-100'
                                         }`
                                     }
@@ -39,7 +38,7 @@ function ProfileLayout() {
                                 </NavLink>
                                 <NavLink
                                     className={({ isActive }) =>
-                                        `block px-4 py-3 transition ${
+                                        `rounded-md block px-4 py-3 transition ${
                                             isActive ? 'bg-blue-500 text-white font-bold' : 'hover:bg-gray-100'
                                         }`
                                     }

@@ -1,4 +1,4 @@
-import { Button, Col, Modal, Rate, Row, Switch, Input } from 'antd';
+import { Button, Col, Modal, Rate, Row, Switch, Input, Alert } from 'antd';
 import { Controller, FormProvider } from 'react-hook-form';
 import InputForm from '~/components/InputForm';
 import { FIELD_REQUIRED_MESSAGE } from '~/utils/validator';
@@ -39,8 +39,9 @@ export const ModalForm = ({ title, isOpen, onCancel, methods, onSubmit, fields, 
                                                         className="resize-none"
                                                     />
                                                     {fieldState.error && (
-                                                        <p style={{ color: 'red' }}>{fieldState.error.message}</p>
+                                                        <Alert showIcon  style={{ margin: '5px 0'}} message={fieldState.error.message} type="error" />
                                                     )}
+                                                    
                                                 </>
                                             )}
                                         />
@@ -65,9 +66,7 @@ export const ModalForm = ({ title, isOpen, onCancel, methods, onSubmit, fields, 
                                                 ))}
                                             </select>
                                             {methods?.formState.errors[field.name]?.message && (
-                                                <p style={{ color: 'red' }}>
-                                                    {methods?.formState.errors[field.name]?.message}
-                                                </p>
+                                                <Alert showIcon  style={{ margin: '5px 0'}} message={methods?.formState.errors[field.name]?.message} type="error" />
                                             )}
                                         </>
                                     )}
