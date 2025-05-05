@@ -15,7 +15,7 @@ const OrderSuccessPage = () => {
             <Col xs={24} sm={24} md={24}>
                 <div className="flex  flex-col items-center justify-center p-4">
                     <div className="p-6 rounded-lg text-center ">
-                        <p className="text-[25px] font-bold  text-green-600">Đặt hàng thành công!</p>
+                        <p className="text-[30px] font-bold  text-green-600">Đặt hàng thành công!</p>
                         <p className="text-[#333] mt-2">
                             Cảm ơn bạn đã mua sắm tại cửa hàng của chúng tôi. {!user && 'Theo dõi dơn hàng qua Email.'}{' '}
                             <br />

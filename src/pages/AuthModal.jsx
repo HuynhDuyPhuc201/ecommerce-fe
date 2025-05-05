@@ -26,7 +26,7 @@ const AuthModal = () => {
 
     // tạo useForm sử dụng cho nhiều component
     const loginForm = useForm({ mode: 'onChange' });
-    const regitserForm = useForm({ mode: 'onChange' });
+    const registerForm = useForm({ mode: 'onChange' });
 
     const handleLogin = async (form) => {
         setLoading(true);
@@ -93,7 +93,7 @@ const AuthModal = () => {
                 setLoading(false);
             }
             if (result.verify) {
-                regitserForm.reset({
+                registerForm.reset({
                     name: '',
                     email: '',
                     password: '',
@@ -115,7 +115,7 @@ const AuthModal = () => {
     };
 
     const handleResendCode = async () => {
-        const form = regitserForm.getValues(); // lấy email hiện tại từ form
+        const form = registerForm.getValues(); // lấy email hiện tại từ form
         try {
             setLoadingSendCode(true);
             const result = await userService.register(form); // giả sử BE có key 'resend' để gửi lại mã
@@ -130,9 +130,16 @@ const AuthModal = () => {
             setLoadingSendCode(false);
         }
     };
+
+    const handleCloseModal = () => {
+        toggleModal();
+        registerForm.clearErrors();
+        loginForm.clearErrors();
+    };
+    console.log('registerForm and loginForm', registerForm.formState.errors, loginForm.formState.errors);
     return (
         <>
-            <Modal open={openModal} onCancel={toggleModal} footer={null} width={800}>
+            <Modal open={openModal} onCancel={handleCloseModal} footer={null} width={800}>
                 <Row gutter={[12, 12]} justify="center" align="middle">
                     {!showSignUp && (
                         <Col xs={24} sm={24} md={14}>
@@ -172,32 +179,35 @@ const AuthModal = () => {
                                         </div>
                                     </div>
 
-                                    <Button className="w-full mt-[30px]" disabled={loading}>
-                                        {loading && <Spin />}Đăng nhập
-                                    </Button>
+                                    <div className="mt-[30px] flex justify-between items-center gap-3">
+                                        <Button className="w-full h-[40px]" disabled={loading}>
+                                            {loading && <Spin />}Đăng nhập
+                                        </Button>
+                                        <GoogleOAuthProvider clientId="119448505566-72peltvkmj8bi0cfn1l5hqm0fmf85jci.apps.googleusercontent.com">
+                                            <GoogleLogin
+                                                onSuccess={handleLoginGoogle}
+                                                onError={() => console.log('Login Failed')}
+                                                theme="outline"
+                                                size="large"
+                                                cookiePolicy={'single_host_origin'}
+                                            />
+                                        </GoogleOAuthProvider>
+                                    </div>
                                 </form>
                             </FormProvider>
-                            <div className="mt-5">
-                                <GoogleOAuthProvider clientId="119448505566-72peltvkmj8bi0cfn1l5hqm0fmf85jci.apps.googleusercontent.com">
-                                    <GoogleLogin
-                                        onSuccess={handleLoginGoogle}
-                                        onError={() => console.log('Login Failed')}
-                                        cookiePolicy={'single_host_origin'}
-                                    />
-                                </GoogleOAuthProvider>
-                            </div>
-                            <Title style={{ fontSize: '14px', paddingTop: '20px' }}>
-                                Chưa tạo tài khoản?{' '}
+
+                            <p style={{ fontSize: '14px', paddingTop: '20px' }}>
+                                Chưa có tài khoản?{' '}
                                 <button onClick={() => setShowSignUp(true)} className="text-[#2640d4]">
-                                    Tạo tài khoản
+                                    Đăng ký
                                 </button>
-                            </Title>
+                            </p>
                         </Col>
                     )}
                     {showSignUp && (
                         <Col md={14}>
-                            <FormProvider {...regitserForm}>
-                                <form onSubmit={regitserForm.handleSubmit(handleRegister)}>
+                            <FormProvider {...registerForm}>
+                                <form onSubmit={registerForm.handleSubmit(handleRegister)}>
                                     <Title
                                         style={{
                                             fontSize: '16px',
@@ -207,24 +217,28 @@ const AuthModal = () => {
                                         }}
                                     >
                                         <LeftOutlined
-                                            onClick={() => setShowSignUp(false)}
+                                            onClick={() => {
+                                                setShowSignUp(false);
+                                                registerForm.clearErrors();
+                                                loginForm.clearErrors();
+                                            }}
                                             style={{ position: 'absolute', left: 0 }}
                                         />
-                                        Đăng ký
+                                        Đăng ký tài khoản
                                     </Title>
                                     <Row gutter={[12, 12]}>
                                         <Col span={12}>
                                             <InputForm
-                                                error={regitserForm.formState.errors['name']}
-                                                placeholder="Name..."
+                                                error={registerForm.formState.errors['name']}
+                                                placeholder="Tên"
                                                 name="name"
                                                 type="text"
                                                 required={true}
                                             />
                                             <div className="relative">
                                                 <InputForm
-                                                    error={regitserForm.formState.errors['password']}
-                                                    placeholder="Password..."
+                                                    error={registerForm.formState.errors['password']}
+                                                    placeholder="Mật khẩu"
                                                     name="password"
                                                     type={showPass ? 'text' : 'password'}
                                                     required={true}
@@ -234,7 +248,7 @@ const AuthModal = () => {
                                                     }}
                                                 />
                                                 <div
-                                                    className="absolute top-[50%] right-2 transform -translate-y-1/2 cursor-pointer w-[20px] h-[20px]"
+                                                    className="absolute pt-8 mt-2 top-0 right-4 transform -translate-y-1/2 cursor-pointer w-[14px] h-[14px]"
                                                     onClick={() => setShowPass(!showPass)}
                                                 >
                                                     {showPass ? <EyeOutlined /> : <EyeInvisibleOutlined />}
@@ -243,8 +257,8 @@ const AuthModal = () => {
                                         </Col>
                                         <Col span={12}>
                                             <InputForm
-                                                error={regitserForm.formState.errors['email']}
-                                                placeholder="Email..."
+                                                error={registerForm.formState.errors['email']}
+                                                placeholder="Email"
                                                 name="email"
                                                 type="text"
                                                 onChange={handleOnChangeEmail}
@@ -256,14 +270,14 @@ const AuthModal = () => {
                                             />
                                             <div className="relative">
                                                 <InputForm
-                                                    error={regitserForm.formState.errors['confirmPassword']}
-                                                    placeholder="confirmPassword..."
+                                                    error={registerForm.formState.errors['confirmPassword']}
+                                                    placeholder="Nhập lại mật khẩu"
                                                     name="confirmPassword"
                                                     type={showPassConFirm ? 'text' : 'password'}
                                                     required={true}
                                                 />
                                                 <div
-                                                    className="absolute top-[50%] right-2 transform -translate-y-1/2 cursor-pointer w-[20px] h-[20px]"
+                                                    className="absolute pt-8 mt-2 top-0 right-4 transform -translate-y-1/2 cursor-pointer w-[14px] h-[14px]"
                                                     onClick={() => setShowPassConFirm(!showPassConFirm)}
                                                 >
                                                     {showPassConFirm ? <EyeOutlined /> : <EyeInvisibleOutlined />}
@@ -274,8 +288,8 @@ const AuthModal = () => {
                                             <Row gutter={[12, 12]}>
                                                 <Col span={12}>
                                                     <InputForm
-                                                        error={regitserForm.formState.errors['code']}
-                                                        placeholder="Verify Code..."
+                                                        error={registerForm.formState.errors['code']}
+                                                        placeholder="Mã xác thực..."
                                                         name="code"
                                                         required={true}
                                                     />
@@ -296,22 +310,26 @@ const AuthModal = () => {
                                         )}
                                     </Row>
 
-                                    <Button className="w-full mt-[30px]" type="submit" disabled={loading}>
+                                    <Button className="w-full mt-[30px] h-[40px]" type="submit" disabled={loading}>
                                         {loading && <Spin />}Đăng ký
                                     </Button>
-                                    <Title style={{ fontSize: '14px', paddingTop: '20px' }}>
+                                    <p style={{ fontSize: '14px', paddingTop: '20px' }}>
                                         Đã có tài khoản?{' '}
-                                        <button onClick={() => setShowSignUp(false)} className="text-[#2640d4]">
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowSignUp(false)}
+                                            className="text-[#2640d4]"
+                                        >
                                             Đăng nhập
                                         </button>
-                                    </Title>
+                                    </p>
                                 </form>
                             </FormProvider>
                         </Col>
                     )}
 
                     <Col md={10}>
-                        <Image src={login} style={{ width: '300px' }} className="w-[100px]" />
+                        <Image src={login} style={{ width: '280px' }} />
                     </Col>
                 </Row>
             </Modal>
