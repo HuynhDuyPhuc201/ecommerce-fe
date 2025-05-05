@@ -100,37 +100,36 @@ const ProductDetail = () => {
 
     const handleAddCart = useCallback(async () => {
         if (newTotalQuantity > dataDetail?.countInstock) {
-          return message.error('Số lượng sản phẩm không đủ');
+            return message.error('Số lượng sản phẩm không đủ');
         }
-      
+
         const { _id, name, price, countInstock, image } = dataDetail;
         const cartItem = {
-          productId: _id,
-          name,
-          price,
-          quantity,
-          image: image?.[0] ?? 'default-image-url.jpg',
-          countInstock,
+            productId: _id,
+            name,
+            price,
+            quantity,
+            image: image?.[0] ?? 'default-image-url.jpg',
+            countInstock,
         };
-      
+
         if (!user) {
-          updateLocalCart(cartItem);
-          return;
+            updateLocalCart(cartItem);
+            return;
         }
-      
+
         try {
-          setIsloading(true);
-          await cartService.addCart(cartItem);
-          refetchCart();
-          message.success('Thêm vào giỏ hàng thành công');
+            setIsloading(true);
+            await cartService.addCart(cartItem);
+            refetchCart();
+            message.success('Thêm vào giỏ hàng thành công');
         } catch (error) {
-          message.error(error?.message || 'Có lỗi xảy ra');
+            message.error(error?.message || 'Có lỗi xảy ra');
         } finally {
-          setIsloading(false);
-          handleQuantityChange(1);
+            setIsloading(false);
+            handleQuantityChange(1);
         }
-      }, [user, newTotalQuantity, dataDetail, refetchCart]);
-      
+    }, [user, newTotalQuantity, dataDetail, refetchCart]);
 
     // update cart ở local dành cho user không login
     const updateLocalCart = (cartItem) => {
@@ -179,20 +178,34 @@ const ProductDetail = () => {
             <Row gutter={[10, 10]} style={{ alignItems: 'flex-start' }}>
                 <Col md={8} className="md:sticky top-0 pt-5 relative">
                     <div className={`slider-container bg-[#fff] rounded-[8px] p-4 relative`}>
-                        <Slider {...settings}>
-                            {dataDetail?.image?.map((item, i) => (
-                                <div key={i}>
-                                    <img
-                                        width={200}
-                                        height={350}
-                                        src={item}
-                                        className={`h-[350px] w-full object-cover ${
-                                            dataDetail.countInstock === 0 && 'opacity-50'
-                                        }`}
-                                    />
-                                </div>
-                            ))}
-                        </Slider>
+                        {dataDetail?.image?.length > 1 ? (
+                            <Slider {...settings}>
+                                {dataDetail?.image?.map((item, i) => (
+                                    <div key={i}>
+                                        <img
+                                            width={200}
+                                            height={350}
+                                            src={item}
+                                            className={`h-[350px] w-full object-cover ${
+                                                dataDetail.countInstock === 0 && 'opacity-50'
+                                            }`}
+                                        />
+                                    </div>
+                                ))}
+                            </Slider>
+                        ) : (
+                            <div >
+                                <img
+                                    width={200}
+                                    height={350}
+                                    src={dataDetail?.image?.[0]}
+                                    className={`h-[350px] w-full object-cover ${
+                                        dataDetail.countInstock === 0 && 'opacity-50'
+                                    }`}
+                                />
+                            </div>
+                        )}
+
                         {dataDetail?.countInstock === 0 && (
                             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[70px] h-[70px] rounded-full bg-[#000000] ">
                                 <span className="text-white h-full text-[12px] text-center flex items-center justify-center">
@@ -332,7 +345,10 @@ const ProductDetail = () => {
                         <div className="flex-col">
                             {shippingOptions?.map((item, i) => (
                                 <>
-                                    <span className="" key={i}>{item.label}</span> - <span>{item.time}</span> <br />
+                                    <span className="" key={i}>
+                                        {item.label}
+                                    </span>{' '}
+                                    - <span>{item.time}</span> <br />
                                 </>
                             ))}
                         </div>

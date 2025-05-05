@@ -136,7 +136,6 @@ const AuthModal = () => {
         registerForm.clearErrors();
         loginForm.clearErrors();
     };
-    console.log('registerForm and loginForm', registerForm.formState.errors, loginForm.formState.errors);
     return (
         <>
             <Modal open={openModal} onCancel={handleCloseModal} footer={null} width={800}>

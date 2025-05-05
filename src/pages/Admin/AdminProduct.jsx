@@ -399,7 +399,7 @@ const AdminProduct = () => {
     const renderImage = (images) => {
         return (
             <>
-                <div className="flex item-center">
+                <div className="flex item-center gap-2">
                     {images?.slice(0, 2).map((imgUrl, index) => (
                         <img
                             width={50}
