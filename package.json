@@ -4,8 +4,8 @@
     "version": "0.0.0",
     "type": "module",
     "scripts": {
-        "dev": "cross-env BUILD_MODE=dev vite --port 3000 --host",
-        "build": "cross-env BUILD_MODE=production vite build",
+        "dev": "cross-env VITE_BUILD_MODE=dev vite --port 3000 --host",
+        "build": "cross-env VITE_BUILD_MODE=production vite build",
         "preview": "vite preview"
     },
     "dependencies": {
