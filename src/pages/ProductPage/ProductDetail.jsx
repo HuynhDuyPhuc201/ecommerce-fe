@@ -385,7 +385,7 @@ const ProductDetail = () => {
                         <Row gutter={[10, 10]}>
                             {productRecommand?.map((item, i) => (
                                 <Col md={12} sm={12} key={i}>
-                                    <ProductCard item={item} />
+                                    <ProductCard item={item} heartIcon={true}/>
                                 </Col>
                             ))}
                         </Row>

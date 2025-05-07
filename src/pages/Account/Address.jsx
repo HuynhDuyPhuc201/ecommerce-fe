@@ -41,16 +41,22 @@ const Address = () => {
     const hanldeCreate = () => {
         setCreateAddress(true);
     };
+    const handleComback = () => {
+        setCreateAddress(false)
+        addressForm.clearErrors();
+    }
 
     return (
         <div className="w-full mx-auto bg-white p-6 rounded-lg shadow-md">
             <HelmetComponent title="Thông tin tài khoản" />
-            <div className="flex items-center my-6">
+            <div className="flex items-center my-6 relative pb-10">
+                <div className="absolute top-0 left-0">
                 {createAddress && (
-                    <Button icon={<ArrowLeftOutlined />} onClick={() => setCreateAddress(false)}>
+                    <Button icon={<ArrowLeftOutlined />} onClick={handleComback}>
                         Quay lại
                     </Button>
                 )}
+                </div>
                 <h2 className="text-2xl font-semibold text-center flex-1">Thông tin tài khoản</h2>
             </div>
 

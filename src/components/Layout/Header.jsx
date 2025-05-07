@@ -1,7 +1,7 @@
 import React, { useState, useEffect, forwardRef } from 'react';
 import { Badge, Col, List, Row } from 'antd';
 import { generatePath, Link, useNavigate } from 'react-router-dom';
-import { ShoppingCartOutlined, UserOutlined, MenuOutlined, CaretDownOutlined } from '@ant-design/icons';
+import { ShoppingCartOutlined, UserOutlined, MenuOutlined, CaretDownOutlined, HeartOutlined } from '@ant-design/icons';
 import { Dropdown, Space } from 'antd';
 import SearchBar from '../SearchBar';
 import Sidebar from '../Sidebar';
@@ -12,6 +12,8 @@ import { getUser, removeUser, removeToken } from '~/config/token';
 import useGetCart from '~/hooks/useGetCart';
 import { useLocalStore } from '~/store/useLocalStore';
 import { formatNumber } from '~/utils/formatNumber';
+import { useQuery } from '@tanstack/react-query';
+import { productService } from '~/services/product.service';
 
 const Header = forwardRef((props, ref) => {
     const user = getUser();
@@ -20,6 +22,14 @@ const Header = forwardRef((props, ref) => {
     const { data: dataCart } = useGetCart();
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
     const { cartLocal } = useLocalStore();
+
+    
+    const { data: dataWishlist, refetch} = useQuery({
+        queryKey: ['wishlist'],
+        queryFn: async () => await productService.getWishlist(user._id),
+        enabled: !!user, // Chỉ chạy khi user tồn tại
+    });
+
     const { toggleSidebar, toggleModal, searchResults, setOverlayVisible, setSearchResults, isOverlayVisible } =
         useAppStore();
 
@@ -70,7 +80,7 @@ const Header = forwardRef((props, ref) => {
                         </Link>
                     </Col>
                     <Col span={windowWidth >= 1000 ? 12 : 0}>
-                        <SearchBar ref={ref} placeholder="Search" size="large" text="Tìm kiếm" />
+                        <SearchBar ref={ref} placeholder="Tìm kiếm..." size="large" text="Tìm kiếm" />
                         {isOverlayVisible && searchResults && searchResults?.length > 0 && (
                             <List
                                 bordered
@@ -144,58 +154,88 @@ const Header = forwardRef((props, ref) => {
                             />
                         )}
                     </Col>
-
-                    <Col span={windowWidth <= 1000 ? 4 : 8} className="flex justify-center items-center">
+                    <Col span={windowWidth <= 1000 ? 4 : 8} className="flex justify-end items-center">
                         {windowWidth >= 1000 ? (
                             <>
-                                <div className="account flex pl-[20px] items-center ">
-                                    {user?.avatar ? (
-                                        <>
-                                            <img
-                                                width={50}
-                                                height={50}
-                                                src={user?.avatar}
-                                                alt=""
-                                                referrerPolicy="no-referrer"
-                                                className="w-[50px] h-[50px] rounded-full object-cover"
-                                            />
-                                        </>
-                                    ) : (
-                                        <UserOutlined style={{ fontSize: '30px', color: '#fff' }} />
-                                    )}
+                                <div className="relative">
+                                    {' '}
+                                    {/* wrapper này để làm gốc tọa độ cho absolute */}
+                                    <div className="account flex pl-[20px] items-center relative">
+                                        {user?.avatar ? (
+                                            <>
+                                                <img
+                                                    width={50}
+                                                    height={50}
+                                                    src={user?.avatar}
+                                                    alt=""
+                                                    referrerPolicy="no-referrer"
+                                                    className="w-[50px] h-[50px] rounded-full object-cover"
+                                                />
+                                            </>
+                                        ) : (
+                                            <UserOutlined style={{ fontSize: '30px', color: '#fff' }} />
+                                        )}
 
-                                    <div className="account__detail pl-[10px]">
-                                        <Dropdown menu={{ items }} trigger={user ? ['hover'] : []}>
-                                            <button onClick={toggleModal} disabled={user} className="cursor-pointer">
-                                                <Space className="text-[#fff] text-[17px]">
-                                                    {user ? user?.name : 'Tài khoản'}
-                                                </Space>
-                                            </button>
-                                        </Dropdown>
-                                    </div>
-                                    <CaretDownOutlined
-                                        style={{ color: '#fff', cursor: 'pointer', padding: '2px 0 0 5px' }}
-                                    />
-                                </div>
-                                {!user?.isAdmin && (
-                                    <Link className="cart pl-[20px] flex item-center cursor-pointer" to={path.Cart}>
-                                        <div className="icon relative">
-                                            <Badge
-                                                count={
-                                                    user
-                                                        ? dataCart?.totalProduct > 0
-                                                            ? dataCart?.totalProduct
-                                                            : 0
-                                                        : cartLocal?.totalProduct > 0
-                                                        ? cartLocal?.totalProduct
-                                                        : 0
-                                                }
-                                            >
-                                                <ShoppingCartOutlined style={{ fontSize: '30px', color: '#fff' }} />
-                                            </Badge>
+                                        <div className="account__detail pl-[10px]">
+                                            <Dropdown menu={{ items }} trigger={user ? ['hover'] : []}>
+                                                <button
+                                                    onClick={toggleModal}
+                                                    disabled={user}
+                                                    className="cursor-pointer"
+                                                >
+                                                    <Space className="text-[#fff] text-[17px]">
+                                                        {user ? user?.name : 'Tài khoản'}
+                                                    </Space>
+                                                </button>
+                                            </Dropdown>
                                         </div>
-                                        <span className="text-[#fff] text-[17px] pl-[10px]">Giỏ hàng</span>
-                                    </Link>
+                                        <CaretDownOutlined
+                                            style={{ color: '#fff', cursor: 'pointer', padding: '2px 0 0 5px' }}
+                                        />
+
+                                        {/* Line xám bên phải */}
+                                        <div className="absolute right-[-10px] top-1/2 -translate-y-1/2 w-[2px] h-[60%] bg-gray-400"></div>
+                                    </div>
+                                </div>
+
+                                {!user?.isAdmin && (
+                                    <>
+                                        <Link
+                                            className="cart pl-[20px] flex item-center cursor-pointer flex-col justify-center text-center"
+                                            to={path.Cart}
+                                        >
+                                            <div className="icon relative">
+                                                <Badge
+                                                    count={
+                                                        user
+                                                            ? dataCart?.totalProduct > 0
+                                                                ? dataCart?.totalProduct
+                                                                : 0
+                                                            : cartLocal?.totalProduct > 0
+                                                            ? cartLocal?.totalProduct
+                                                            : 0
+                                                    }
+                                                >
+                                                    <ShoppingCartOutlined style={{ fontSize: '30px', color: '#fff' }} />
+                                                </Badge>
+                                            </div>
+                                        </Link>
+
+                                        {user && (
+                                            <Link
+                                                className="cart pl-[20px] flex item-center cursor-pointer flex-col justify-center text-center"
+                                                to={path.Account.Wishlist}
+                                            >
+                                                <div className="icon relative">
+                                                    <Badge
+                                                        count={dataWishlist?.wishlist?.products.length || 0}
+                                                    >
+                                                        <HeartOutlined style={{ fontSize: '30px', color: '#fff' }} />
+                                                    </Badge>
+                                                </div>
+                                            </Link>
+                                        )}
+                                    </>
                                 )}
                             </>
                         ) : (

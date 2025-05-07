@@ -47,7 +47,6 @@ api.interceptors.response.use(
                     err.config.headers.Authorization = `Bearer ${newAccessToken.access_token}`;
                     return api.request(err.config);
                 } catch (refreshError) {
-                    console.error('🚨 Refresh token failed', refreshError);
                     throw new Error(refreshError?.response?.data);
                 }
             }

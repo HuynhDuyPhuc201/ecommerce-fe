@@ -38,7 +38,6 @@ const AddressItem = () => {
             if (result.success) {
                 message.success(result.message);
                 refetch();
-                addressForm.reset({});
                 setModalConfig(false);
             }
         } catch (error) {
@@ -56,11 +55,11 @@ const AddressItem = () => {
             <Row gutter={[24, 24]} justify="center">
                 {data?.address?.map((item) => (
                     <Col xs={24} sm={12} md={24} lg={12} key={item?._id}>
-                        <Card style={{ position: 'relative', padding: '10px' }}>
+                        <Card style={{ position: 'relative'}}>
                             <p>Số nhà: {item?.houseNumber}</p>
                             <p>Đường: {item?.district}</p>
                             <p>Thành phố: {item?.city}</p>
-                            <div className="flex justify-between">
+                            <div className="flex justify-between relative">
                                 <Button
                                     type="primary"
                                     style={{ marginRight: 10, marginTop: '10px' }}

@@ -11,6 +11,7 @@ const ProductDetail = lazy(() => import('./pages/ProductPage/ProductDetail'));
 const Profile = lazy(() => import('./pages/Account/Profile'));
 const Address = lazy(() => import('./pages/Account/Address'));
 const MyOrder = lazy(() => import('./pages/Account/MyOrder'));
+const Wishlist = lazy(() => import('./pages/Account/Wishlist'));
 
 // admin
 const Admin = lazy(() => import('./pages/Admin/Admin'));
@@ -59,6 +60,10 @@ const routers = [
           {
             path: path.Account.MyOrder,
             element: <MyOrder />,
+          },
+          {
+            path: path.Account.Wishlist,
+            element: <Wishlist />,
           },
         ],
       },

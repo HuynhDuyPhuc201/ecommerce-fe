@@ -123,7 +123,7 @@ const Index = () => {
                                 : dataProduct?.map((item, i) => (
                                       <Col lg={6} md={8} sm={12} xs={12} key={i}>
                                           <Suspense fallback={<Skeleton active style={{ height: '200px' }} />}>
-                                              <LazyProductCard item={item} />
+                                              <LazyProductCard item={item} heartIcon/>
                                           </Suspense>
                                       </Col>
                                   ))}

@@ -10,6 +10,7 @@ export const path = {
         Profile: '/account',
         Address: '/account/address',
         MyOrder: '/account/orders',
+        Wishlist: '/account/wishlist',
     },
     Admin: '/admin',
 };

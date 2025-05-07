@@ -1,5 +1,5 @@
-import { Button } from 'antd';
-import React, { useCallback, useMemo, useState } from 'react';
+import { Button, message } from 'antd';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { generatePath, Link, useNavigate } from 'react-router-dom';
 import { path } from '~/config/path';
 import { formatNumber } from '~/utils/formatNumber';
@@ -8,12 +8,27 @@ import { getUser, removeAddress } from '~/config/token';
 import useGetUserDetail from '~/hooks/useGetUserDetail';
 import ProductDetailModal from './ProductDetailModal';
 import { useScrollTop } from '~/hooks/useScrollTop';
+import { CloseCircleOutlined, CloseOutlined, CloseSquareOutlined, HeartFilled, HeartOutlined } from '@ant-design/icons';
+import { productService } from '~/services/product.service';
+import { useQuery } from '@tanstack/react-query';
 
-const ProductCard = ({ item }) => {
+const ProductCard = ({ item, heartIcon = false, closeIcon = false }) => {
     const navigate = useNavigate();
+    const [liked, setLiked] = useState(false);
     const { data: dataUser } = useGetUserDetail();
     const user = getUser();
     const [isModalVisible, setIsModalVisible] = useState(false);
+
+    const { data: dataWishlist, refetch } = useQuery({
+        queryKey: ['wishlist'],
+        queryFn: async () => await productService.getWishlist(user._id),
+        enabled: !!user, // Chỉ chạy khi user tồn tại
+    });
+
+    useEffect(() => {
+        const check = dataWishlist?.wishlist?.products.some((p) => p._id === item._id);
+        setLiked(check ? true : false);
+    }, [dataWishlist?.wishlist?.products]);
 
     const discount = useMemo(
         () => (item?.price_old ? ((item?.price_old - item?.price) / item?.price_old) * 100 : 0),
@@ -35,7 +50,6 @@ const ProductCard = ({ item }) => {
         () => generatePath(path.ProductDetail, { idCate: item?.categories, id: item?._id }),
         [item.categories, item._id],
     );
-
     let address = dataUser?.address?.find((item) => item?.defaultAddress) || dataUser?.address[0] || {};
     const handleBuyNow = useCallback(async () => {
         handleClickItem();
@@ -58,6 +72,22 @@ const ProductCard = ({ item }) => {
         };
         navigate(path.Payment, { state: form });
     }, []);
+
+    const handleWishlist = async (type) => {
+        try {
+            const service =
+                type === 'add'
+                    ? productService.addWishlist({ productId: item._id })
+                    : productService.deleteWishlist(item._id);
+            const result = await service;
+            if (result.success) {
+                message.success(result.message);
+                refetch();
+            }
+        } catch (error) {
+            message.error(error?.response.data.message || 'Lỗi');
+        }
+    };
 
     return (
         <div className="group relative rounded-lg shadow-md cursor-pointer">
@@ -93,7 +123,26 @@ const ProductCard = ({ item }) => {
                             </div>
                         </div>
                     )}
-
+                    {user && heartIcon && (
+                        <div
+                            onClick={() => handleWishlist('add')}
+                            className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center text-lg text-black/80 rounded-full bg-white hover:text-red-500 hover:shadow transition-colors duration-200 cursor-pointer"
+                        >
+                            {liked ? (
+                                <HeartFilled style={{ color: 'red' }} />
+                            ) : (
+                                <HeartOutlined style={{ color: 'red' }} />
+                            )}
+                        </div>
+                    )}
+                    {closeIcon && (
+                        <div
+                            onClick={() => handleWishlist('delete')}
+                            className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center text-xl rounded-full bg-white transition-colors duration-200 cursor-pointer"
+                        >
+                           <CloseOutlined />
+                        </div>
+                    )}
                     {/* Hover action buttons */}
                     <div className="absolute bottom-2 left-0 right-0 mx-2 flex items-center justify-center gap-2 transition-all duration-300 translate-y-10 opacity-0 group-hover:translate-y-0 group-hover:opacity-100">
                         <Button

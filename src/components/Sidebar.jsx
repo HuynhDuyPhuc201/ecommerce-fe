@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Drawer, Badge, Menu, List } from 'antd';
-import { CloseOutlined, ShoppingCartOutlined, UserOutlined } from '@ant-design/icons';
+import { Drawer, Badge, Menu, List, message } from 'antd';
+import { CloseOutlined, HeartOutlined, ShoppingCartOutlined, UserOutlined } from '@ant-design/icons';
 import { useAppStore } from '~/store/useAppStore';
 import { getUser, removeToken, removeUser } from '~/config/token';
 import { generatePath, Link, useLocation, useNavigate } from 'react-router-dom';
@@ -10,6 +10,9 @@ import SearchBar from './SearchBar';
 import useGetUserDetail from '~/hooks/useGetUserDetail';
 import { useLocalStore } from '~/store/useLocalStore';
 import { formatNumber } from '~/utils/formatNumber';
+import { userService } from '~/services/user.service';
+import { useQuery } from '@tanstack/react-query';
+import { productService } from '~/services/product.service';
 
 const Sidebar = () => {
     const { cartLocal } = useLocalStore();
@@ -21,11 +24,24 @@ const Sidebar = () => {
     const navigate = useNavigate();
     const { data: dataCart } = useGetCart();
 
-    const handleLogout = () => {
+    const { data: dataWishlist } = useQuery({
+        queryKey: ['wishlist'],
+        queryFn: async () => await productService.getWishlist(user._id),
+        enabled: !!user, // Chỉ chạy khi user tồn tại
+    });
+
+    const handleLogout = async () => {
+        if (!import.meta.env.VITE_COOKIE_MODE) {
+            removeToken();
+        } else {
+            const result = await userService.logout();
+            if (result.success) {
+                message.success(result.message);
+            }
+        }
         removeUser();
-        removeToken();
-        navigate('/', { replace: true });
         toggleSidebar(false);
+        navigate('/', { replace: true });
         window.location.replace('/');
     };
 
@@ -109,7 +125,7 @@ const Sidebar = () => {
             </div>
 
             <div className="m-5 border-b-[0.5px] border-solid border-b-[#eae9e9]">
-                <SearchBar placeholder="Search" size="large" text="Tìm kiếm" />
+                <SearchBar placeholder="Tìm kiếm..." size="large" text="Tìm kiếm" />
                 {searchResults && searchResults?.length > 0 && (
                     <List
                         bordered
@@ -212,7 +228,23 @@ const Sidebar = () => {
                         <ShoppingCartOutlined style={{ fontSize: '20px', color: '#000' }} />
                     </Badge>
 
-                    <span className="text-[16px] text-[#333] pl-5">Giỏ hàng</span>
+                    <span className="text-[16px] text-[#333] pl-5">Giỏ hàng nè</span>
+                </div>
+            )}
+
+            {user && (
+                <div
+                    className="px-10 flex items-center cursor-pointer text-xl"
+                    onClick={() => {
+                        navigate(path.Account.Wishlist);
+                        toggleSidebar(false);
+                    }}
+                >
+                    <Badge count={dataWishlist?.wishlist?.products.length || 0}>
+                        <HeartOutlined style={{ fontSize: '20px', color: '#000' }} />
+                    </Badge>
+
+                    <span className="text-[16px] text-[#333] pl-5">Yêu thích</span>
                 </div>
             )}
         </Drawer>

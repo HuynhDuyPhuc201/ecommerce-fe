@@ -8,7 +8,7 @@ export const userService = {
     // auth
     login: (form) => api.post('/user/sign-in', form),
     loginGoogle: (token) => api.post('/user/sign-in-google', token),
-    logout: (form) => api.post('/user/sign-out', form),
+    logout: () => api.post('/user/sign-out'),
     register: (form) => api.post('/user/sign-up', form),
     verifyEmail: (form) => api.post('/user/verify-email', form),
     refreshToken: (token) => api.post('/user/refresh-token', { token }, { withCredentials: true }),
