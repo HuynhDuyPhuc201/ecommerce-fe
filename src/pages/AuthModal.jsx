@@ -260,7 +260,7 @@ const AuthModal = () => {
                                         <Col span={12}>
                                             <InputForm
                                                 error={registerForm.formState.errors['email']}
-                                                placeholder="Email"
+                                                placeholder="Tài khoản"
                                                 name="email"
                                                 type="text"
                                                 onChange={handleOnChangeEmail}
