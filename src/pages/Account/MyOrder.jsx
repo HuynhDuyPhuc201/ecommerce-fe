@@ -6,10 +6,10 @@ import { formattedDate } from '~/utils/formatDate';
 import { orderService } from '~/services/order.service';
 import HelmetComponent from '~/components/Helmet';
 import { ProductReview } from '~/components/ProductReview';
-import { productService } from '~/services/product.service';
 import { getUser } from '~/config/token';
 import { useForm } from 'react-hook-form';
 import { validImageTypes } from '~/utils/typeFile';
+import { reviewService } from '~/services/review.service';
 const MyOrder = () => {
     const user = getUser();
     const [state, setState] = useState({
@@ -25,7 +25,7 @@ const MyOrder = () => {
 
     const { data: dataReview, refetch: refetchReview } = useQuery({
         queryKey: ['reviews'],
-        queryFn: async () => await productService.getReviews(),
+        queryFn: async () => await reviewService.getReviews(),
         staleTime: 5 * 60 * 1000,
         cacheTime: 30 * 60 * 1000,
     });
@@ -169,7 +169,7 @@ const MyOrder = () => {
 
             formData.append('unchangedImages', JSON.stringify(unchangedImages));
 
-            const result = await productService.addReview(formData, {
+            const result = await reviewService.addReview(formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
 
@@ -262,7 +262,7 @@ const MyOrder = () => {
                     <p className="text-[20px] text-center py-10">Đơn hàng trống</p>
                 </div>
             )}
-            <HelmetComponent title="Thông tin tài khoản" />
+            <HelmetComponent title="Đơn hàng" />
             <Modal title="Chi tiết đơn hàng" open={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
                 {selectedOrder && (
                     <div>
@@ -314,7 +314,7 @@ const MyOrder = () => {
                                             {formatNumber(item?.price || 0)} x {item?.quantity || 0}₫
                                         </p>
                                     </div>
-                                    <Button onClick={() => handleModalReview(item)}>Xem Đánh giá</Button>
+                                    <Button onClick={() => handleModalReview(item)}>Đánh giá</Button>
                                 </li>
                             ))}
                         </ul>

@@ -57,7 +57,7 @@ const Address = () => {
                     </Button>
                 )}
                 </div>
-                <h2 className="text-2xl font-semibold text-center flex-1">Thông tin tài khoản</h2>
+                <h2 className="text-2xl font-semibold text-center flex-1">Thông tin địa chỉ</h2>
             </div>
 
             {createAddress ? (

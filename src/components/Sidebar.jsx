@@ -12,7 +12,7 @@ import { useLocalStore } from '~/store/useLocalStore';
 import { formatNumber } from '~/utils/formatNumber';
 import { userService } from '~/services/user.service';
 import { useQuery } from '@tanstack/react-query';
-import { productService } from '~/services/product.service';
+import { wishlistService } from '~/services/wishlist.service';
 
 const Sidebar = () => {
     const { cartLocal } = useLocalStore();
@@ -26,8 +26,8 @@ const Sidebar = () => {
 
     const { data: dataWishlist } = useQuery({
         queryKey: ['wishlist'],
-        queryFn: async () => await productService.getWishlist(user._id),
-        enabled: !!user, // Chỉ chạy khi user tồn tại
+        queryFn: async () => await wishlistService.getWishlist(),
+        enabled: !!user,
     });
 
     const handleLogout = async () => {
@@ -133,7 +133,7 @@ const Sidebar = () => {
                         renderItem={(item) => (
                             <Link
                                 to={generatePath(path.ProductDetail, {
-                                    idCate: item?.categories,
+                                    slug: item?.categories,
                                     id: item?._id,
                                 })}
                                 onClick={hanldeShowSearch}
@@ -228,7 +228,7 @@ const Sidebar = () => {
                         <ShoppingCartOutlined style={{ fontSize: '20px', color: '#000' }} />
                     </Badge>
 
-                    <span className="text-[16px] text-[#333] pl-5">Giỏ hàng nè</span>
+                    <span className="text-[16px] text-[#333] pl-5">Giỏ hàng</span>
                 </div>
             )}
 

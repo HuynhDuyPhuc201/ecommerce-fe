@@ -3,11 +3,11 @@ import { Modal, Carousel, Rate, Tag, Descriptions, Button, Divider, Typography, 
 import { ShoppingCartOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import { formatNumber } from '~/utils/formatNumber';
 import { useQuery } from '@tanstack/react-query';
-import { productService } from '~/services/product.service';
 import { cartService } from '~/services/cart.service';
 import useGetCart from '~/hooks/useGetCart';
 import { getUser, setCart } from '~/config/token';
 import { useLocalStore } from '~/store/useLocalStore';
+import { categoryService } from '~/services/category.service';
 
 const { Title, Text } = Typography;
 
@@ -20,7 +20,7 @@ const ProductDetailModal = ({ open, product, onClose }) => {
 
     const { data: dataCategory } = useQuery({
         queryKey: ['category'],
-        queryFn: async () => await productService.getCategory(),
+        queryFn: async () => await categoryService.getCategory(),
         staleTime: 5 * 60 * 1000, // Cache trong 5 phút
         refetchOnWindowFocus: false, // Tắt refetch khi tab focus lại
         refetchOnReconnect: false, // Tắt refetch khi mạng có lại

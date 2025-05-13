@@ -78,7 +78,7 @@ const Profile = () => {
                             <div className="flex flex-col items-center gap-4 p-4 border rounded-lg shadow-md w-full">
                                 {/* Hiển thị avatar */}
                                 <Avatar
-                                    size={150}
+                                    size={180}
                                     icon={!imageUrl ? <UserOutlined /> : undefined}
                                     src={imageUrl || data?.avatar || user?.avatar}
                                 />
@@ -90,7 +90,7 @@ const Profile = () => {
                         </Col>
 
                         <Col xs={24} md={16}>
-                            <Row gutter={[12, 12]}>
+                            <Row gutter={[24, 24]}>
                                 <Col span={12}>
                                     <label className="block text-gray-700">Họ & Tên</label>
                                     <InputForm

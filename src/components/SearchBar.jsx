@@ -81,9 +81,9 @@ const SearchBar = forwardRef(({ placeholder, size = 'small', text }, ref) => {
 
             <Button
                 size={size}
-                icon={<SearchOutlined />}
+                icon={<SearchOutlined style={{fontSize: '16px'}}/>}
                 style={{
-                    fontSize: '17px',
+                    fontSize: '16px',
                     border: 'none',
                     borderRadius: '0',
                     borderTopRightRadius: '4px',

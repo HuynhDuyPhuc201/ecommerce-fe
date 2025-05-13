@@ -62,20 +62,20 @@ export const tabTableAdminProduct = [
     },
 ];
 
-export const modalButtonData = [
-    {
-        title: 'Quản lí sản phẩm',
-        type: 'product',
-        action: 'create',
-    },
-    {
-        title: 'Danh mục sản phẩm',
-        type: 'category',
-        action: '',
-    },
-    {
-        title: 'Khuyến mãi',
-        type: 'discount',
-        action: 'create',
-    },
-];
+// export const modalButtonData = [
+//     {
+//         title: 'Quản lí sản phẩm',
+//         type: 'product',
+//         action: 'create',
+//     },
+//     {
+//         title: 'Danh mục sản phẩm',
+//         type: 'category',
+//         action: '',
+//     },
+//     {
+//         title: 'Khuyến mãi',
+//         type: 'discount',
+//         action: 'create',
+//     },
+// ];

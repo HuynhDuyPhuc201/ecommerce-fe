@@ -19,14 +19,10 @@ const OrderSuccessPage = () => {
                         <p className="text-[#333] mt-2">
                             Cảm ơn bạn đã mua sắm tại cửa hàng của chúng tôi. {!user && 'Theo dõi dơn hàng qua Email.'}{' '}
                             <br />
-                            {user ? (
+                            {user && (
                                 <Link to={path.Account.MyOrder} style={{ textDecoration: 'underline' }}>
                                     Xem đơn hàng
                                 </Link>
-                            ) : (
-                                <a href="https://mail.google.com/" className="underline">
-                                    Xem đơn hàng
-                                </a>
                             )}
                         </p>
                         <div className="w-[50%] mx-auto mt-4">

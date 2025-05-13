@@ -83,7 +83,7 @@ const AddressItem = () => {
             </Row>
 
             <Modal title="Cập nhật địa chỉ" open={modalConfig} onCancel={handleCancel} footer={null}>
-                <UpdateAddressForm onSubmit={onSubmit} useForm={addressForm} />
+                <UpdateAddressForm onSubmit={onSubmit} useForm={addressForm} defaultAddress/>
             </Modal>
         </>
     );

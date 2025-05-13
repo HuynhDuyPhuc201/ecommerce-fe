@@ -19,6 +19,7 @@ import HelmetComponent from '~/components/Helmet';
 import { ReviewCard } from '~/components/ReviewCard';
 import { shippingOptions } from '~/constants/dummyData';
 import './style.css';
+import { reviewService } from '~/services/review.service';
 
 const { Title, Text } = Typography;
 
@@ -26,7 +27,7 @@ const ProductDetail = () => {
     const user = getUser();
     const navigate = useNavigate();
 
-    const { idCate, id } = useParams();
+    const { slug, id } = useParams();
     const { cartLocal, setCartLocal } = useLocalStore();
     const [quantity, setQuantity] = useState(1);
     const [isLoading, setIsloading] = useState(false);
@@ -66,15 +67,15 @@ const ProductDetail = () => {
 
     const { data: allReviews = [], refetch: refetchReview } = useQuery({
         queryKey: ['reviews'],
-        queryFn: async () => await productService.getReviews(),
+        queryFn: async () => await reviewService.getReviews(),
     });
 
     const findReview = allReviews?.find((item) => item.productId === dataDetail?._id);
 
     const { data: dataProduct } = useQuery({
-        queryKey: ['products', idCate],
-        queryFn: async () => await productService.getAll(`?limit=8&page=1&categories=${idCate}`),
-        // enabled: Boolean(idCate), // Chỉ gọi khi idCate tồn tại
+        queryKey: ['products', slug],
+        queryFn: async () => await productService.getAll(`?limit=8&page=1&categories=${slug}`),
+        // enabled: Boolean(slug), // Chỉ gọi khi slug tồn tại
         refetchOnWindowFocus: false, // Tắt refetch khi tab focus lại
         refetchOnReconnect: false, // Tắt refetch khi mạng có lại
     });
@@ -165,7 +166,7 @@ const ProductDetail = () => {
             subTotal: cartItem.price * cartItem.quantity,
             totalProduct: 1,
             userId: user ? user?._id : null,
-            idCate,
+            slug,
         };
         navigate(path.Payment, { state: form });
     }, [dataDetail, newTotalQuantity]);
@@ -359,7 +360,7 @@ const ProductDetail = () => {
                             <span className="font-bold">Thông tin chi tiết</span>
                         </div>
                         <div className="border-solid border-[#f0f0f0] ">
-                            <p>{dataDetail?.descrireviewsption || 'Không có'}</p>
+                            <p>{dataDetail?.description || 'Không có'}</p>
                         </div>
                     </div>
                     <div className="bg-[#fff] rounded-[8px] p-6 mb-4">

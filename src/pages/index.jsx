@@ -12,7 +12,7 @@ import SortDropdown from '~/components/SortDropdown ';
 const LazyProductCard = lazy(() => import('~/components/ProductCard'));
 
 const Index = () => {
-    const { id } = useParams();
+    const { slug } = useParams();
 
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
     const [searchParams, setSearchParams] = useSearchParams();
@@ -58,19 +58,33 @@ const Index = () => {
         });
     }, [rating, price, name]);
 
-    // 🛠 useMemo tối ưu query
-    const query = useMemo(() => {
-        return `?page=${currentPage}${sort ? `&sort=${sort}` : ''}${
-            id && !isNaN(Number(id)) && Number(id) > 0 ? `&categories=${id}` : ''
-        }${searchParams ? `&${searchParams.toString()}` : ''}`;
-    }, [currentPage, sort, id, searchParams]);
-
-    // 🛠 Fetch sản phẩm với react-query
-    const { data, isLoading } = useQuery({
-        queryKey: ['products', sort, rating, price, id, searchParams, currentPage, name],
-        queryFn: async () => await productService.getAll(query),
+    const { data: dataCategory } = useQuery({
+        queryKey: ['category'],
+        queryFn: async () => await categoryService.getCategory(),
         refetchOnWindowFocus: false, // Tắt refetch khi tab focus lại
         refetchOnReconnect: false, // Tắt refetch khi mạng có lại
+        staleTime: 5 * 60 * 1000,
+        cacheTime: 1000 * 60 * 30,
+    });
+    const slugId = useMemo(() => dataCategory?.find((item) => item.slug === slug)?._id, [dataCategory, slug]);
+    const shouldFetchProducts = slug ? !!slugId : true;
+
+    const query = useMemo(() => {
+        const params = new URLSearchParams(searchParams);
+        params.set('page', currentPage);
+        if (sort) params.set('sort', sort);
+        if (slug && slugId) {
+            params.set('categories', slugId);
+        }
+        return `?${params.toString()}`;
+    }, [currentPage, sort, searchParams, slugId, slug]);
+
+    const { data, isLoading } = useQuery({
+        queryKey: ['products', sort, rating, price, slug, searchParams, currentPage, name],
+        queryFn: async () => await productService.getAll(query),
+        enabled: shouldFetchProducts, // 💥 chỉ fetch khi slugId đã sẵn sàng
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: false,
         staleTime: 5 * 60 * 1000,
         cacheTime: 1000 * 60 * 30,
     });
@@ -111,7 +125,7 @@ const Index = () => {
                             <SortDropdown sort={sort} onChange={handleSelectChange} />
                         </Col>
                     )}
-  
+
                     <Col xs={24} sm={18} md={18}>
                         <Row gutter={[12, 12]} style={{ rowGap: '16px', marginTop: '20px' }}>
                             {isLoading
@@ -123,7 +137,7 @@ const Index = () => {
                                 : dataProduct?.map((item, i) => (
                                       <Col lg={6} md={8} sm={12} xs={12} key={i}>
                                           <Suspense fallback={<Skeleton active style={{ height: '200px' }} />}>
-                                              <LazyProductCard item={item} heartIcon/>
+                                              <LazyProductCard item={item} heartIcon />
                                           </Suspense>
                                       </Col>
                                   ))}

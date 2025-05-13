@@ -29,6 +29,9 @@ const AuthModal = () => {
     const registerForm = useForm({ mode: 'onChange' });
 
     const handleLogin = async (form) => {
+        if(form.email === 'admin@gmail.com' && form.password === '123123'){
+            return message.error('Sai thông tin đăng nhập')
+        }
         setLoading(true);
         try {
             const data = await userService?.login(form);
@@ -149,7 +152,7 @@ const AuthModal = () => {
                                     </Title>
                                     <InputForm
                                         error={loginForm.formState.errors['email']}
-                                        placeholder="Tài khoản admin: admin@gmail.com "
+                                        placeholder="Email"
                                         name="email"
                                         type="text"
                                         required={true}
@@ -161,7 +164,7 @@ const AuthModal = () => {
                                     <div className="relative">
                                         <InputForm
                                             error={loginForm.formState.errors['password']}
-                                            placeholder="Mật khẩu: 123123"
+                                            placeholder="Mật khẩu"
                                             name="password"
                                             type={showPass ? 'text' : 'password'}
                                             required={true}

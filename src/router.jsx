@@ -13,9 +13,6 @@ const Address = lazy(() => import('./pages/Account/Address'));
 const MyOrder = lazy(() => import('./pages/Account/MyOrder'));
 const Wishlist = lazy(() => import('./pages/Account/Wishlist'));
 
-// admin
-const Admin = lazy(() => import('./pages/Admin/Admin'));
-
 const routers = [
   {
     path: '/',
@@ -68,10 +65,6 @@ const routers = [
         ],
       },
     ],
-  },
-  {
-    path: path.Admin,
-    element: <Admin />,
   },
   {
     path: '*',

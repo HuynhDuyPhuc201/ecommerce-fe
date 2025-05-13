@@ -8,9 +8,9 @@ import { getUser, removeAddress } from '~/config/token';
 import useGetUserDetail from '~/hooks/useGetUserDetail';
 import ProductDetailModal from './ProductDetailModal';
 import { useScrollTop } from '~/hooks/useScrollTop';
-import { CloseCircleOutlined, CloseOutlined, CloseSquareOutlined, HeartFilled, HeartOutlined } from '@ant-design/icons';
-import { productService } from '~/services/product.service';
+import { CloseOutlined, CloseSquareOutlined, HeartFilled, HeartOutlined } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
+import { wishlistService } from '~/services/wishlist.service';
 
 const ProductCard = ({ item, heartIcon = false, closeIcon = false }) => {
     const navigate = useNavigate();
@@ -21,8 +21,8 @@ const ProductCard = ({ item, heartIcon = false, closeIcon = false }) => {
 
     const { data: dataWishlist, refetch } = useQuery({
         queryKey: ['wishlist'],
-        queryFn: async () => await productService.getWishlist(user._id),
-        enabled: !!user, // Chỉ chạy khi user tồn tại
+        queryFn: async () => await wishlistService.getWishlist(),
+        enabled: !!user, 
     });
 
     useEffect(() => {
@@ -47,7 +47,7 @@ const ProductCard = ({ item, heartIcon = false, closeIcon = false }) => {
     };
 
     const pathURL = useMemo(
-        () => generatePath(path.ProductDetail, { idCate: item?.categories, id: item?._id }),
+        () => generatePath(path.ProductDetail, { slug: item?.categories || '', id: item?._id }),
         [item.categories, item._id],
     );
     let address = dataUser?.address?.find((item) => item?.defaultAddress) || dataUser?.address[0] || {};
@@ -68,7 +68,7 @@ const ProductCard = ({ item, heartIcon = false, closeIcon = false }) => {
             subTotal: item.price * 1,
             totalProduct: 1,
             userId: user ? user?._id : null,
-            idCate: item.categories,
+            slug: item.categories || '',
         };
         navigate(path.Payment, { state: form });
     }, []);
@@ -77,8 +77,8 @@ const ProductCard = ({ item, heartIcon = false, closeIcon = false }) => {
         try {
             const service =
                 type === 'add'
-                    ? productService.addWishlist({ productId: item._id })
-                    : productService.deleteWishlist(item._id);
+                    ? wishlistService.addWishlist({ productId: item._id })
+                    : wishlistService.deleteWishlist(item._id);
             const result = await service;
             if (result.success) {
                 message.success(result.message);

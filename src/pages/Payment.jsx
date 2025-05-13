@@ -19,9 +19,9 @@ import ShippingMethodCard from '~/components/checkout/ShippingMethodCard';
 import AddressDisplay from '~/components/checkout/AddressDisplay';
 import OrderSummary from '~/components/checkout/OrderSummary';
 import { useQuery } from '@tanstack/react-query';
-import { adminService } from '~/services/admin.service';
 import { useDebounce } from '~/hooks/useDebounce';
 import HelmetComponent from '~/components/Helmet';
+import { discountService } from '~/services/discount.service';
 
 const Payment = () => {
     const user = getUser();
@@ -60,7 +60,7 @@ const Payment = () => {
 
     const { data: dataDiscount } = useQuery({
         queryKey: ['discount', debouncedSearch],
-        queryFn: async () => await adminService.getAllDiscount(`?code=${debouncedSearch}`),
+        queryFn: async () => await discountService.getAllDiscount(`?code=${debouncedSearch}`),
         staleTime: 5 * 60 * 1000,
     });
 
@@ -88,7 +88,7 @@ const Payment = () => {
         const discountPrice =
             itemDiscount.type === 'percent' ? checkoutInfo?.subTotal * (itemDiscount.value / 100) : itemDiscount.value;
         try {
-            const result = await adminService.validateDiscount({
+            const result = await discountService.validateDiscount({
                 id: user?._id,
                 code: itemDiscount?.code,
                 subTotal: checkoutInfo?.subTotal,
@@ -202,7 +202,7 @@ const Payment = () => {
                 href:
                     checkoutInfo?.page === 'cart'
                         ? 'cart'
-                        : `product-detail/${checkoutInfo?.idCate}/${checkoutInfo?.orderItems[0]?.productId}`,
+                        : `product-detail/${checkoutInfo?.slug}/${checkoutInfo?.orderItems[0]?.productId}`,
             },
             { text: 'Thanh toán' },
         ];

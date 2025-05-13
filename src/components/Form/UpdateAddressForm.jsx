@@ -3,7 +3,7 @@ import { FormProvider } from 'react-hook-form';
 import InputForm from '../InputForm';
 import { Col, Row } from 'antd';
 
-function UpdateAddressForm({ useForm, onSubmit }) {
+function UpdateAddressForm({ useForm, onSubmit, defaultAddress = false }) {
     return (
         <FormProvider {...useForm}>
             <form onSubmit={useForm.handleSubmit(onSubmit)}>
@@ -32,19 +32,21 @@ function UpdateAddressForm({ useForm, onSubmit }) {
                             label="Thành phố"
                         />
                     </Col>
-                    <Col span={24}>
-                        <div className="flex items-center justify-start gap-3">
-                        <label className="block text-gray-700">Địa chỉ mặc định</label>
-                        <div className="w-30">
-                            <InputForm
-                                error={useForm.formState.errors['defaultAddress']}
-                                name="defaultAddress"
-                                type="checkbox"
-                                className="p-2 border rounded-lg"
-                            />
+                    {defaultAddress && (
+                        <Col span={24}>
+                            <div className="flex items-center justify-start gap-3">
+                                <label className="block text-gray-700">Địa chỉ mặc định</label>
+                                <div className="w-30">
+                                    <InputForm
+                                        error={useForm.formState.errors['defaultAddress']}
+                                        name="defaultAddress"
+                                        type="checkbox"
+                                        className="p-2 border rounded-lg"
+                                    />
+                                </div>
                             </div>
-                        </div>
-                    </Col>
+                        </Col>
+                    )}
                 </Row>
 
                 <div className="flex items-center justify-center mt-6">
