@@ -216,7 +216,7 @@ const MyOrder = () => {
                                 key={item._id}
                                 src={item.image}
                                 alt="Product"
-                                className='w-[50px] h-[50px] rounded-lg'
+                                className="w-[50px] h-[50px] rounded-lg"
                             />
                         ))}
                         {list.length > 2 && <span className="pl-2">+{list.length - 2}</span>}
@@ -242,12 +242,31 @@ const MyOrder = () => {
             render: (item) => formattedDate(item),
         },
         {
+            title: 'Trạng thái',
+            width: 70,
+            responsive: ['xs', 'sm', 'md', 'lg'],
+            dataIndex: 'status',
+            render: (item) => (
+                <>
+                    <p>
+                        {item === 'pending'
+                            ? 'Chờ xác nhận'
+                            : item === 'cancelled'
+                            ? 'Đã hủy'
+                            : item === 'fullfilled'
+                            ? 'Đã hoàn thành'
+                            : 'Không xác định'}
+                    </p>
+                </>
+            ),
+        },
+        {
             title: 'Chi tiết',
             responsive: ['xs', 'sm', 'md', 'lg'],
             dataIndex: '_id',
             width: 70,
             render: (id, record) => (
-                <Button key={id} type="link" onClick={() => showModal(record)}>
+                <Button key={id} onClick={() => showModal(record)}>
                     Xem chi tiết
                 </Button>
             ),
