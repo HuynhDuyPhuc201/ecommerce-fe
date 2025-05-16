@@ -464,7 +464,7 @@ const AuthModal = () => {
                                         error={newPasswordForm.formState.errors['password']}
                                         placeholder="Nhập mật khẩu mới"
                                         name="password"
-                                        type="text"
+                                        type="password"
                                         required={true}
                                         pattern={{
                                             value: PASSWORD_RULE,
