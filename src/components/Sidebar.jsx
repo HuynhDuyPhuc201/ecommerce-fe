@@ -84,7 +84,7 @@ const Sidebar = () => {
                 ? [
                       userDetail?.isAdmin
                           ? { key: path.Admin, label: 'Quản lý hệ thống' }
-                          : { key: path.Account.Profile, label: 'Thông tin người dùng' },
+                          : { key: path.Account.Profile, label: 'Thông tin tài khoản' },
                       !userDetail?.isAdmin && { key: path.Account.MyOrder, label: 'Đơn hàng' },
                       { key: 'logout', label: 'Đăng xuất' },
                   ].filter(Boolean)

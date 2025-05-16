@@ -55,7 +55,7 @@ const Header = forwardRef((props, ref) => {
     const items = [
         {
             key: '1',
-            label: `${user?.isAdmin ? 'Quản lý hệ thống' : 'Thông tin người dùng'}`,
+            label: `${user?.isAdmin ? 'Quản lý hệ thống' : 'Thông tin tài khoản'}`,
             onClick: () => navigate(`${user?.isAdmin ? path.Admin : path.Account.Profile}`),
         },
         !user?.isAdmin && {

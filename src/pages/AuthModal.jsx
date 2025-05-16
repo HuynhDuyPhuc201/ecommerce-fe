@@ -9,7 +9,7 @@ import { useAppStore } from '~/store/useAppStore';
 import { userService } from '~/services/user.service';
 import { login } from '~/constants/images';
 import { path } from '~/config/path';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import { EMAIL_RULE, EMAIL_RULE_MESSAGE, PASSWORD_RULE, PASSWORD_RULE_MESSAGE } from '~/utils/validator';
 
@@ -19,18 +19,23 @@ const AuthModal = () => {
     const navigate = useNavigate();
     const [verifyEmail, setShowVerifyEmail] = useState(false);
     const [showPass, setShowPass] = useState(false);
+    const [showCodePassword, setShowCodePassword] = useState(false);
     const [showPassConFirm, setShowPassConFirm] = useState(false);
-    const { showSignUp, setShowSignUp } = useAppStore();
+    const [showForm, setShowForm] = useState({
+        type: 'showSignIn',
+    });
     const [loading, setLoading] = useState(false);
     const [loadingSendCode, setLoadingSendCode] = useState(false);
 
     // tạo useForm sử dụng cho nhiều component
     const loginForm = useForm({ mode: 'onChange' });
     const registerForm = useForm({ mode: 'onChange' });
+    const changePasswordForm = useForm({ mode: 'onChange' });
+    const newPasswordForm = useForm({ mode: 'onChange' });
 
     const handleLogin = async (form) => {
-        if(form.email === 'admin@gmail.com' && form.password === '123123'){
-            return message.error('Sai thông tin đăng nhập')
+        if (form.email === 'admin@gmail.com' && form.password === '123123') {
+            return message.error('Sai thông tin đăng nhập');
         }
         setLoading(true);
         try {
@@ -102,7 +107,7 @@ const AuthModal = () => {
                     password: '',
                     confirmPassword: '',
                 });
-                setShowSignUp(false);
+                setShowForm({ type: 'showSignIn' });
                 message.success(result.message);
             }
         } catch (error) {
@@ -111,6 +116,35 @@ const AuthModal = () => {
             setLoading(false);
         }
     };
+
+    const handleChangePassword = async (form) => {
+        try {
+            const result = await userService.changePassword(form);
+            if (result.success) {
+                message.success(result.message);
+                setShowCodePassword(true);
+            }
+            if (result.message === 'Xác thực thành công') {
+                setShowForm({ type: 'showNewPassword' });
+            }
+        } catch (error) {
+            message.error(error.response.data?.message);
+        }
+    };
+    const handleUpdatePassword = async (form) => {
+        const getEmail = changePasswordForm.getValues('email');
+        const newForm = {...form, email: getEmail}
+        try {
+            const result = await userService.updateUserPassword(newForm);
+            if (result.success) {
+                message.success(result.message);
+                setShowForm({ type: 'showSignIn' });
+            }
+        } catch (error) {
+            message.error(error.response.data?.message);
+        }
+    }
+
     const handleOnChangeEmail = (e) => {
         if (dataDefault.email !== e.target.value) {
             setShowVerifyEmail(false);
@@ -138,17 +172,21 @@ const AuthModal = () => {
         toggleModal();
         registerForm.clearErrors();
         loginForm.clearErrors();
+        changePasswordForm.clearErrors();
+        changePasswordForm.reset();
+        setShowCodePassword(false);
+        setShowForm({ type: 'showSignIn' });
     };
     return (
         <>
             <Modal open={openModal} onCancel={handleCloseModal} footer={null} width={800}>
                 <Row gutter={[12, 12]} justify="center" align="middle">
-                    {!showSignUp && (
+                    {showForm.type === 'showSignIn' && (
                         <Col xs={24} sm={24} md={14}>
                             <FormProvider {...loginForm}>
                                 <form onSubmit={loginForm.handleSubmit(handleLogin)}>
                                     <Title style={{ fontSize: '16px', marginBottom: '30px', textAlign: 'center' }}>
-                                        Đăng nhập bằng Email
+                                        Đăng nhập
                                     </Title>
                                     <InputForm
                                         error={loginForm.formState.errors['email']}
@@ -197,16 +235,33 @@ const AuthModal = () => {
                                     </div>
                                 </form>
                             </FormProvider>
-
-                            <p style={{ fontSize: '14px', paddingTop: '20px' }}>
-                                Chưa có tài khoản?{' '}
-                                <button onClick={() => setShowSignUp(true)} className="text-[#2640d4]">
-                                    Đăng ký
-                                </button>
+                            <p
+                                style={{
+                                    fontSize: '14px',
+                                    paddingTop: '20px',
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                }}
+                            >
+                                <Link
+                                    style={{ fontSize: '14px' }}
+                                    onClick={() => setShowForm({ type: 'showChangePassword' })}
+                                >
+                                    Quên mật khẩu
+                                </Link>
+                                <p>
+                                    Chưa có tài khoản?{' '}
+                                    <button
+                                        onClick={() => setShowForm({ type: 'showSignUp' })}
+                                        className="text-[#2640d4]"
+                                    >
+                                        Đăng ký
+                                    </button>
+                                </p>
                             </p>
                         </Col>
                     )}
-                    {showSignUp && (
+                    {showForm.type === 'showSignUp' && (
                         <Col md={14}>
                             <FormProvider {...registerForm}>
                                 <form onSubmit={registerForm.handleSubmit(handleRegister)}>
@@ -220,13 +275,13 @@ const AuthModal = () => {
                                     >
                                         <LeftOutlined
                                             onClick={() => {
-                                                setShowSignUp(false);
+                                                setShowForm({ type: 'showSignIn' });
                                                 registerForm.clearErrors();
                                                 loginForm.clearErrors();
                                             }}
                                             style={{ position: 'absolute', left: 0 }}
                                         />
-                                        Đăng ký tài khoản
+                                        Đăng ký
                                     </Title>
                                     <Row gutter={[12, 12]}>
                                         <Col span={12}>
@@ -319,7 +374,7 @@ const AuthModal = () => {
                                         Đã có tài khoản?{' '}
                                         <button
                                             type="button"
-                                            onClick={() => setShowSignUp(false)}
+                                            onClick={() => setShowForm({ type: 'showSignIn' })}
                                             className="text-[#2640d4]"
                                         >
                                             Đăng nhập
@@ -329,7 +384,102 @@ const AuthModal = () => {
                             </FormProvider>
                         </Col>
                     )}
-
+                    {showForm.type === 'showChangePassword' && (
+                        <Col xs={24} sm={24} md={14}>
+                            <FormProvider {...changePasswordForm}>
+                                <form onSubmit={changePasswordForm.handleSubmit(handleChangePassword)}>
+                                    <Title
+                                        style={{
+                                            fontSize: '16px',
+                                            marginBottom: '30px',
+                                            textAlign: 'center',
+                                            position: 'relative',
+                                        }}
+                                    >
+                                        <LeftOutlined
+                                            onClick={() => {
+                                                setShowForm({ type: 'showSignIn' });
+                                                setShowCodePassword(false);
+                                                registerForm.clearErrors();
+                                                changePasswordForm.clearErrors();
+                                            }}
+                                            style={{ position: 'absolute', left: 0 }}
+                                        />
+                                        {showCodePassword ? 'Xác thực Email' : 'Đặt lại mật khẩu'}
+                                    </Title>
+                                    <InputForm
+                                        error={changePasswordForm.formState.errors['email']}
+                                        placeholder="Nhập email"
+                                        name="email"
+                                        type="text"
+                                        required={true}
+                                        pattern={{
+                                            value: EMAIL_RULE,
+                                            message: EMAIL_RULE_MESSAGE,
+                                        }}
+                                    />
+                                    {showCodePassword && (
+                                        <InputForm
+                                            error={changePasswordForm.formState.errors['code']}
+                                            placeholder="Nhập mã xác thực"
+                                            name="code"
+                                            type="text"
+                                            required={true}
+                                        />
+                                    )}
+                                    <div className="mt-[30px] flex justify-between items-center gap-3 pb-[30px]">
+                                        <Button className="w-full h-[40px]" disabled={loading}>
+                                            {loading && <Spin />} {showCodePassword ? 'Xác thực' : 'Tiếp theo'}
+                                        </Button>
+                                    </div>
+                                </form>
+                            </FormProvider>
+                        </Col>
+                    )}
+                    {showForm.type === 'showNewPassword' && (
+                        <Col xs={24} sm={24} md={14}>
+                            <FormProvider {...newPasswordForm}>
+                                <form onSubmit={newPasswordForm.handleSubmit(handleUpdatePassword)}>
+                                    <Title
+                                        style={{
+                                            fontSize: '16px',
+                                            marginBottom: '30px',
+                                            textAlign: 'center',
+                                            position: 'relative',
+                                        }}
+                                    >
+                                        <LeftOutlined
+                                            onClick={() => {
+                                                setShowForm({ type: 'showSignIn' });
+                                                registerForm.clearErrors();
+                                                changePasswordForm.clearErrors();
+                                                newPasswordForm.clearErrors();
+                                                newPasswordForm.reset();
+                                            }}
+                                            style={{ position: 'absolute', left: 0 }}
+                                        />
+                                        Nhập mật khẩu mới
+                                    </Title>
+                                    <InputForm
+                                        error={newPasswordForm.formState.errors['password']}
+                                        placeholder="Nhập mật khẩu mới"
+                                        name="password"
+                                        type="text"
+                                        required={true}
+                                        pattern={{
+                                            value: PASSWORD_RULE,
+                                            message: PASSWORD_RULE_MESSAGE,
+                                        }}
+                                    />
+                                    <div className="mt-[30px] flex justify-between items-center gap-3 pb-[30px]">
+                                        <Button className="w-full h-[40px]" disabled={loading}>
+                                            {loading && <Spin />} Xác nhận
+                                        </Button>
+                                    </div>
+                                </form>
+                            </FormProvider>
+                        </Col>
+                    )}
                     <Col md={10}>
                         <Image src={login} style={{ width: '280px' }} />
                     </Col>

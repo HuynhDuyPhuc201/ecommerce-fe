@@ -17,4 +17,6 @@ export const userService = {
     createAddress: (form) => api.post('/user/createAddress', form),
     removeAddress: (id) => api.delete(`/user/removeAddress${id}`),
     updateAddress: (form) => api.put(`/user/updateAddress`, form),
+    changePassword: (form) => api.put('/user/change-password', form),
+    updateUserPassword: (form) => api.put('/user/update-password', form),
 };
