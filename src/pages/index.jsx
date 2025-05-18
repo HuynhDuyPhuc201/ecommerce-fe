@@ -52,11 +52,17 @@ const Index = () => {
         setSearchParams((prev) => {
             const params = new URLSearchParams(prev);
             if (rating) params.set('rating', rating);
+            if (currentPage) params.set('page', currentPage);
             if (price) params.set('price', price);
             if (name) params.set('q', name);
             return params;
         });
-    }, [rating, price, name]);
+    }, [rating, price, name, currentPage]);
+
+    // set lại page 1 khi click danh mục
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [slug]);
 
     const { data: dataCategory } = useQuery({
         queryKey: ['category'],
@@ -71,11 +77,9 @@ const Index = () => {
 
     const query = useMemo(() => {
         const params = new URLSearchParams(searchParams);
-        params.set('page', currentPage);
+        if (currentPage) params.set('page', currentPage);
         if (sort) params.set('sort', sort);
-        if (slug && slugId) {
-            params.set('categories', slugId);
-        }
+        if (slug && slugId) params.set('categories', slugId);
         return `?${params.toString()}`;
     }, [currentPage, sort, searchParams, slugId, slug]);
 
@@ -92,6 +96,11 @@ const Index = () => {
     // 🛠 Thay đổi cách sắp xếp
     const handleSelectChange = useCallback((e) => {
         setSort(e.target.value);
+        setSearchParams((prev) => {
+            const params = new URLSearchParams(prev);
+            params.set('sort', e.target.value);
+            return params;
+        });
     }, []);
 
     const dataProduct = data?.data;
@@ -99,6 +108,11 @@ const Index = () => {
     // 🛠 Thay đổi trang Pagination
     const onShowSizeChange = (page) => {
         setCurrentPage(page);
+        setSearchParams((prev) => {
+            const params = new URLSearchParams(prev);
+            params.set('page', page);
+            return params;
+        });
     };
 
     // 🛠 Cập nhật kích thước cửa sổ (windowWidth)
@@ -151,15 +165,17 @@ const Index = () => {
                     </Col>
                 </Row>
 
-                <div className="flex justify-end">
-                    <Pagination
-                        style={{ padding: '16px', display: 'flex', justifyContent: 'center' }}
-                        onChange={onShowSizeChange}
-                        total={data?.total || 0}
-                        pageSize={8}
-                        current={currentPage}
-                    />
-                </div>
+                {data?.totalPage > 1 && (
+                    <div className="flex justify-end">
+                        <Pagination
+                            style={{ padding: '16px', display: 'flex', justifyContent: 'center' }}
+                            onChange={onShowSizeChange}
+                            total={data?.total || 0}
+                            pageSize={8}
+                            current={currentPage}
+                        />
+                    </div>
+                )}
             </div>
         </>
     );

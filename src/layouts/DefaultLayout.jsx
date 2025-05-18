@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Outlet } from 'react-router-dom';
 import Footer from '~/components/Layout/Footer';
 import Header from '~/components/Layout/Header';
@@ -13,10 +13,20 @@ const DefaultLayout = () => {
             setOverlayVisible(false);
         }
     };
+
+    const handleScroll = () => {
+        if (window.scrollY > 0) setOverlayVisible(false);
+    };
+    useEffect(() => {
+        window.addEventListener('scroll', handleScroll);
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }, []);
     return (
         <>
             <div className="flex flex-col min-h-screen">
-                <Header />
+                <Header ref={inputRef} />
                 <main className="flex-grow" onClick={hanldeClickOutside}>
                     {isOverlayVisible && <Overlay />}
                     <Outlet />
