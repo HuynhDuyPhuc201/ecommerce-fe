@@ -3,7 +3,7 @@ import { lazy, Suspense, memo } from 'react';
 
 import Navbar from '~/components/Navbar';
 import { Col, Pagination, Row, Skeleton } from 'antd';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { productService } from '~/services/product.service';
 import { useQuery } from '@tanstack/react-query';
 import HomeSlider from '~/components/HomeSlider';
@@ -52,12 +52,11 @@ const Index = () => {
         setSearchParams((prev) => {
             const params = new URLSearchParams(prev);
             if (rating) params.set('rating', rating);
-            if (currentPage) params.set('page', currentPage);
             if (price) params.set('price', price);
             if (name) params.set('q', name);
             return params;
         });
-    }, [rating, price, name, currentPage]);
+    }, [rating, price, name]);
 
     // set lại page 1 khi click danh mục
     useEffect(() => {
@@ -77,7 +76,7 @@ const Index = () => {
 
     const query = useMemo(() => {
         const params = new URLSearchParams(searchParams);
-        if (currentPage) params.set('page', currentPage);
+        if (currentPage && currentPage !== 1) params.set('page', currentPage);
         if (sort) params.set('sort', sort);
         if (slug && slugId) params.set('categories', slugId);
         return `?${params.toString()}`;
@@ -110,7 +109,11 @@ const Index = () => {
         setCurrentPage(page);
         setSearchParams((prev) => {
             const params = new URLSearchParams(prev);
-            params.set('page', page);
+            if (page === 1) {
+                params.delete('page');
+            } else {
+                params.set('page', page);
+            }
             return params;
         });
     };
@@ -173,6 +176,12 @@ const Index = () => {
                             total={data?.total || 0}
                             pageSize={8}
                             current={currentPage}
+                            itemRender={(page, type, originalElement) => {
+                                if (type === 'page') {
+                                    return <Link to={page === 1 ? '/' : `/?page=${page}`}>{page}</Link>;
+                                }
+                                return originalElement; // Giữ nguyên các nút mặc định như "prev", "next", "jump"
+                            }}
                         />
                     </div>
                 )}
