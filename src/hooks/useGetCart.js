@@ -1,13 +1,18 @@
 import { useQuery } from '@tanstack/react-query';
+import { getUser } from '~/config/token';
 import { cartService } from '~/services/cart.service';
 
-const useGetCart = (user) => {
+const useGetCart = () => {
+    const user = getUser()
     const { data, isFetching, refetch } = useQuery({
-        queryKey: ['cart'],
+        queryKey: ['cart', user?.id],
         queryFn: async () => cartService.getCart(),
-        refetchOnWindowFocus: false, // Tắt refetch khi tab focus lại
-        refetchOnReconnect: false, // Tắt refetch khi mạng có lại
+        enabled: !!user,
+        retry: !!user ? true : false,
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: false,
     });
+
     return {
         refetch,
         isFetching,
