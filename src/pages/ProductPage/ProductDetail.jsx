@@ -195,7 +195,7 @@ const ProductDetail = () => {
                                 ))}
                             </Slider>
                         ) : (
-                            <div >
+                            <div>
                                 <img
                                     width={200}
                                     height={350}
@@ -345,12 +345,9 @@ const ProductDetail = () => {
                         </div>
                         <div className="flex-col">
                             {shippingOptions?.map((item, i) => (
-                                <>
-                                    <span className="" key={i}>
-                                        {item.label}
-                                    </span>{' '}
-                                    - <span>{item.time}</span> <br />
-                                </>
+                                <div className="" key={i}>
+                                    <span className="">{item.label}</span> - <span>{item.time}</span> <br />
+                                </div>
                             ))}
                         </div>
                     </div>
@@ -386,7 +383,7 @@ const ProductDetail = () => {
                         <Row gutter={[10, 10]}>
                             {productRecommand?.map((item, i) => (
                                 <Col md={12} sm={12} key={i}>
-                                    <ProductCard item={item} heartIcon={true}/>
+                                    <ProductCard item={item} heartIcon={true} />
                                 </Col>
                             ))}
                         </Row>

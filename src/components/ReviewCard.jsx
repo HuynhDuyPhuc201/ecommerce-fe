@@ -6,14 +6,15 @@ import { formattedDate } from '~/utils/formatDate';
 import { useScrollTop } from '~/hooks/useScrollTop';
 
 export const ReviewCard = ({ itemReview }) => {
+    console.log('itemReview', itemReview)
     const user = getUser();
     const handleClickItem = () => useScrollTop();
     return (
         <div className="border-b border-gray-200 p-4">
             <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
-                    <img src={itemReview?.userAvatar} alt="" className="w-12 h-12 rounded-full" />
-                    <span className="text-md font-medium ml-2">{itemReview?.userName || ''}</span>
+                    <img src={itemReview?.userId.avatar} alt="" className="w-12 h-12 rounded-full" />
+                    <span className="text-md font-medium ml-2">{itemReview?.userId.name || ''}</span>
                 </div>
                 {itemReview?.userId === user?._id && (
                     <Link to={path.Account.MyOrder} onClick={handleClickItem}>
