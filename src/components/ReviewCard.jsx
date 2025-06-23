@@ -6,7 +6,6 @@ import { formattedDate } from '~/utils/formatDate';
 import { useScrollTop } from '~/hooks/useScrollTop';
 
 export const ReviewCard = ({ itemReview }) => {
-    console.log('itemReview', itemReview)
     const user = getUser();
     const handleClickItem = () => useScrollTop();
     return (

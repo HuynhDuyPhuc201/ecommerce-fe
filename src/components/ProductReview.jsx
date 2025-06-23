@@ -46,7 +46,7 @@ export const ProductReview = (props) => {
                                     <Button
                                         onClick={(e) => {
                                             e.stopPropagation();
-                                            actions.remove(); // ✅ Sử dụng remove mặc định của AntD
+                                            actions.remove();
                                         }}
                                         className="absolute top-1 right-1 p-1 bg-white bg-opacity-80 rounded-full opacity-0 group-hover:opacity-100 transition"
                                         icon={<CloseCircleOutlined className="text-red-500 text-lg" />}
